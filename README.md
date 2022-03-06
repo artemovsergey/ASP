@@ -178,18 +178,18 @@ Finally fixed it by turning off File > Settings > General > SSL Certificate Veri
 тестирование моделей, контроллеров, представлений через xUnit
 
 ## Порядок работы над новым проектом
-1.Создать пустой проект ASP.NET Core 6
-2.Создать папки Models,Controllers,Views
-3.Скопировать конфигурационный конфиг по MVC паттерн в Program.cs
-4. В папке Views создадим импортируемый шаблон для пространства имен _ViewImports.cshtml
+1 Создать пустой проект ASP.NET Core 6
+2 Создать папки Models,Controllers,Views
+3 Скопировать конфигурационный конфиг по MVC паттерн в Program.cs
+4 В папке Views создадим импортируемый шаблон для пространства имен _ViewImports.cshtml
 ```asp
 @using SportsStore.Models // название приложения ? проверить 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers 
 
 ```
-5. Создать проект модульного тестирования xUnit
-6. Добавить в ссылки проект и Moq. Это можно сделать через файл конфигурации ```asp <PackageReference Include="Moq" Version="4.7.99" /> ``` или через NuGet
-7. Создаем модель предметной области. В папке Models создаем файл Product.cs
+5 Создать проект модульного тестирования xUnit
+6 Добавить в ссылки проект и Moq. Это можно сделать через файл конфигурации ```asp <PackageReference Include="Moq" Version="4.7.99" /> ``` или через NuGet
+7 Создаем модель предметной области. В папке Models создаем файл Product.cs
 
 
 
