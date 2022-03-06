@@ -101,20 +101,20 @@ app.Run();
 
 
 ```
-## Null условнаяя проверка с объединением
+##Null условнаяя проверка с объединением
 ```asp
 
 string name = р?.Name ?? "No name"; // null условная операция с объединением
 
 ```
 
-## Автоматические реализуемые свойства
+##Автоматические реализуемые свойства
 
 ```asp
 puЫic string Nаш.е { get; set; } 
 
 ```
-## Сопоставление с образцом
+##Сопоставление с образцом
 
 ```asp
 
@@ -125,7 +125,7 @@ if (data is decimal d) { }
 
 ---
 
-## Применение лямбда выражений
+##Применение лямбда выражений
 
 ```asp
 pubclic ViewResult Index() {
@@ -138,7 +138,7 @@ pubclic ViewResult Index() => View()
 
 ```
 
-## Передача данных из контроллера в представление через ViewBag
+##Передача данных из контроллера в представление через ViewBag
 
 В контроллере метода можно прописать
 ``` ViewBag.AnyProperty = 2;```
@@ -147,14 +147,14 @@ pubclic ViewResult Index() => View()
 
 ``` @ViewBag.AnyProperty
 
-## Возможности механизма представления Razor
+##Возможности механизма представления Razor
 
 Можно добавлять значения в аттрибуты элементов разметки
 Условные операторы if, switch
 Циклы foreach
 
 
-## Подключение Bootstrap и js
+##Подключение Bootstrap и js
 
 wwwroot папка
 В ней должны быть ресурсы
@@ -165,18 +165,18 @@ wwwroot папка
 <script src = "js/"></script>
 ```
 
-## Настройка Postman для localhost
+##Настройка Postman для localhost
 
 Finally fixed it by turning off File > Settings > General > SSL Certificate Verification
 
-## Bundler and Minifier
+##Bundler and Minifier
 Установить расширение
 
-## Надо потом изучить
+##Надо потом изучить
 интерфейсы в С#
 тестирование моделей, контроллеров, представлений через xUnit
 
-## Порядок работы над новым проектом
+##Порядок работы над новым проектом
 1.Создать пустой проект ASP.NET Core 6
 2.Создать папки Models,Controllers,Views
 3.Скопировать конфигурационный конфиг по MVC паттерн в Program.cs
@@ -188,7 +188,7 @@ Finally fixed it by turning off File > Settings > General > SSL Certificate Veri
 ```
 5. Создать проект модульного тестирования xUnit
 6. Добавить в ссылки проект и Moq. Это можно сделать через файл конфигурации ```asp <PackageReference Include="Moq" Version="4.7.99" /> ``` или через NuGet
-7. Создаем модей предметной области. В папке Models создаем файл Product.cs
+7. Создаем модель предметной области. В папке Models создаем файл Product.cs
 
 
 
