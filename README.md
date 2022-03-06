@@ -66,41 +66,102 @@
 
 ```ASP
 
-var builder = WebApplication.CreateBuilder(args);
+          var builder = WebApplication.CreateBuilder(args);
 
-    // Add services to the container.
-    builder.Services.AddControllersWithViews();
+              // Add services to the container.
+              builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
-
-
-    // Configure the HTTP request pipeline.
-    if (!app.Environment.IsDevelopment())
-    {
-        app.UseExceptionHandler("/Home/Error");
-        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-        app.UseHsts();
-    }
+          var app = builder.Build();
 
 
-    //app.MapGet("/", () => "Hello World!");
+              // Configure the HTTP request pipeline.
+              if (!app.Environment.IsDevelopment())
+              {
+                  app.UseExceptionHandler("/Home/Error");
+                  // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                  app.UseHsts();
+              }
 
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+              //app.MapGet("/", () => "Hello World!");
 
-app.UseRouting();
 
-app.UseAuthorization();
+          app.UseHttpsRedirection();
+          app.UseStaticFiles();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+          app.UseRouting();
 
-app.Run();
+          app.UseAuthorization();
+
+          app.MapControllerRoute(
+              name: "default",
+              pattern: "{controller=Home}/{action=Index}/{id?}");
+
+          app.Run();
 
 
 ```
+## Null условнаяя проверка с объединением
+```asp
+
+string name = р?.Name ?? "No name"; // null условная операция с объединением
+
+```
+
+## Автоматические реализуемые свойства
+
+```asp
+puЫic string Nаш.е { get; set; } 
+
+```
+## Сопоставление с образцом
+
+```asp
+
+if (data is decimal d) { }
+
+```
+Замечание: сопоставлнеие с образцом также работает с оператором ```switch```
+
+---
+
+## Применение лямбда выражений
+
+```asp
+pubclic ViewResult Index() {
+return View()
+}
+
+```asp
+pubclic ViewResult Index() => View()
+}
+
+```
+
+## Передача данных из контроллера в представление через ViewBag
+
+В контроллере метода можно прописать
+``` ViewBag.AnyProperty = 2;```
+
+В представлении можно:
+
+``` @ViewBag.AnyProperty
+
+## Возможности механизма представления Razor
+
+Можно добавлять значения в аттрибуты элементов разметки
+Условные операторы if, switch
+Циклы foreach
+
+
+
+
+
+
+
+
+
+
 
 
 
