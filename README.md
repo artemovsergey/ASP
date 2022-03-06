@@ -66,38 +66,38 @@
 
 ```ASP
 
-          var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-              // Add services to the container.
-              builder.Services.AddControllersWithViews();
+// Add services to the container.
+builder.Services.AddControllersWithViews();
 
-          var app = builder.Build();
-
-
-              // Configure the HTTP request pipeline.
-              if (!app.Environment.IsDevelopment())
-              {
-                  app.UseExceptionHandler("/Home/Error");
-                  // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                  app.UseHsts();
-              }
+var app = builder.Build();
 
 
-              //app.MapGet("/", () => "Hello World!");
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
 
 
-          app.UseHttpsRedirection();
-          app.UseStaticFiles();
+//app.MapGet("/", () => "Hello World!");
 
-          app.UseRouting();
+app.UseDeveloperExceptionPage(); // Ошибки при отладке
+app.UseHttpsRedirection();
+app.UseStaticFiles(); // доставка статического содержимого
 
-          app.UseAuthorization();
+app.UseRouting();
 
-          app.MapControllerRoute(
-              name: "default",
-              pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseAuthorization();
 
-          app.Run();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
 
 
 ```
@@ -154,6 +154,41 @@ pubclic ViewResult Index() => View()
 Циклы foreach
 
 
+## Подключение Bootstrap и js
+
+wwwroot папка
+В ней должны быть ресурсы
+
+В шаблоне сделать ссылку
+```html
+<link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css"/>
+<script src = "js/"></script>
+```
+
+## Настройка Postman для localhost
+
+Finally fixed it by turning off File > Settings > General > SSL Certificate Verification
+
+## Bundler and Minifier
+Установить расширение
+
+## Надо потом изучить
+интерфейсы в С#
+тестирование моделей, контроллеров, представлений через xUnit
+
+## Порядок работы над новым проектом
+1.Создать пустой проект ASP.NET Core 6
+2.Создать папки Models,Controllers,Views
+3.Скопировать конфигурационный конфиг по MVC паттерн в Program.cs
+4. В папке Views создадим импортируемый шаблон для пространства имен _ViewImports.cshtml
+```asp
+@using SportsStore.Models // название приложения ? проверить 
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers 
+
+```
+5. Создать проект модульного тестирования xUnit
+6. Добавить в ссылки проект и Moq. Это можно сделать через файл конфигурации ```asp <PackageReference Include="Moq" Version="4.7.99" /> ``` или через NuGet
+7. Создаем модей предметной области. В папке Models создаем файл Product.cs
 
 
 
