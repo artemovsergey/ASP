@@ -197,6 +197,62 @@ Finally fixed it by turning off File > Settings > General > SSL Certificate Veri
 
 7. Создаем модель предметной области. В папке Models создаем файл Product.cs
 
+8. Создаем миграции с помощью консольных команд
+
+```asp
+dotnet ef migrations add Itinial
+dotnet ef database update
+
+
+
+```
+
+
+
+## Форма
+
+```asp
+
+<form asp-action="rsvpform" methdod="post">
+                
+                <p>
+                    <label asp-for="Name">Your Name</label>
+                    <input asp-for="Name"/>
+                </p>
+
+                <p>
+                    <label asp-for="Email">Ваша почта</label>
+                    <input asp-for="Email"/>
+                </p>
+
+                <p>
+                    <label asp-for="Phone">Телефон</label>
+                    <input asp-for="Phone"/>
+                </p>
+                <p>
+                    <label> WillAttend</label>
+                    <select asp-for="WillAttend">
+                        <option value="Choose an option"></option>
+                        <option value="true">Да</option>
+                        <option value="false">Нет</option>
+                    </select>
+                </p>
+                <button class ="btn btn-primary" type="submit">Отправить</button>
+
+            </form>
+
+            </div>
+
+
+            <p> <a href="/">Перейти на главную форму</a>.</p>
+            
+            <br>
+            
+            <a asp-action = "Index">Перейти на главную форму средствами asp</a>
+
+
+
+```
 
 
 
