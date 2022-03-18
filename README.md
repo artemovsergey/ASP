@@ -254,6 +254,41 @@ dotnet ef database update
 
 ```
 
+## Get и Post запросы
+
+```asp
+
+// действие формы
+        [HttpGet]
+        public ViewResult RsvpForm()
+        {
+            //int hour = DateTime.Now.Hour;
+            //ViewBag.Hour = hour;
+            return View("RsvpForm");
+        }
+
+
+        [HttpPost]
+        public ViewResult RsvpForm(GuestResponse guestResponse)
+        // сохранить ответ
+        {
+
+            if (ModelState.IsValid)
+            {
+                Repository.AddResponse(guestResponse);
+                return View("Thanks", guestResponse);
+            }
+            else
+            {
+                //Обнаружена ошибка проверки достоверности.
+                return View();
+            }
+            //int hour = DateTime.Now.Hour;
+            //ViewBag.Hour = hour;
+            //return View();
+        }
+
+```
 
 
 
