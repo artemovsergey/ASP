@@ -8,6 +8,83 @@
 Можно создать API веб-приложение
 
 
+1. Создали пустой проект Asp Net Core
+2. Создали папки Models,Controllers,Views
+3. Создали класс модель в Models
+4. Создать класс контроллера в Controllers. Нужно подключение using Microsoft.AspNetCore.Mvc 
+
+```asp
+
+**using Microsoft.AspNetCore.Mvc**;
+
+namespace Example.Controllers;
+
+    public class HomeController : Controller
+    {
+
+        public IActionResult Index()
+        {
+        return View();
+        }
+
+    }
+
+```
+Замечание: можно создать отдельный файл класса с глобальными подключениями ```global using Microsoft.AspNetCore.Mvc; ```
+
+5. Создадим представление пустое Razor. Это файл с расширением cshtml в папке View. В представлении подключаем модель. Далее можно использовать переданный объект модели из action контроллера в представлении через @Model
+
+```asp
+
+@model Example.Models.MyModel;
+<h1>@Model.Message</h1>
+
+```
+6. Настройка работы под паттерн MVC в файле Program.cs
+
+
+
+```asp
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllersWithViews();
+builder.Services.AddMvc();
+builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
+
+
+var app = builder.Build();
+app.UseDeveloperExceptionPage(); // Ошибки при отладке
+app.UseHttpsRedirection();
+app.UseStaticFiles(); // доставка статического содержимого
+app.UseStatusCodePages();
+app.UseMvc();
+app.UseMvcWithDefaultRoute();
+app.UseRouting();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapDefaultControllerRoute();
+app.Run();
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Форма
 ```asp
