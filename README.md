@@ -67,12 +67,69 @@ app.Run();
 
 ```
 
+7.
+После определения моделей надо выбрать хранилище данных для этих моделей. Мы будем использовать MS SQL Server. Для работы с MS SQL Server компания Microsoft рекомендует использовать ORM-технологию Entity Framework, хотя ее использование необязательно. Мы также можем применять другие ORM-технологии или доступные средства ADO.NET. Преимущество фреймворка Entity Framework состоит в том, что он позволяет абстрагироваться от структуры конкретной базы данных и вести все операции с данными через модель.
+
+8. Далее надо через менеджер пакетов Nuget установить Entity Framework Sql Server 
+
+9.
+Чтобы взаимодействовать с базой данных нам нужен контекст данных. Причем Entity Framework Core использует подход Code First, при котором нам надо сначала определить модели и контекст данных, а потом уже исходя и этих моделей и класса контекста будет создаваться бд и все ее таблицы.
+
+MobileContext.cs в Models
+```asp
+
+using Microsoft.EntityFrameworkCore;
+ 
+namespace MobileStore.Models
+{
+    public class MobileContext : DbContext
+    {
+        public DbSet<Phone> Phones { get; set; }
+        public DbSet<Order> Orders { get; set; }
+ 
+        public MobileContext(DbContextOptions<MobileContext> options)
+            : base(options)
+        {
+            Database.EnsureCreated();
+        }
+    }
+}
+
+```
+
+10.
+
+По умолчанию у нас база данных отсутствуют. Поэтому в конструктор MobileContext определен вызов Database.EnsureCreated(), который при отсутствии базы данных автоматически создает ее. Если база данных уже есть, то ничего не происходит.
+
+Чтобы подключаться к базе данных, нам надо задать параметры подключения. Для этого изменим файл appsettings.json. По умолчанию он содержит только настройки логгирования:
+
+```json
+
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=mobilestore;Trusted_Connection=True;MultipleActiveResultSets=true"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "AllowedHosts": "*"
+}
+
+```
 
 
 
+11. Настройка подключения в файле Program.cs
 
-
-
+```asp
+// Подключение базы данных SQL Server
+string connection = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<MobileContext>(options => options.UseSqlServer(connection));
+```
 
 
 
