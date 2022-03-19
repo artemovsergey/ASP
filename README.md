@@ -121,8 +121,6 @@ namespace MobileStore.Models
 
 ```
 
-
-
 11. Настройка подключения в файле Program.cs
 
 ```asp
@@ -131,11 +129,55 @@ string connection = builder.Configuration.GetConnectionString("DefaultConnection
 builder.Services.AddDbContext<MobileContext>(options => options.UseSqlServer(connection));
 ```
 
+12. После того, как мы настроили подключение к базе данных мы можем работать через модели посредством контекста с базой данных
+Например, в контроллере может быть следующий код
+
+```asp
+
+public class HomeController : Controller
+{
 
 
+    // Поступает запрос
+    // Контроллер создает в конструкторе контекст базы данных
+
+    MobileContext db;
+    public HomeController(MobileContext context)
+    {
+        db = context;
+    }
 
 
+    public IActionResult Index()
+    {
+        return View(db.Phones.ToList());
+    }
+}
 
+```
+
+
+13. Представление получает доступ к данным, которые были переданы из метода контроллера
+
+```asp
+@model IEnumerable<Example.Models.Phone>
+```
+Первая строка устанавливает модель представления - та сущность, которая будет доступна в представлении через объект Model. В данном случае это объект IEnumerable<MobileStore.Models.Phone>, так как в контроллере в методе Index мы передаем список смартфонов, а список - объект List представляет интерфейс IEnumerable.
+
+Теперь данные доступны посредством объекта @Model
+
+**Замечание**: Каждый метод контроллера использует по умолчанию одноименный метод пердставления
+
+14 
+
+```asp
+@{
+    Layout = null
+}
+
+Далее идет блок кода, в котором выражение Layout = null указывает, что мастер-страница (макет) не будет применяться к этому представлению
+
+```
 
 
 
@@ -304,12 +346,19 @@ wwwroot папка
 
 Finally fixed it by turning off File > Settings > General > SSL Certificate Verification
 
+
+
+
 ## Bundler and Minifier
 Установить расширение
+
+
 
 ## Надо потом изучить
 интерфейсы в С#
 тестирование моделей, контроллеров, представлений через xUnit
+
+
 
 ## Порядок работы над новым проектом
 1. Создать пустой проект ASP.NET Core 6
