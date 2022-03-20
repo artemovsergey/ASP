@@ -587,27 +587,18 @@ ViewBag
 ViewData
 ViewData представляет словарь из пар ключ-значение:
 
-1
-2
-3
-4
-5
-6
+```asp
 public IActionResult Index()
 {
     ViewData["Message"] = "Hello ASP.NET Core";
  
     return View();
 }
+```
+
 Здесь динамически определяется во ViewData объект с ключом "Message" и значением "Hello ASP.NET Core". При этом в качестве значения может выступать любой объект. И после этому мы можем его использовать в представлении:
 
-1
-2
-3
-4
-5
-6
-7
+```asp
 @{
     ViewData["Title"] = "Index";
 }
@@ -615,23 +606,22 @@ public IActionResult Index()
 <h3>@ViewData["Message"]</h3>
  
 <p>Random text.</p>
+```
+
 Причем не обязательно устанавливать все объекты во ViewData в контроллере. Так, в данном случае объект с ключом "Title" устанавливается непосредственно в представлении.
 
 ViewBag
 ViewBag во многом подобен ViewData. Он позволяет определить различные свойства и присвоить им любое значение. Так, мы могли бы переписать предыдущий пример следующим образом:
 
-1
-2
-3
-4
-5
-6
+```asp
 public IActionResult Index()
 {
     ViewBag.Message = "Hello ASP.NET Core";
  
     return View();
 }
+```
+
 И таким же образом нам надо было бы изменить представление:
 
 ```asp
@@ -762,16 +752,7 @@ public IActionResult Index()
 <footer>@RenderSection("Footer", false)</footer>
 Второй вариант позволяет задать содержание секции по умолчанию, если данная секция не определена в представлении:
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
+```asp
 <footer>
     @if (IsSectionDefined("Footer"))
     {
@@ -782,13 +763,309 @@ public IActionResult Index()
         <span>Содержание элемента footer по умолчанию.</span>
     }
 </footer>
+```
+    
+31. Частитчные представления
+В приложениях на ASP.NET MVC кроме обычных представлений и мастер-страниц можно также использовать частичные представления или partial views. Их отличительной особенностью является то, что их можно встраивать в другие обычные представления. Частичные представления могут использоваться также как и обычные, однако наиболее удобной областью их использования является рендеринг результатов AJAX-запроса. По своему действию частичные представления похожи на секции, которые использовались в прошлой теме, только их код выносится в отдельные файлы.
+
+Частичные представления полезны для создания различных панелей веб-страницы, например, панели меню, блока входа на сайт, каких-то других блоков.
+
+За рендеринг частичных представлений отвечает объект PartialViewResult, который возвращается методом PartialView. Итак, определим в контроллере HomeController новое действие GetMessage:
+
+```asp
+public class HomeController : Controller
+{
+    public ActionResult GetMessage()
+    {
+        return PartialView("_GetMessage");
+    }
+    //....................
+}
+```
+    
+Теперь добавим в папку Views/Home новое представление _GetMessage.cshtml, в котором будет простенькое содержимое:
+
+```as[
+<h3>Частичное представление</h3>
+```
+Теперь обратимся к методу GetMessage как к обычному действию контроллера, и оно нам вернет частичное представление:
+
+Частичные представления в ASP.NET MVC Core
+По своему действию частичное представление похоже на обычное, только для него по умолчанию не определяется мастер-страница.
+
+Встраивание частичного представления в обычное
+Теперь рассмотрим, как мы можем встраивать частичные представления в обычные. Для этого изменим представление Index.cshtml:
+
+```asp
+@{
+    ViewData["Title"] = "Home Page";
+}
+<h2>Представление Index.cshtml</h2>
+ 
+@await Html.PartialAsync("_GetMessage")
+```
+    
+    Метод Html.PartialAsync() встраивает код частичного представления в обычное. Он является асинхронным и возвращает объект IHtmlContent, который представляет html-содержимое и который обернут в объект Task<TResult>. В качестве параметра в метод передается имя представления:
+
+Partial Views in ASP.NET MVC Core
+Обращения к методу GetMessage() в контроллере при этом не происходит.
+
+Кроме метода Html.PartialAsync() частичное представление можно встроить с помощью другого метода - Html.RenderPartialAsync. Этот метод также принимает имя представления, только он используется не в строчных выражениях кода Razor, а в блоке кода, то есть обрамляется фигурными скобками:
+
+```asp
+@{await Html.RenderPartialAsync("_GetMessage");}
+```
+    Html.RenderPartialAsync напрямую пишет вывод в выходной поток в асинхронном режиме, поэтому может работать чуть быстрее, чем Html.PartialAsync.
+
+Одна из перегруженных версий методов Html.PartialAsync / Html.RenderPartialAsync позволяет передать модель в частичное представление. В итоге у нас получится стандартное строго типизированное представление. Например, в качестве второго параметра список строк:
+
+1
+@await Html.PartialAsync("_GetMessage", new List<string> { "Lumia 950", "iPhone 6S", "Samsung Galaxy s 6", "LG G 4" })
+Поскольку здесь в частичное представление передается список строк, то мы можем использовать модель List<string>, чтобы получить этот список. Теперь изменим частичное представление _GetMessage.cshtml:
+
+```asp
+@model IEnumerable<string>
+<h3>Список моделей</h3>
+<ul>
+    @foreach(string s in Model)
+    {
+        <li>@s</li>
+    }
+</ul>
+```
+
+32. Внедрение зависимостей в представление
     
     
+33. ## Работа с формами
+https://metanit.com/sharp/aspnet5/7.8.php
     
+
+34. Маршрутизация 
+    https://metanit.com/sharp/aspnet5/11.5.php
+
+35. Маршрутизация на основе аттрибутов
+
+Фреймворк MVC позволяет использовать в приложении маршрутизацию на основе атрибутов. Такой тип маршрутизации еще называется Attribute-Based Routing. Атрибуты предоставляют более гибкий способ определения маршрутов. Маршруты, определенные с помощью атрибутов, имеют приоритет по сравнению с маршрутами, определенными в классе Startup.
+
+Маршрутизация на основе атрибутов может применяться независимо от того, какой компонент отвечает в приложении за маршрутизацию - RouterMiddleware или EndpointRoitingMiddleware+EndpointMiddleware.
+
+Для определения маршрута, необходимо использовать атрибут [Route]:
+
+```asp
+public class HomeController : Controller
+{
+    [Route("Home/Index")]
+    public IActionResult Index()
+    {
+        return Content("ASP.NET Core на metanit.com");
+    }
+    [Route("About")]
+    public IActionResult About()
+    {
+        return Content("About site");
+    }
+}
+```
     
+В данном случае метод Index будет обрабатывать запросы по адресу "Home/Index", а метод About по адресу "About".
+
+Attribute-Based Routing in ASP.NET Core
+Если в проекте планируется использовать только маршрутизацию на основе атрибутов, то в классе Startup мы можем не определять никаких маршрутов. Например, при использовании EndpointMiddleware и конечных точек можно применить метод MapControllers:
+
+```asp
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    if (env.IsDevelopment())
+    {
+        app.UseDeveloperExceptionPage();
+    }
+    app.UseStaticFiles();
+ 
+    app.UseRouting();
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();     // нет определенных маршрутов
+    });
+}
+Аналогично можно не определять маршруты и при использовании RouterMiddleware:
+```
     
+```asp
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    if (env.IsDevelopment())
+    {
+        app.UseDeveloperExceptionPage();
+    }
+ 
+    app.UseStaticFiles();
+    app.UseMvc();           // нет определенных маршрутов
+}
+Но также мы можем комбинировать способы маршрутизации. При чем здесь надо учитывать, что маршрутизация на основе атрибутов имеет больший приоритет. Например, определим следующее действие контроллера:
+```
     
+```asp
+public class HomeController : Controller
+{
+    [Route("homepage")]
+    public IActionResult Index()
+    {
+        return Content("Hello ASP.NET MVC на https://metanit.com");
+    }
+}
+```
+В качестве параметра атрибут Route принимает шаблон URL, с которым будет сопоставляться запрошенный адрес. И даже если у нас определен стандартный маршрут в классе Startup:
+
+```asp
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    if (env.IsDevelopment())
+    {
+        app.UseDeveloperExceptionPage();
+    }
+    app.UseStaticFiles();
+ 
+    app.UseRouting();
+    app.UseEndpoints(endpoints =>
+    {
+        // определение маршрутов
+        endpoints.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}");
+    });
+}
+```
     
+Запрос типа http://localhost:xxxx/home/index работать не будет, так как мы явно указали с помощью атрибута, что метод Index контроллера Home будет обрабатывать только запросы http://localhost:xxxx/homepage
+
+Атрибуты маршрутизации в ASP.NET MVC Core
+Определение маршрутов с помощью атрибутов подчиняется тем же правилам, что определение маршрутов в классе Startup. Например, используем параметры и ограничения:
+
+```asp
+public class HomeController : Controller
+{
+    [Route("{id:int}/{name:maxlength(10)}")]
+    public IActionResult Test(int id, string name)
+    {
+        return Content($" id={id} | name={name}");
+    }
+}
+```
+И к такому методу мы сможем обратиться с запросом типа http://localhost:xxxx/10/lumia.
+
+Атрибуты контроллеров и маршрутизация в ASP.NET MVC Core
+Или другой пример - применение необязательного параметра:
+
+```asp
+public class HomeController : Controller
+{
+    [Route("Home/Index/{id?}")]
+    public IActionResult Test(int? id)
+    {
+        if(id!=null)
+            return Content($"Параметр id={id}");
+        else
+            return Content($"Параметр id неопределен");
+    }
+}
+```
+    
+И к такому методу мы сможем обратиться с запросом типа http://localhost:xxxx/home/index или добавить параметр http://localhost:xxxx/home/index/5.
+
+Использование префиксов
+Допустим, у нас есть несколько методов, для которых определен свой маршрут, и мы хотим, чтобы эти маршруты начинались с одного определенного префикса. Например:
+
+```asp
+public class HomeController : Controller
+{
+    [Route("main/index/{name}")]
+    public IActionResult Index(string name)
+    {
+        return Content(name);
+    }
+    [Route("main/{id:int}/{name:maxlength(10)}")]
+    public IActionResult Test(int id, string name)
+    {
+        return Content($" id={id} | name={name}");
+    }
+}
+```
+    
+Вместо того, чтобы добавлять префикс "main" к каждому маршруту, мы могли бы определить его глобально для всего контроллера:
+
+    
+```asp
+[Route("main")]
+public class HomeController : Controller
+{
+    [Route("index/{name}")]
+    public IActionResult Index(string name)
+    {
+        return Content(name);
+    }
+    [Route("{id:int}/{name:maxlength(10)}")]
+    public IActionResult Test(int id, string name)
+    {
+        return Content($" id={id} | name={name}");
+    }
+}
+```
+    
+Параметры controller и action
+От всех параметров шаблона маршрутов в атрибутах отличаются два параметра controller и action, которые ссылаются соответственно на контроллер и его действие. При использовании их надо помещать в квадратные скобки, а не в фигурные, как другие параметры:
+
+```asp
+public class HomeController : Controller
+{
+    [Route("[controller]/[action]")]
+    public IActionResult Index()
+    {
+        var controller = RouteData.Values["controller"].ToString();
+        var action = RouteData.Values["action"].ToString();
+        return Content($"controller: {controller} | action: {action}");
+    }
+}
+```
+    
+Допустимо также использование их по отдельности или добавление к ним других параметров в фигурных скобках:
+
+```asp
+[Route("[controller]")]
+[Route("[action]")]
+[Route("[controller]/[action]/{id?}")]
+```
+    Множественные маршруты
+С помощью атрибутов можно задать несколько маршрутов для одного метода. Например:
+
+```asp
+[Route("[controller]")]
+public class HomeController : Controller
+{
+   [Route("")]     // сопоставляется с Home
+   [Route("Index")] // сопоставляется с Home/Index
+   public IActionResult Index()
+   {
+        return View();
+   }
+}
+```
+    
+Также для контроллера можно задать сразу несколько маршрутов:
+    
+```asp
+[Route("Store")]
+[Route("[controller]")]
+public class HomeController : Controller
+{
+   [Route("Main")]     // сопоставляется с Home/Main, либо с Store/Main
+   [Route("Index")] // сопоставляется с Home/Index, либо с Store/Index
+   public IActionResult Index()
+   {
+        return View();
+   }
+}
+```
     
     
     
@@ -1108,6 +1385,9 @@ dotnet ef database update
 
 ```
 
+34. Области. надо потестить, может быть полезны?
+ 
+    https://metanit.com/sharp/aspnet5/11.9.php
 
 
 
