@@ -401,6 +401,66 @@ public IActionResult Index()
 }
 ```
 
+UnauthorizedResult и UnauthorizedObjectResult
+UnauthorizedResult посылает код 401, уведомляя пользователя, что он не автризован для доступа к ресурсу:
+
+```asp
+public IActionResult Index(int age)
+{
+    if (age < 18)
+        return Unauthorized();
+    return Content("Проверка пройдена");
+}
+```
+
+Для создания ответа используется метод Unauthorized().
+
+UnauthorizedObjectResult также посылает код 401, только позволяет добавить в ответ некоторый объект с информацией об ошибке:
+
+```asp
+public class HomeController : Controller
+{
+    public IActionResult Index(int age)
+    {
+        if (age < 18)
+            return Unauthorized(new Error { Message = "параметр age содержит недействительное значение" });
+        return Content("Проверка пройдена");
+    }
+}
+class Error
+{
+    public string Message { get; set; }
+}
+```
+
+BadResult и BadObjectResult
+BadResult и BadObjectResult посылают код 400, что говорит о том, что запрос некорректный. Второй класс в дополнении к статусному коду позволяет отправить доплнительную информацию, которая потом отобразится в браузере.
+
+Эти классы можно применять, например, если в запросе нет каких-то параметров или данные представляют совсем не те типы, которые мы ожидаем получить, и т.д.
+
+Объекты обоих классов создаются методом BadRequest. Для первого класса - это метод без параметров, для второго класса - метод, который в качестве параметра принимает отправляемую информацию:
+
+```asp
+public IActionResult Index(string s)
+{
+    if(String.IsNullOrEmpty(s))
+        return BadRequest("Не указаны параметры запроса");
+    return View();
+}
+```
+
+OkResult и OkObjectResult
+OkResult и OkObjectResult посылают код 200, уведомляя об успешном выполнении запроса. Второй класс в дополнении к статусному коду позволяет отправить доплнительную информацию, которая потом отобразится в браузере.
+
+Объекты обоих классов создаются методом Ok(). Для первого класса - это метод без параметров, для второго класса - метод, который в качестве параметра принимает отправляемую информацию:
+
+```asp
+public IActionResult Index()
+{
+    return Ok("Запрос успешно выполнен");
+}
+```
+
 
 
 
