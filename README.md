@@ -1389,12 +1389,19 @@ dotnet ef database update
  
     https://metanit.com/sharp/aspnet5/11.9.php
 
+35 Модели
+    https://metanit.com/sharp/aspnet5/8.1.php
+36 Html-хэлперы
+    https://metanit.com/sharp/aspnet5/9.1.php
+37 Tag-хэлперы
+    https://metanit.com/sharp/aspnet5/10.1.php
+38 Компоненты
+    https://metanit.com/sharp/aspnet5/7.6.php
+39 Валидации моделей
+    https://metanit.com/sharp/aspnet5/19.1.php
 
-
-
-
-
-
+40 Работа с Entity Framework. Сортировка, фильтрация, пагинация
+    https://metanit.com/sharp/aspnet5/12.1.php
 
 
 
