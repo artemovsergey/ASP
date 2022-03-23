@@ -1403,6 +1403,56 @@ dotnet ef database update
 40 Работа с Entity Framework. Сортировка, фильтрация, пагинация
     https://metanit.com/sharp/aspnet5/12.1.php
 
+41 Razor Pages - то же самое, что и MVC, только почти без контроллеров в чистом виде
+    https://metanit.com/sharp/aspnet5/29.1.php
 
+42 Web API
+    https://metanit.com/sharp/aspnet5/23.1.php
+43 Фильтры как в Rails
+    https://metanit.com/sharp/aspnet5/18.1.php
+44 Применение аутентификации и авторизации средаствами ASP .NET Core
+    https://metanit.com/sharp/aspnet5/15.1.php
+    https://metanit.com/sharp/aspnet5/16.1.php
 
+45 Клиентская разработка
+    https://metanit.com/sharp/aspnet5/13.6.php
 
+46 Кеширование
+    https://metanit.com/sharp/aspnet5/14.1.php
+
+47 Сервер и публикация приложения
+    https://metanit.com/sharp/aspnet5/2.7.php
+    
+48 URL Rewriting
+    https://metanit.com/sharp/aspnet5/24.1.php
+
+49 Глобализация и локализация
+    https://metanit.com/sharp/aspnet5/28.1.php
+
+50 SignalR Core
+    https://metanit.com/sharp/aspnet5/30.1.php
+ 
+51 Кроссдоменные запросы. CORS и кросс-доменные запросы
+    https://metanit.com/sharp/aspnet5/31.1.php
+
+52  Тестирование
+    https://metanit.com/sharp/aspnet5/22.1.php
+
+53 Dapper - альтернатива EF
+    https://metanit.com/sharp/aspnet5/26.1.php
+
+54 Mongo DB
+    https://metanit.com/sharp/aspnet5/27.1.php
+    
+55 React.JS
+    https://metanit.com/sharp/aspnet5/25.1.php
+
+56 Сервисы gRPC
+    https://metanit.com/sharp/aspnet5/32.1.php
+    
+56 Отправка email в ASP.NET Core
+    https://metanit.com/sharp/aspnet5/21.1.php
+
+57 Загрузка файлов на сервер
+    https://metanit.com/sharp/aspnet5/21.3.php
+    
