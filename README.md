@@ -2,20 +2,31 @@
 
 ### Виды приложений на ASP
 
-Можно создать пустое приложение
-Можно создать веб-приложение
-Можно создать веб-приложение MVC
-Можно создать API веб-приложение
+- Можно создать пустое приложение
+- Можно создать веб-приложение
+- Можно создать веб-приложение MVC
+- Можно создать API веб-приложение
 
 
-1. Создали пустой проект Asp Net Core
-2. Создали папки Models,Controllers,Views
-3. Создали класс модель в Models
-4. Создать класс контроллера в Controllers. Нужно подключение using Microsoft.AspNetCore.Mvc 
+1. Создать пустой проект Asp Net Core
+2. Создать папки Models,Controllers,Views
+3. Создать класс модели в папке Models
+
+```asp
+    public class User
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+
+    }
+```
+
+5. Создать класс контроллера в Controllers. Нужно подключение using Microsoft.AspNetCore.Mvc 
 
 ```asp
 
-**using Microsoft.AspNetCore.Mvc**;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Example.Controllers;
 
@@ -24,15 +35,21 @@ namespace Example.Controllers;
 
         public IActionResult Index()
         {
-        return View();
+            return View();
         }
 
     }
 
 ```
-Замечание: можно создать отдельный файл класса с глобальными подключениями ```global using Microsoft.AspNetCore.Mvc; ```
+Замечание: можно создать отдельный файл класса с глобальными подключениями 
+```global using Microsoft.AspNetCore.Mvc; ```
 
-5. Создадим представление пустое Razor. Это файл с расширением cshtml в папке View. В представлении подключаем модель. Далее можно использовать переданный объект модели из action контроллера в представлении через @Model
+5. Создадим представление пустое Razor. Это файл с расширением cshtml в папке View. В представлении подключаем модель.
+ Далее можно использовать переданный объект модели из action контроллера в представлении через @Model
+
+Example - название проекта
+Models - папка Models в проекте
+MyModel - название модели 
 
 ```asp
 
