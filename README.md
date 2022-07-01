@@ -14,9 +14,9 @@
     }
 ```
 
-5. Создать класс контроллера в Controllers. Нужно подключение using Microsoft.AspNetCore.Mvc 
+4. Создать класс контроллера в папке Controllers.
 
-```asp
+```СSharp
 
 using Microsoft.AspNetCore.Mvc;
 
