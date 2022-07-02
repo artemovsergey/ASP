@@ -195,6 +195,15 @@ public class HomeController : Controller
 
 ```
 
+Для создания контекста в ```Program.cs```
+
+```
+// Подключение базы данных SQL Server
+string connection = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppContext>(options => options.UseSqlServer(connection));
+```
+
+
 
 ### Передача данных в контроллер
 Вместе с запросом приложению могут приходить различные данные. И чтобы получить эти данные, мы можем использовать разные способы. Самым распространенным способом считается применение параметров.
