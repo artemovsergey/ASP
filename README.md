@@ -93,7 +93,7 @@ app.Run();
     }
 ```
 
-### Entityt Framework Core. Создание контекста в Models
+### Entity Framework Core. Создание контекста в Models
 
 ```asp
 
@@ -218,6 +218,7 @@ public class HomeController : Controller
 Параметры представляют самый простой способ получения данных, но в действительности нам необязательно их использовать. В контроллере доступен объект Request, у которого можно получить как данные строки запроса, так и данные отправленных форм.
 
 Данные строки запроса доступны через свойство Request.Query, которое представляет объект IQueryCollection. Например:
+```asp
 public string Area()
 {
     string altitudeString = Request.Query.FirstOrDefault(p => p.Key == "altitude").Value;
@@ -229,6 +230,8 @@ public string Area()
     double square = altitude * height / 2;
     return $"Площадь треугольника с основанием {altitude} и высотой {height} равна {square}";
 }
+```
+
 В данном случае метод Area обрабатывает GET-запросы, и мы можем к нему обратиться через запрос типа http://localhost:57086/Home/Area?altitude=20&height=4.
 
 
@@ -287,7 +290,6 @@ public IActionResult Index()
 
 
 ### Отправка файлов
-...
 https://metanit.com/sharp/aspnet5/5.7.php
 
 
@@ -390,7 +392,7 @@ https://metanit.com/sharp/aspnet5/5.10.php
 
 ```
 
-### Применнеие мастер-страницы
+### Применение мастер-страницы
 
 Файл _Layout.cshtml должен находиться в папке Views/Shared
 
