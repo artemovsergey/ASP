@@ -141,7 +141,379 @@ namespace MobileStore.Models
 ---
 
 
+### Метод GET для вывода всех пользователей
+```asp
 
+// Запрос на вывод все пользователей на /Home/index
+
+[HttpGet]
+public IActionResult Index()
+{
+    return View(db.Users.ToList());
+}
+
+```
+
+### Метод GЕT на вывод одного пользователя
+```asp
+
+// запрос на одного пользователя /Home/SelectUser/id
+
+[HttpGet]
+public IActionResult SelectUser(int? id)  
+{
+    if (id == null) return RedirectToAction("Index");
+
+    ViewBag.UserId = id;
+    var selectUser = db.Users.Include(u => u.Products).FirstOrDefault(u => u.Id == id);
+
+
+    // возврат на одноименное представление контроллера
+    return View(selectUser);
+}
+
+```
+
+### Метод POST на добавление пользователя
+
+```asp
+
+        [HttpPost]
+        //  Home/AddUser
+        public IActionResult AddUser(User user) // форма по аттрибутам поймет, что передается user
+        {
+            db.Users.Add(user);
+            // сохраняем в бд все изменения
+            try
+            {
+                db.SaveChanges();
+            }
+            catch(Exception ex)
+            {
+                ViewBag.Error = ex.Message.ToString();
+            }
+
+
+            return RedirectToAction("Index");
+
+        }
+
+```
+
+### Представление на добавление пользователя
+
+```cshtml
+
+@{
+    ViewData["Title"] = "Добавление пользователя";
+}
+
+@{
+    Layout ="_Layout"; 
+}
+
+<h2>Форма добавления пользователя</h2>
+
+
+<form method="post"  role="form" >
+  
+  <input type="hidden"  name="Id" />
+
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Имя</label>
+    <input type="text" name="Name"    class="form-control" aria-describedby="emailHelp">
+    <div id="textHelp" class="form-text">We'll never share your email with anyone else.</div>
+  </div>
+
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Возраст</label>
+    <input type="text" name="Age"    class="form-control" aria-describedby="emailHelp">
+    <div id="textHelp" class="form-text">We'll never share your email with anyone else.</div>
+  </div>
+  
+  <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+
+
+
+```
+
+
+### Представление на редактирование пользователя
+
+```cshtml
+
+@model User;
+
+
+@{
+    ViewData["Title"] = "Добавление пользователя";
+}
+
+@{
+    Layout ="_Layout"; 
+}
+
+
+
+<h2>Форма добавления пользователя</h2>
+ 
+<form method="post" class="form-horizontal" role="form">
+    
+    
+    <!--  <input type="hidden" value="@ViewBag.UserId" name="Id" /> -->
+    
+
+    <p>Для оформления покупки заполните следующие поля:</p>
+    <!--
+    <div class="form-group">
+        <label for="User" class="col-md-2 control-label">Id:</label>
+        <div class="col-md-4">
+            <input type="text" name="Id" class="form-control" />
+        </div>
+    </div>
+    -->
+    <div class="form-group">
+        <label for="Address" class="col-md-2 control-label">Имя:</label>
+        <div class="col-md-4">
+            <input type="text" value = @Model.Name  name="Name" class="form-control" />
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Возраст:</label>
+        <div class="col-md-4">
+            <input type="text" value = @Model.Age  name="Age" class="form-control" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Отправить" />
+        </div>
+    </div>
+</form>
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+### Метод GET на редактирование пользователя
+
+```asp
+
+[HttpGet]
+// Home/AddUser
+public IActionResult EditUser(int id) // просто отображаем форму
+{
+    User user = db.Users.Where(u => u.Id == id).FirstOrDefault();
+
+
+    return View(user);
+}
+
+```
+
+### Метод POST на редактирование пользователя
+
+```asp
+
+ [HttpPost]
+ // Home/AddUser
+ public IActionResult EditUser(User user) // просто отображаем форму
+ {
+     db.Users.Update(user);
+     // сохраняем в бд все изменения
+     try
+     {
+         db.SaveChanges();
+     }
+     catch (Exception ex)
+     {
+         ViewBag.Error = ex.Message.ToString();
+     }
+
+
+     return RedirectToAction("Index");
+ }
+
+```
+
+### Метод DELETE на удаление пользователя
+
+```asp
+
+[HttpGet]
+// Home/DeleteUser
+public IActionResult DeleteUser(int id) // просто отображаем форму
+{
+    User user = db.Users.Where(u => u.Id == id).FirstOrDefault();
+    db.Users.Remove(user);
+
+    try
+    {
+        db.SaveChanges();
+    }
+    catch (Exception ex)
+    {
+        ViewBag.Error = ex.Message.ToString();
+    }
+
+
+    return RedirectToAction("Index");
+}
+
+```
+
+
+### Index.cshtml
+
+```cshtml
+
+@model IEnumerable<FurnitureShop.Models.User>
+
+    <!-- это модель представления, т.е. объект(объекты) какой модели контроллер передает в представление  -->
+    <!-- в данном случае модель представления совпадает с просто моделью -->
+
+
+@{
+    // В даннос случае макет для данного представления отключен
+    //Layout = null;
+
+
+
+    // В даннос случае макет для данного представления включен
+    Layout = "_Layout";
+}
+
+    <!--  @Model - это объект-список сейчас -->
+
+
+<h1>    
+     Мебельный магазин
+     <!-- _GetMessage это частичное представление. Оно должно находиться в папке View для своего контроллера -->
+        
+</h1>    
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <td scope="col">#</td>
+      <td scope="col">Name</td>
+      <td scope="col">Age</td>
+      <td scope="col">#</td>
+      <td scope="col">#</td>
+    </tr>
+  </thead>
+  <tbody>
+          @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Name</td>
+                        <td>@user.Age</td>
+                        <td><a href="~/Home/SelectUser/@user.Id">Просмотр</a></td>
+                        <td><a href="~/Home/EditUser/@user.Id">Редактировать</a></td>
+                        <td><a href="~/Home/DeleteUser/@user.Id">Удалить</a></td>         
+                    </tr>
+                }
+  </tbody>
+</table>
+
+
+<a class = "btn btn-primary" href="~/Home/AddUser">Добавить пользователя</a>
+
+```
+
+### Пример макета или мастер-страницы _Layout.cshtml
+
+```cshtml
+
+<!DOCTYPE html>
+<html>
+    
+    
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["Title"]</title>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    </head>
+
+
+    <body>
+    
+        <!--меню-->
+    <nav class="navbar navbar-expand-lg bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/Product/">Мебельный магазин</a>
+        
+          <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Найдите мебель" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Поиск</button>
+          </form>
+
+          <a class="navbar-brand" href="#">Корзина</a>
+        
+      </div>
+    </nav>
+
+        <!--основной контент-->
+        <div class="container body-content">
+            
+            @RenderBody()
+            
+            <hr />
+
+
+
+            <footer>
+                <p>© 2022 - TestStore</p>
+            </footer>
+        </div>
+
+
+    </body>
+</html>
+
+```
+
+
+
+
+### Пример _ViewImports.cshtml
+
+```cshtml
+
+@using FurnitureShop.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+```
+
+
+### Пример _ViewStart.cshtml
+
+```cshtml
+@{
+    Layout = "_Layout";
+}
+```
+
+
+
+
+ 
 ## Контроллер
 
 Создать класс контроллера ```HomeController``` в папке ```Controllers```.
