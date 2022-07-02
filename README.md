@@ -2,7 +2,7 @@
 
 ## Program.cs
 
-```asp
+```csharp
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
