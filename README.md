@@ -711,6 +711,7 @@ public IActionResult Index()
 ```
     
 ### Частитчные представления
+ 
 В приложениях на ASP.NET MVC кроме обычных представлений и мастер-страниц можно также использовать частичные представления или partial views. Их отличительной особенностью является то, что их можно встраивать в другие обычные представления. Частичные представления могут использоваться также как и обычные, однако наиболее удобной областью их использования является рендеринг результатов AJAX-запроса. По своему действию частичные представления похожи на секции, которые использовались в прошлой теме, только их код выносится в отдельные файлы.
 
 Частичные представления полезны для создания различных панелей веб-страницы, например, панели меню, блока входа на сайт, каких-то других блоков.
@@ -882,7 +883,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     
 Запрос типа http://localhost:xxxx/home/index работать не будет, так как мы явно указали с помощью атрибута, что метод Index контроллера Home будет обрабатывать только запросы http://localhost:xxxx/homepage
 
-Атрибуты маршрутизации в ASP.NET MVC Core
+### Атрибуты маршрутизации в ASP.NET MVC Core
 Определение маршрутов с помощью атрибутов подчиняется тем же правилам, что определение маршрутов в классе Startup. Например, используем параметры и ограничения:
 
 ```asp
@@ -917,7 +918,8 @@ public class HomeController : Controller
 И к такому методу мы сможем обратиться с запросом типа http://localhost:xxxx/home/index или добавить параметр http://localhost:xxxx/home/index/5.
 
 ### Использование префиксов
-Допустим, у нас есть несколько методов, для которых определен свой маршрут, и мы хотим, чтобы эти маршруты начинались с одного определенного префикса. Например:
+
+ Допустим, у нас есть несколько методов, для которых определен свой маршрут, и мы хотим, чтобы эти маршруты начинались с одного определенного префикса. Например:
 
 ```asp
 public class HomeController : Controller
@@ -1012,8 +1014,9 @@ public class HomeController : Controller
     
     
    
-Форма
-```asp
+### Применение дескриптеров  в форме
+
+ ```asp
           <form asp-action="rsvpform" methdod="post">
                 
                 <p>
@@ -1047,11 +1050,13 @@ public class HomeController : Controller
 
 
 ---
-Цель паттерна MVC - разделение приложения на три функциональных области, каждая из которых может содержать и логиу и данные. Цель не в том, чтобы устранить логику из модели. Наоборот, цель в том, чтобы гарантировать наличие в модели только логики предназначенной для создания и управления данными
+
+ Цель паттерна MVC - разделение приложения на три функциональных области, каждая из которых может содержать и логиу и данные. Цель не в том, чтобы устранить логику из модели. Наоборот, цель в том, чтобы гарантировать наличие в модели только логики предназначенной для создания и управления данными
+
+ ---
 
 
-
-### Null условнаяя проверка с объединением
+### Null условная проверка с объединением
 ```asp
 
 string name = р?.Name ?? "No name"; // null условная операция с объединением
@@ -1075,7 +1080,9 @@ if (data is decimal d) { }
 public ViewResult Index() {
 return View()
 }
-
+ 
+или
+ 
 ```asp
 pubclic ViewResult Index() => View()
 }
@@ -1086,11 +1093,8 @@ pubclic ViewResult Index() => View()
 
 wwwroot
 
-
 В шаблоне сделать ссылку
-```html
-<link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css"/> <script src = "js/"></script>
-```
+```html <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css"/> <script src = "js/"></script>```
 
 ### Настройка Postman для localhost
 
@@ -1100,89 +1104,9 @@ Finally fixed it by turning off File > Settings > General > SSL Certificate Veri
 ### Создаем миграции с помощью консольных команд
 
 ```asp
+ 
 dotnet ef migrations add Itinial
 dotnet ef database update
-
-```
-
-## Форма
-
-```asp
-
-<form asp-action="rsvpform" methdod="post">
-                
-                <p>
-                    <label asp-for="Name">Your Name</label>
-                    <input asp-for="Name"/>
-                </p>
-
-                <p>
-                    <label asp-for="Email">Ваша почта</label>
-                    <input asp-for="Email"/>
-                </p>
-
-                <p>
-                    <label asp-for="Phone">Телефон</label>
-                    <input asp-for="Phone"/>
-                </p>
-                <p>
-                    <label> WillAttend</label>
-                    <select asp-for="WillAttend">
-                        <option value="Choose an option"></option>
-                        <option value="true">Да</option>
-                        <option value="false">Нет</option>
-                    </select>
-                </p>
-                <button class ="btn btn-primary" type="submit">Отправить</button>
-
-            </form>
-
-            </div>
-
-
-            <p> <a href="/">Перейти на главную форму</a>.</p>
-            
-            <br>
-            
-            <a asp-action = "Index">Перейти на главную форму средствами asp</a>
-
-
-
-```
-
-## Get и Post запросы
-
-```asp
-
-// действие формы
-        [HttpGet]
-        public ViewResult RsvpForm()
-        {
-            //int hour = DateTime.Now.Hour;
-            //ViewBag.Hour = hour;
-            return View("RsvpForm");
-        }
-
-
-        [HttpPost]
-        public ViewResult RsvpForm(GuestResponse guestResponse)
-        // сохранить ответ
-        {
-
-            if (ModelState.IsValid)
-            {
-                Repository.AddResponse(guestResponse);
-                return View("Thanks", guestResponse);
-            }
-            else
-            {
-                //Обнаружена ошибка проверки достоверности.
-                return View();
-            }
-            //int hour = DateTime.Now.Hour;
-            //ViewBag.Hour = hour;
-            //return View();
-        }
 
 ```
 
@@ -1203,7 +1127,6 @@ dotnet ef database update
 ### Компоненты
     https://metanit.com/sharp/aspnet5/7.6.php
 
-    
 ### Валидации моделей
     https://metanit.com/sharp/aspnet5/19.1.php
 
