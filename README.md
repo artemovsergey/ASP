@@ -334,6 +334,19 @@ public IActionResult SelectUser(int? id)
 </div>
 ```
 
+### Стили css для валидаций
+
+```css
+
+    .field-validation-error {color: #f00;}
+    .field-validation-valid {display: none}
+    .input-validation-error {border: 1px solid #f00;background-color: #fee;}
+    .validation-summary-errors {font-weight: bold; color: #f00;}
+    .validation-summary-valid {display: none;}
+
+```
+
+
 
 ### Представление на редактирование пользователя
 
