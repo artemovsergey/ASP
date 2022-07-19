@@ -100,66 +100,44 @@ using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddControllersWithViews();
-
-// Сервисы для работы MVC
-
-builder.Services.AddMvc(); // добавлвяет сервисы mvc фреймворка
-
-
-//builder.Services.AddMvcCore(); //добавляет только основные сервисы фреймворка MVC, а всю допалнительную функциональность, типа аутентификацией и авторизацией, валидацией и т.д., необходимо добавлять самостоятельно
-//builder.Services.AddControllersWithViews();
-/*
-добавляет только те сервисы фреймворка MVC, которые позволяют использовать контроллеры и представления
-и связанную функциональность. 
-При создании проекта по типу Web Application (Model-View-Controller) используется именно этот метод 
-*/
-
-//builder.Services.AddControllers(); // позволяет использовать контроллеры, но без представлений.
-
-
-
+builder.Services.AddMvc();
 // Подключение базы данных SQL Server
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<TestStoreContext>(options => options.UseSqlServer(connection));
-
-
+//builder.Services.AddDbContext<TestStoreContext>(options => options.UseSqlServer(connection));
 builder.Services.AddControllersWithViews();
-
 builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
 
+// Это значит совместное использоване объекта класса AppTimeService во всем приложении.
+// Общая функциональность для приложения
+builder.Services.AddSingleton<AppTimeService>();
+
+// Configure the HTTP request pipeline.
 
 var app = builder.Build();
 
-// Маршрутизация
-/*
- Здесь добавляется маршрут с именем default. 
-Поле pattern указывает, что запрос 
-к приложению должен иметь двух-трехсегментную структуру. 
-Вначале идет имя контроллера, 
-потом имя метода и потом может идти необязательный параметр id. 
-
- */
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
 app.UseDeveloperExceptionPage(); // Ошибки при отладке
 app.UseHttpsRedirection();
 app.UseStaticFiles(); // доставка статического содержимого
-app.UseStatusCodePages();
+app.UseStatusCodePages(); // отправка кодов состояния в ответе
 app.UseMvc(); //
 app.UseMvcWithDefaultRoute();
 app.UseRouting(); // использование
-
 
 // Определение корневого маршрута
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-
-
 app.MapDefaultControllerRoute();
 app.Run();
+//
 
+public class AppTimeService { };
 ```
 
 
