@@ -145,19 +145,34 @@ public class AppTimeService { };
 
 
 
-## Модель
+## Модель с валидацией данных полей
 
 Создать класс модели в папке Models
 
 ```csharp
-    public class User
+    public class User 
     {
+        [Required(ErrorMessage = "Пожайлуста введите id пользователя")]
         public int Id { get; set; }
+        
+        [Required(ErrorMessage = "Пожайлуста введите имя пользователя")]
         public string Name { get; set; }
-        public int Age { get; set; }
 
+        [Required(ErrorMessage = "Пожайлуста введите возраст пользователя")]
+        public int? Age { get; set; }
     }
 ```
+### Проверка в контроллере
+
+```Csharp
+    if (ModelState.IsValid)
+    {
+        _allUsers.Add(user);
+        return View("Users",_allUsers);
+    } 
+```
+
+
 
 ### Entity Framework Core. Создание контекста в Models
 
@@ -203,6 +218,22 @@ namespace MobileStore.Models
 }
 
 ```
+### Файл _ViewStart
+
+```Csharp
+@{
+    Layout = "_Layout";
+}
+```
+
+### Файл _ViewImports
+
+```Csharp
+@using AppTest.Models;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+```
+
+
 
 ---
 
@@ -269,40 +300,38 @@ public IActionResult SelectUser(int? id)
 ### Представление на добавление пользователя
 
 ```cshtml
+@model User;
 
-@{
-    ViewData["Title"] = "Добавление пользователя";
-}
-
-@{
-    Layout ="_Layout"; 
-}
-
+<div>
 <h2>Форма добавления пользователя</h2>
 
-
-<form method="post"  role="form" >
+<form asp-action="Index"   method="post"  role="form" >
   
-  <input type="hidden"  name="Id" />
+  <div asp-validation-summary = "All" ></div>
+
+
+  <input type="hidden"  asp-for="Id" value="1" />
 
   <div class="mb-3">
     <label for="exampleInputEmail1" class="form-label">Имя</label>
-    <input type="text" name="Name"    class="form-control" aria-describedby="emailHelp">
-    <div id="textHelp" class="form-text">We'll never share your email with anyone else.</div>
+    <input type="text" asp-for="Name"    class="form-control" aria-describedby="emailHelp">
+    <div id="textHelp" class="form-text">Имя пользователя</div>
   </div>
 
   <div class="mb-3">
     <label for="exampleInputEmail1" class="form-label">Возраст</label>
-    <input type="text" name="Age"    class="form-control" aria-describedby="emailHelp">
-    <div id="textHelp" class="form-text">We'll never share your email with anyone else.</div>
+    <input type="text" asp-for="Age" class="form-control" aria-describedby="emailHelp">
+    <div id="textHelp" class="form-text">Возраст</div>
   </div>
   
   <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>
 
+<br>
 
+<a href="/Home/Users" > Список пользователей</a>
 
-
+</div>
 ```
 
 
@@ -1636,4 +1665,47 @@ dotnet ef database update
 
 ### Загрузка файлов на сервер
     https://metanit.com/sharp/aspnet5/21.3.php
+    
+
+## Работа с Visual Code
+## Создание приложения
+
+Веб-приложение
+```csharp
+dotnet new webapp -o aspnetcoreapp
+```
+MVC
+
+```csharp
+dotnet new mvc -o aspnetcoreapp
+```
+
+Все шаблоны
+```dotnet new --list```
+
+
+
+## Установка доверия к сертификату разработки
+```csharp
+dotnet dev-certs https --trust
+```
+
+## Запуск приложения
+```csharp
+dotnet watch run
+
+```
+Можно запустить ```dotnet run```.
+
+## Пример добавления пакетов Nugent
+
+```csharp
+dotnet new webapi -o TodoApi
+cd TodoApi
+dotnet add package Microsoft.EntityFrameworkCore.InMemory
+code -r ../TodoApi
+```
+
+
+    
     
