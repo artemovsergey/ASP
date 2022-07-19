@@ -86,6 +86,63 @@
 
 
 
+## Program.cs для API
+
+```Csharp
+using WebAPI.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.InMemory;
+
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
+/*
+ 
+В ASP.NET Core службы (такие как контекст базы данных) должны быть зарегистрированы с помощью 
+контейнера внедрения зависимостей. Контейнер предоставляет службу контроллерам.
+
+ */
+
+string connection = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(connection));
+
+//builder.Services.AddDbContext<UserContext>(opt =>opt.UseInMemoryDatabase("UsersDatabase"));
+// Добавляет контекст базы данных в контейнер внедрения зависимостей.
+// Указывает, что контекст базы данных будет использовать базу данных в памяти.
+
+builder.Services.AddEndpointsApiExplorer();
+
+// тестирование api
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    
+    // тестирвоание api 
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
+
+```
+
 
 
 ## Program.cs
