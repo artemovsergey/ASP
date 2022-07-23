@@ -1,4 +1,7 @@
-# ASP Core 6
+# ASP.Net Core
+
+### .Net Core 6
+###  EntityFrameworkCore (6.0.7)
 
 
 Алгоритм по книге
