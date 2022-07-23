@@ -296,25 +296,31 @@ namespace WebAPI.Controllers
 
 ```csharp
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer;
-using FurnitureShop.Models;
-using Microsoft.Extensions.Configuration;
-
-
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+
 builder.Services.AddMvc();
+//builder.Services.AddControllersWithViews();
+//builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
+
 // Подключение базы данных SQL Server
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 //builder.Services.AddDbContext<TestStoreContext>(options => options.UseSqlServer(connection));
-builder.Services.AddControllersWithViews();
-builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
+
 
 // Это значит совместное использоване объекта класса AppTimeService во всем приложении.
 // Общая функциональность для приложения
 builder.Services.AddSingleton<AppTimeService>();
+
+
+//Какие преимущества? Нам не придется возиться с созданием объекта, удалением его или управлением этим объектом в коде наших страниц.
+
+
+// Создание служю необходимых для управления сеансом
+builder.Services.AddMemoryCache();
+builder.Services.AddSession();
+
+// Сервисы, это любой функционал, который мы хотим зарегистрировать, чтобы другие части приложения, могли его использовать (эл почта, бд…).
 
 // Configure the HTTP request pipeline.
 
@@ -329,19 +335,28 @@ app.UseDeveloperExceptionPage(); // Ошибки при отладке
 app.UseHttpsRedirection();
 app.UseStaticFiles(); // доставка статического содержимого
 app.UseStatusCodePages(); // отправка кодов состояния в ответе
-app.UseMvc(); //
-app.UseMvcWithDefaultRoute();
-app.UseRouting(); // использование
 
-// Определение корневого маршрута
+// добавляет в конвейер новый компонент, который ассоциирует данные сеанса с запросами
+// и добавляет cookie наборы к ответам
+// должен вызываться перед методом app.UseMvc()
+app.UseSession();
+
+
+
+//app.UseMvc();
+//app.UseMvcWithDefaultRoute();
+//app.MapDefaultControllerRoute();
+
+// Определение маршрутов
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapDefaultControllerRoute();
+  name: "default",
+  pattern: "/{controller=Home}/{action=Index}/{id?}");
+
 app.Run();
 //
 
 public class AppTimeService { };
+
 ```
 
 
