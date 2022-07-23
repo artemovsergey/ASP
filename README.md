@@ -1,5 +1,7 @@
 # ASP.Net Core
 
+## Tехнологии
+
 ### .Net Core 6
 ###  EntityFrameworkCore (6.0.7)
 
