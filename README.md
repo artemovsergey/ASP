@@ -296,6 +296,10 @@ namespace WebAPI.Controllers
 
 ```csharp
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer;
+using MyProject.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
