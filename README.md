@@ -6,6 +6,68 @@
 ###  EntityFrameworkCore (6.0.7)
 
 
+### Быстрое создание прототипа MVC
+
+dotnet new mvc --output TestMVC
+cd TestMVC
+mkdir Models
+### Установить CLI-инструмент Scaffolding
+dotnet tool install -g dotnet-aspnet-codegenerator
+dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design
+dotnet add package Microsoft.EntityFrameworkCore.Design
+
+dotnet tool install --global dotnet-ef
+dotnet add package Microsoft.EntityFrameworkCore.SQLite
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+
+### Создать модель
+
+```Csharp
+namespace TestMVC.Models
+{
+    public class Beer{
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Rating { get; set; }
+    }
+}
+```
+
+### Создание контекста BeerContext c EntityFrameworkCore
+
+```Csharp
+using Microsoft.EntityFrameworkCore;
+namespace TestMVC.Data
+{
+    public class BeerContext : DbContext
+    {
+        public DbSet<TestMVC.Models.Beer> Beers { get; set; }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            //Don't hardcode like this in a real app:
+            optionsBuilder.UseSqlite("Data Source=beers.db");
+        }
+    }
+}
+```
+### Добавить служюу
+```Csharp
+builder.Services.AddDbContext<BeerContext>();
+```
+### Сделать скаффолдинг
+```Csharp
+dotnet aspnet-codegenerator controller --controllerName Home --model Beer --dataContext BeerContext --useDefaultLayout -outDir Controllers -f --useSqlite
+```
+### Выполнить миграции в базу данных
+```Csharp
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+dotnet run
+```
+
+**Замечание**: это можно только для тренировки
+
+
 Алгоритм по книге
 
 1. Создали пустой проект
