@@ -373,6 +373,8 @@ public class AppTimeService { };
 Создать класс модели в папке Models
 
 ```csharp
+using System.ComponentModel.DataAnnotations;
+
     public class User 
     {
         [Required(ErrorMessage = "Пожайлуста введите id пользователя")]
