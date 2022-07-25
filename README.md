@@ -82,6 +82,9 @@ dotnet aspnet-codegenerator controller --controllerName Home --model Beer --data
 
 ### Теория
 
+### MVC
+Цель паттерна MVC - разделение приложения на три функциональных области, каждая из которых может содержать и логиу и данные. Цель не в том, чтобы устранить логику из модели. Наоборот, цель в том, чтобы гарантировать наличие в модели только логики предназначенной для создания и управления данными
+
 ### ViewModel
 Правильно использовать строгую типизацию представлений. Используя ViewBag или ViewData, наше представление теряет строгую типизацию.  Лучше всего использовать ViewModel.
 
@@ -639,21 +642,6 @@ public IActionResult SelectUser(int? id)
 <a href="/Home/Users" > Список пользователей</a>
 
 </div>
-```
-
-
-## Стилизация Bootstrap
-
-### Стили css для валидаций
-
-```css
-
-    .field-validation-error {color: #f00;}
-    .field-validation-valid {display: none}
-    .input-validation-error {border: 1px solid #f00;background-color: #fee;}
-    .validation-summary-errors {font-weight: bold; color: #f00;}
-    .validation-summary-valid {display: none;}
-
 ```
 
 ### Представление на редактирование пользователя
@@ -1232,15 +1220,6 @@ public string Index()
     return timeService?.Time ?? "Undefined";
 }
 ```
-
-
-
-
-
-
-
-
-
 ---
 
 
@@ -1659,14 +1638,14 @@ Partial Views in ASP.NET MVC Core
 </ul>
 ```
 
- 
- Работа с формами
+ ---
+ ### Работа с формами и html
  https://metanit.com/sharp/aspnetmvc/3.8.php
- 
- 
  ---
  
-### Маршрутизация
+    
+    
+## Маршрутизация
     
 - MapControllerRoute() определяет произвольный маршрут и принимает следующие параметры:
 
@@ -1983,241 +1962,51 @@ public class HomeController : Controller
    }
 }
 ```
-    
-    
-   
-### Применение дескриптеров  в форме
-
- ```csharp
-          <form asp-action="rsvpform" methdod="post">
-                
-                <p>
-                    <label asp-for="Name">Your Name</label>
-                    <input asp-for="Name"/>
-                </p>
-
-                <p>
-                    <label asp-for="Email">Ваша почта</label>
-                    <input asp-for="Email"/>
-                </p>
-
-                <p>
-                    <label asp-for="Phone">Телефон</label>
-                    <input asp-for="Phone"/>
-                </p>
-                <p>
-                    <label> WillAttend</label>
-                    <select asp-for="WillAttend">
-                        <option value="Choose an option"></option>
-                        <option value="true">Да</option>
-                        <option value="false">Нет</option>
-                    </select>
-                </p>
-                <button type="submit">Отправить</button>
-
-            </form>
-```
-
-Каждый элемент ассоциирован со свойством модели с помощью дескриптора asp-for
-
-
----
-
- Цель паттерна MVC - разделение приложения на три функциональных области, каждая из которых может содержать и логиу и данные. Цель не в том, чтобы устранить логику из модели. Наоборот, цель в том, чтобы гарантировать наличие в модели только логики предназначенной для создания и управления данными
-
- ---
-
- 
+     
 ### Null условная проверка с объединением
+
 ```csharp
-
-string name = р?.Name ?? "No name"; // null условная операция с объединением
-
+string name = р?.Name ?? "No name";
 ```
-
- 
- 
-## Сопоставление с образцом
-
-```csharp
-
-if (data is decimal d) { }
-
-```
-**Замечание**: сопоставлнеие с образцом также работает с оператором ```switch```
-
----
-
- 
- 
-### Применение лямбда выражений
-
-```csharp
-public ViewResult Index() {
-return View()
-}
- 
-или
- 
-```csharp
-pubclic ViewResult Index() => View()
-}
-
-```
-
- 
- 
- 
-### Подключение Bootstrap и js
-
-В шаблоне сделать ссылку
-```html <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css"/> <script src = "js/"></script>```
-
- 
- 
- 
- 
- 
+    
+--- 
  
 ### Настройка Postman для localhost
 
 Finally fixed it by turning off File > Settings > General > SSL Certificate Verification
 
- 
- 
- 
- 
+--- 
 
-### Создаем миграции с помощью консольных команд
+### Миграции
 
-```csharp
- 
-dotnet ef migrations add Itinial
-dotnet ef database update
+```dotnet ef migrations add Itinial```
 
-```
+```dotnet ef database update```
 
- 
- 
- 
-### Области
- 
-    https://metanit.com/sharp/aspnetmvc/4.4.php
+---
+    
+## dotnet cli
 
     
-    
-### Модели
-    https://metanit.com/sharp/aspnet5/8.1.php
-
-    
-### Html-хэлперы
-    https://metanit.com/sharp/aspnet5/9.1.php
-
-### Tag-хэлперы
-    https://metanit.com/sharp/aspnet5/10.1.php
-
-### Компоненты
-    https://metanit.com/sharp/aspnet5/7.6.php
-
-### Валидации моделей
-    https://metanit.com/sharp/aspnet5/19.1.php
-
-### Работа с Entity Framework. Сортировка, фильтрация, пагинация
-    https://metanit.com/sharp/aspnet5/12.1.php
-
-### Razor Pages - то же самое, что и MVC, только почти без контроллеров в чистом виде
-    https://metanit.com/sharp/aspnet5/29.1.php
-
-### Web API
-    https://metanit.com/sharp/aspnet5/23.1.php
-
-### Фильтры как в Rails
-    https://metanit.com/sharp/aspnet5/18.1.php
-
-### Применение аутентификации и авторизации средаствами ASP .NET Core
-    https://metanit.com/sharp/aspnet5/15.1.php
-    https://metanit.com/sharp/aspnet5/16.1.php
-
-### Клиентская разработка
-    https://metanit.com/sharp/aspnet5/13.6.php
-
-### Кеширование
-    https://metanit.com/sharp/aspnet5/14.1.php
-
-### Сервер и публикация приложения
-    https://metanit.com/sharp/aspnet5/2.7.php
-    
-### URL Rewriting
-    https://metanit.com/sharp/aspnet5/24.1.php
-
-### Глобализация и локализация
-    https://metanit.com/sharp/aspnet5/28.1.php
-
-### SignalR Core
-    https://metanit.com/sharp/aspnet5/30.1.php
- 
-### Кроссдоменные запросы. CORS и кросс-доменные запросы
-    https://metanit.com/sharp/aspnet5/31.1.php
-
-### Тестирование
-    https://metanit.com/sharp/aspnet5/22.1.php
-
-### Dapper - альтернатива EF
-    https://metanit.com/sharp/aspnet5/26.1.php
-
-### Mongo DB
-    https://metanit.com/sharp/aspnet5/27.1.php
-    
-### React.JS
-    https://metanit.com/sharp/aspnet5/25.1.php
-
-### Сервисы gRPC
-    https://metanit.com/sharp/aspnet5/32.1.php
-    
-### Отправка email в ASP.NET Core
-    https://metanit.com/sharp/aspnet5/21.1.php
-
-### Загрузка файлов на сервер
-    https://metanit.com/sharp/aspnet5/21.3.php
-    
-
- 
- 
- 
- ---
-## Работа с Visual Code
-## Создание приложения
-
 Веб-приложение
-```csharp
-dotnet new webapp -o aspnetcoreapp
-```
+```dotnet new webapp -o aspnetcoreapp```
+
 MVC
-
-```csharp
-dotnet new mvc -o aspnetcoreapp
-```
-
+```dotnet new mvc -o aspnetcoreapp```    
+    
 Все шаблоны
 ```dotnet new --list```
-
-
-
-## Установка доверия к сертификату разработки
+    
+Установка доверия к сертификату разработки
 ```csharp
 dotnet dev-certs https --trust
-```
-
-## Запуск приложения
-```csharp
-dotnet watch run
-
-```
-Можно запустить ```dotnet run```.
-
-## Пример добавления пакетов Nugent
-
-```csharp
+```    
+    
+```dotnet watch run```  
+    
+ ```dotnet run```
+    
+```cmd
 dotnet new webapi -o TodoApi
 cd TodoApi
 dotnet add package Microsoft.EntityFrameworkCore.InMemory
