@@ -50,7 +50,7 @@ namespace TestMVC.Data
     }
 }
 ```
-### Добавить служюу
+### Добавить службу
 ```Csharp
 builder.Services.AddDbContext<BeerContext>();
 ```
@@ -1227,38 +1227,6 @@ public string Index()
     return timeService?.Time ?? "Undefined";
 }
 ```
-
-
-
-
-### Контекст контроллера
-https://metanit.com/sharp/aspnet5/5.9.php
-
-
-
-
-
-### Передача зависимотей в контроллер
-https://metanit.com/sharp/aspnet5/5.10.php
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
