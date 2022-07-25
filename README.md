@@ -1591,9 +1591,43 @@ Partial Views in ASP.NET MVC Core
  https://metanit.com/sharp/aspnetmvc/3.8.php
  
  
+ ---
  
+### Маршрутизация
+    
+- MapControllerRoute() определяет произвольный маршрут и принимает следующие параметры:
+
+```Csharp
+MapControllerRoute(string name, string pattern, [object defaults = null], [object constraints = null], [object dataTokens = null]) 
+```
+
+- MapDefaultControllerRoute() определяет стандартный маршрут, фактически эквивалентен вызову
+    
+```Csharp
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+```
+Поскольку это довольно часто используемое определение маршрута, то для него и был введен отдельный метод.    
+    
+ - MapAreaControllerRoute() определяет маршрут, который также учитывает область приложения. Имеет следующие параметры:   
+
+```Csharp
+MapAreaControllerRoute(string name, string areaName, string pattern, [object defaults = null], [object constraints = null], [object dataTokens = null])
+```
+    
+Обязательный параметр areaName позволяет определить область, с которой будет связан маршрут.  
+    
+ - MapControllers() сопоставляет действия контроллера с запросами, используя маршрутизацию на основе атрибутов.   
+
+- MapFallbackToController() определяет действие контроллера, которое будет обрабатывать запрос, если все остальые определенные маршруты не соответствуют запросу. Принимает имя контроллера и его метода:
  
- 
+```Csharp
+MapFallbackToController(string action, string controller)
+```
+    
+    
+    
 ### Маршрутизация на основе аттрибутов
 
 Фреймворк MVC позволяет использовать в приложении маршрутизацию на основе атрибутов. Такой тип маршрутизации еще называется Attribute-Based Routing. Атрибуты предоставляют более гибкий способ определения маршрутов. Маршруты, определенные с помощью атрибутов, имеют приоритет по сравнению с маршрутами, определенными в классе Startup.
