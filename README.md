@@ -9,17 +9,22 @@
 
 ### Быстрое создание прототипа MVC
 
-dotnet new mvc --output TestMVC
-cd TestMVC
-mkdir Models
-### Установить CLI-инструмент Scaffolding
-dotnet tool install -g dotnet-aspnet-codegenerator
-dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design
-dotnet add package Microsoft.EntityFrameworkCore.Design
+```dotnet new mvc --output TestMVC```
 
-dotnet tool install --global dotnet-ef
-dotnet add package Microsoft.EntityFrameworkCore.SQLite
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+
+### Установить CLI-инструмент Scaffolding
+
+```dotnet tool install -g dotnet-aspnet-codegenerator```
+
+```dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design```
+
+```dotnet add package Microsoft.EntityFrameworkCore.Design```
+
+```dotnet tool install --global dotnet-ef```
+
+```dotnet add package Microsoft.EntityFrameworkCore.SQLite```
+
+```dotnet add package Microsoft.EntityFrameworkCore.SqlServer```
 
 ### Создать модель
 
@@ -51,22 +56,28 @@ namespace TestMVC.Data
     }
 }
 ```
-### Добавить службу
+
+### Добавить службу контекста
+
 ```Csharp
 builder.Services.AddDbContext<BeerContext>();
 ```
 ### Сделать скаффолдинг
+
 ```Csharp
 dotnet aspnet-codegenerator controller --controllerName Home --model Beer --dataContext BeerContext --useDefaultLayout -outDir Controllers -f --useSqlite
 ```
-### Выполнить миграции в базу данных
-```Csharp
-dotnet ef migrations add InitialCreate
-dotnet ef database update
-dotnet run
-```
 
-**Замечание**: это можно только для тренировки
+### Выполнить миграции в базу данных
+
+```dotnet ef migrations add InitialCreate```
+
+```dotnet ef database update```
+
+```dotnet run```
+
+
+**Замечание**: это можно только для тренировки. Также в Visual Studio можно сделать так через создание специального контроллера
 
 
 ### Теория
@@ -1246,7 +1257,75 @@ public string Index()
 @await Html.PartialAsync("_GetMessage")
 ```
 
+### Внедрение зависимостей
+
+Dependency injection (DI) или внедрение зависимостей представляет механизм, который позволяет сделать взаимодействующие в приложении объекты слабосвязанными. Такие объекты связаны между собой через абстракции, например, через интерфейсы, что делает всю систему более гибкой, более адаптируемой и расширяемой.
+
+В центре подобного механизма находится понятие зависимость - некоторая сущность, от которой зависит другая сущность. Например:
+
+```Csharp
+class Logger
+{
+    public void Log(string message) => Console.WriteLine(message);
+}
+class Message
+{
+    Logger logger = new Logger();
+    public string Text { get; set; } = "";
+    public void Print() => logger.Log(Text);
+}
+```
+
+Здесь сущность Message, которая представляет некоторое сообщение, зависит от другой сущности - Logger, которая представляет логгер. В методе Print() класса Message имитируется логгирование текста сообщения путем вызова у объекта Logger метода Log, который выводит сообщение на консоль. Однако здесь класс Message тесно связан с классом Loger. Класс Message отвечает за создание объекта Logger. Это имеет ряд недостатков. Прежде всего, если мы захотим вместо класса Logger использовать другой тип тип логгера, например, логгировать в файл, а не на консоль, то нам придется менять класс Message. Один класс не составит труда поменять, но если в проекте таких классов много, то поменять во всех класс Logger на другой будет труднее. Кроме того, класс Logger может иметь свои зависимости, которые тоже может потребоваться поменять. В итоге такими системами сложнее управлять и сложнее тестировать.
+Чтобы отвязать объект Logger от класса Message, мы можем создать абстракцию, которая будет представлять логгер, и передавать ее извне в объект Message:
+
+```Csharp
+interface ILogger
+{
+    void Log(string message);
+}
+class Logger : ILogger
+{
+    public void Log(string message) => Console.WriteLine(message);
+}
+class Message
+{
+    ILogger logger;
+    public string Text { get; set; } = "";
+    public Message(ILogger logger)
+    {
+        this.logger = logger;
+    }
+    public void Print() => logger.Log(Text);
+}
+```
+
+Теперь класс Message не зависит от конкретной реализации класса Logger - это может быть любая реализация интерфейса ILogger. Кроме того, создание объекта логгера выносится во внешний код. Класс Message больше ничего не знает о логгере кроме того, что у него есть метод Log, который позволяет логгировать его текст.
+Тем не менее остается проблема управления подобными зависимостями, особенно если это касается больших приложений. Нередко для установки зависимостей в подобных системах используются специальные контейнеры - IoC-контейнеры
+
+Такие контейнеры служат своего рода фабриками, которые устанавливают зависимости между абстракциями и конкретными объектами и, как правило, управляют созданием этих объектов.
+Преимуществом ASP.NET Core в этом оношении является то, что фреймворк уже по умолчанию имеет встроенный контейнер внедрения зависимостей, который представлен интерфейсом IServiceProvider. А сами зависимости еще называются сервисами, собственно поэтому контейнер можно назвать провайдером сервисов. Этот контейнер отвечает за сопоставление зависимостей с конкретными типами и за внедрение зависимостей в различные объекты
+
+---
+Примечание:  Статические переменные класса - это способ хранить состояние объекта в памяти (во время работы приложения)
+
+### Управление привязкой модели
+https://metanit.com/sharp/aspnetmvc/5.3.php
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### Внедрение зависимостей в представления
+
 
 ASP.NET Core MVC поддерживает внедрение зависимостей в представления. За внедрение зависимостей в представление отвечает директива @inject.
 
