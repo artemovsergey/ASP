@@ -1626,7 +1626,54 @@ MapAreaControllerRoute(string name, string areaName, string pattern, [object def
 MapFallbackToController(string action, string controller)
 ```
     
+
+Для установки значений по умолчанию также можно применять параметр defaults метода MapControllerRoute(). Этот параметр представляет объект, свойства которого соответствуют параметрам маршрута. Например, определим следующий маршрут:    
     
+```Csharp
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllersWithViews();
+ 
+var app = builder.Build();
+ 
+app.MapControllerRoute(
+    name: "default", 
+    pattern: "{action}",
+    defaults: new { controller = "Home", action = "Index"});
+ 
+app.Run(); 
+```
+
+### Ограничения маршрутов
+    
+Для параметров маршрута в MVC, также как и в общем в ASP.NET Core, можно устанавливать ограничения.
+Ограничения можно установить непосредственно в шаблоне маршрута:    
+    
+```Csharp
+ app.MapControllerRoute(
+    name: "default", 
+    pattern: "{controller=Home}/{action=Index}/{id:int?}");
+```
+ В данном случае указывается, что параметр id может иметь либо значение типа int, либо значение null   
+    
+  Второй способ установки ограничений представляет параметр constraints метода MapControllerRoute:  
+ 
+ ```Csharp
+ using Microsoft.AspNetCore.Routing.Constraints; // для типа IntRouteConstraint
+ 
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllersWithViews();
+ 
+var app = builder.Build();
+ 
+app.MapControllerRoute(
+    name: "default", 
+    pattern: "{controller=Home}/{action=Index}/{id?}",
+    constraints: new {id= new IntRouteConstraint()});  // ограничения маршрутов
+ 
+app.Run();
+ ```
+
+Параметр constraints принимает объект, в котором свойства соответствуют по названиям параметрам маршрутов, а значения свойств - ограничения, применяемые к одноименным параметрам маршрутов. Так, в данном случае к параметру id применяется ограничение IntRouteConstraint, которое указывает, что id должно представлять значение типа int.   
     
 ### Маршрутизация на основе аттрибутов
 
@@ -1982,8 +2029,10 @@ dotnet ef database update
  
 ### Области
  
-    https://metanit.com/sharp/aspnet5/11.9.php
+    https://metanit.com/sharp/aspnetmvc/4.4.php
 
+    
+    
 ### Модели
     https://metanit.com/sharp/aspnet5/8.1.php
 
