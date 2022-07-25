@@ -315,18 +315,35 @@ namespace WebAPI.Controllers
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
-using MyProject.Models;
+using TestASP.Models;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddMvc();
+//добавляет все сервисы фреймворка MVC
+// (в том числе сервисы для работы с аутентификацией и авторизацией, валидацией и т.д.)
+
+// AddMvcCore(): добавляет только основные сервисы фреймворка MVC,
+// а всю дополнительную функциональность, типа аутентификацией и авторизацией, валидацией и т.д.,
+// необходимо добавлять самостоятельно
+
+// AddControllersWithViews(): добавляет только те сервисы фреймворка MVC,
+// которые позволяют использовать контроллеры и представления и связанную функциональность.
+// При создании проекта по типу ASP.NET Core Web App (Model-View-Controller) используется именно этот метод
+
+// AddControllers(): позволяет использовать контроллеры, но без представлений.
+
+
+
+
 //builder.Services.AddControllersWithViews();
 //builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
 
 // Подключение базы данных SQL Server
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
-//builder.Services.AddDbContext<TestStoreContext>(options => options.UseSqlServer(connection));
+builder.Services.AddDbContext<TestStoreContext>(options => options.UseSqlServer(connection));
 
 
 // Это значит совместное использоване объекта класса AppTimeService во всем приложении.
@@ -363,7 +380,6 @@ app.UseStatusCodePages(); // отправка кодов состояния в �
 app.UseSession();
 
 
-
 //app.UseMvc();
 //app.UseMvcWithDefaultRoute();
 //app.MapDefaultControllerRoute();
@@ -373,10 +389,45 @@ app.MapControllerRoute(
   name: "default",
   pattern: "/{controller=Home}/{action=Index}/{id?}");
 
+// тоже самое
+//app.MapDefaultControllerRoute();
+
+IHostEnvironment? env = app.Services.GetService<IHostEnvironment>();
+if (env != null)
+{
+    // добавляем поддержку каталога node_modules
+    app.UseFileServer(new FileServerOptions()
+    {
+        FileProvider = new PhysicalFileProvider(
+            Path.Combine(env.ContentRootPath, "node_modules")
+        ),
+        RequestPath = "/node_modules",
+        EnableDirectoryBrowsing = false
+    });
+}
+
+/*
+ Последний вызов app.UseFileServer() позволит сопоставлять 
+все запросы с "/node_modules" с каталогом "node_modules".
+
+В реальности, конечно, в большинстве случаев для библиотек из node_modules 
+используют минификацию/бандлинг с помощью BundleConfig из первой 
+темы этой главы с последующим копированием в папку wwwroot, 
+поэтому не придется прибегать к проекции запросов на каталог node_modules. 
+Но тем не менее так мы тоже можем обращаться к файлам в каталоге node_modules.
+
+ */
+
+
+
+
+
+
 app.Run();
 //
 
 public class AppTimeService { };
+
 
 ```
 
