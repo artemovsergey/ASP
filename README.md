@@ -71,16 +71,17 @@ dotnet aspnet-codegenerator controller --controllerName Home --model Beer --data
 ### Выполнить миграции в базу данных
 
 ```dotnet ef migrations add InitialCreate```
-Замечание: --project Name, если несколько проекто. Помогает также очистка и пересборка решения.
+
+**Замечание**: --project Name, если несколько проекто. Помогает также очистка и пересборка решения.
 
 ```dotnet ef database update```
-Замечание: --connection "Data Source=My.db"
+
+**Замечание**: --connection "Data Source=My.db"
 
 ```dotnet run```
 
 
-**Замечание**: это можно только для тренировки. Также в Visual Studio можно сделать так через создание специального контроллера
-
+**Замечание**: это можно только для тренировки.
 
 ---
 
