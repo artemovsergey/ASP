@@ -145,8 +145,6 @@ Viewmodel – содержит поля, которые нужны для пре
 using WebAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory;
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
