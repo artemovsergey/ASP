@@ -500,6 +500,16 @@ public class AppTimeService { };
             return View(user);
         }
 ```
+Замечание: полезный код
+
+```Csharp
+    string errors = $"Количество ошибок: {ModelState.ErrorCount}. Ошибки в свойствах: ";
+    foreach(var prop in ModelState.Keys)
+    {
+        errors = $"{errors}{prop}; ";
+    }
+```
+
 
 ### Edit
 
