@@ -834,10 +834,15 @@ public class AppTimeService { };
 
 
 
+---
 
+## Модель
+---
+## Валидация модели на стороне сервера
 
+Важную роль в ASP.NET Core MVC играет валидация входных данных. Валидация позволяет проверить входные данные на наличие неправильных, корректных значений и должным образом обработать эти значения. Валидация модели в ASP.NET Core MVC базируется на общем механизме валидации, который имеется в .NET, однако ASP.NET Core MVC добавляет некоторую дополнительную инфраструктуру, которая облегчает процесс валидации.
 
-## Модель с валидацией данных полей
+---
 
 Создать класс модели в папке Models
 
@@ -865,13 +870,56 @@ using System.ComponentModel.DataAnnotations;
 
 ### Проверка в контроллере
 
+Валидация на стороне сервера, то есть в контроллере, осуществляется посредством помощью проверки свойства ModelState.IsValid. Объект ModelState сохраняет все значения, которые пользователь ввел для свойств модели, а также все ошибки, связанные с каждым свойством и с моделью в целом. Если в объекте ModelState имеются какие-нибудь ошибки, то свойство ModelState.IsValid возвратит false.
+
+
 ```Csharp
-    if (ModelState.IsValid)
-    {
-        _allUsers.Add(user);
-        return View("Users",_allUsers);
-    } 
+
+if (ModelState.IsValid)
+                return $"{person.Name} - {person.Age}";
+
+            string errorMessages = "";
+            // проходим по всем элементам в ModelState
+            foreach (var item in ModelState)
+            {
+                // если для определенного элемента имеются ошибки
+                if (item.Value.ValidationState == ModelValidationState.Invalid)
+                {
+                    errorMessages = $"{errorMessages}\nОшибки для свойства {item.Key}:\n";
+                    // пробегаемся по всем ошибкам
+                    foreach (var error in item.Value.Errors)
+                    {
+                        errorMessages = $"{errorMessages}{error.ErrorMessage}\n";
+                    }
+                }
+            }
+            return errorMessages;
+            
 ```
+
+## Добавление собственных валидаций 
+
+При необходимости мы сами можем валидировать значения и добавлять в ModelState информацию об ошибках. Для этого применяется метод ModelState.AddModelError.
+
+```Csharp
+
+ if (person.Name == "admin" && person.Age == 25)
+            {
+                // добавляем ошибку уровня модели
+                ModelState.AddModelError("", "Некорректные данные");
+            }
+
+            if (person.Age > 110 || person.Age < 0)
+            {
+                ModelState.AddModelError("Age", "Возраст должен находиться в диапазоне от 0 до 110");
+            }
+            if (person.Name?.Length < 3)
+            {
+                ModelState.AddModelError("Name", "Недопустимая длина строки. Имя должно иметь больше 2 символов");
+            }
+
+```
+
 
 
 
