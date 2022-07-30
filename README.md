@@ -875,8 +875,8 @@ using System.ComponentModel.DataAnnotations;
 
 ```Csharp
 
-if (ModelState.IsValid)
-                return $"{person.Name} - {person.Age}";
+            if (ModelState.IsValid)
+                return Content($"{person.Name} - {person.Age}");
 
             string errorMessages = "";
             // проходим по всем элементам в ModelState
@@ -893,7 +893,7 @@ if (ModelState.IsValid)
                     }
                 }
             }
-            return errorMessages;
+            return  View(person); // errorMessages;
             
 ```
 
@@ -919,6 +919,19 @@ if (ModelState.IsValid)
             }
 
 ```
+
+## Валидация на стороне клиента
+
+Кроме валидации на стороне сервера с помощью свойства ModelState в ASP.NET Core MVC можно применять валидацию на стороне клиента, то есть на веб-странице. Валидация на стороне клиента позволяет уменьшить количество обращений к серверу и произвести все действия по проверке значений непосредственно при вводе данных.
+
+
+
+
+
+
+
+
+
 
 
 
