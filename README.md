@@ -3114,3 +3114,107 @@ namespace UserApp.Components
  
 При использовании тег-хелпера параметры компонента определяются как атрибуты тега, которым присваивается необходимое значение. Причем если у нас исползуется camelcase, при котором каждое подслово в составе составного слова пишется с большой буквы, например, includeSeconds, то в названии атрибута все подслова разделяются дефисом и начинаются со строчной буквы.
     
+    
+# Настройка webpack
+
+Затем создайте новый каталог ```ClientApp``` в корне вашего проекта MVC. Внутри этого нового каталога создайте файл с именем ```package.json```.
+    
+```js
+    
+{
+  "name": "myapp-client-bundle",
+  "version": "1.0.0",
+  "description": "This is client-side scripts bundle for MyApp",
+  "private": true,
+  "scripts": {
+    "build": "webpack --mode=development",
+    "build:prod": "webpack --mode=production"
+  },
+  "devDependencies": {
+    "ts-loader": "^9.2.5",
+    "typescript": "^4.4.3",
+    "webpack": "^5.52.1",
+    "webpack-cli": "^4.8.0"
+  },
+  "dependencies": {
+  }
+}
+    
+```
+
+Выполнить установку пакетов npm
+```npm install```
+    
+ Появится новый node_modulesкаталог, содержащий огромное количество файлов JS и CSS. Считайте, что этот каталог похож на каталоги binи obj(или, что еще лучше, на кеш пакетов NuGet). Хотя он не содержит двоичных файлов, его содержимое по-прежнему представляет собой набор зависимостей, на которые мы ссылаемся из нашего собственного кода.
+    
+Создаем каталог ```ClinetApp``` в нем создаем папку ```src```, в ней создаем файл ```index.js```. Пример
+    
+```js
+    
+// JS Dependencies: Popper, Bootstrap & JQuery
+import '@popperjs/core';
+import 'bootstrap';
+import 'jquery';
+// Using the next two lines is like including partial view _ValidationScriptsPartial.cshtml
+import 'jquery-validation';
+import 'jquery-validation-unobtrusive';
+
+// CSS Dependencies: Bootstrap
+import 'bootstrap/dist/css/bootstrap.css';
+
+// Custom JS imports
+// ... none at the moment
+
+// Custom CSS imports
+import '../css/site.css';
+
+console.log('The \'site\' bundle has been loaded!');
+    
+```
+
+Строки со 2 по 9 будут импортировать код изнутри node_modules. Мы импортируем Javascript, Popper и CSS Bootstrap, а также несколько библиотек JQuery, которые используются сценариями проверки ASP.NET Core.
+Все это делается с помощью модулей ECMAScript 6 — современного подхода к импорту JS-файлов из других JS-файлов или даже CSS-файлов из JS-файлов.
+
+ 
+## Создание webpack
+
+ Создайте новый файл с именем ```webpack.config.js``` и поместите его в ClientAppкаталог.
+    
+```js
+
+const path = require('path');
+
+module.exports = {
+  entry: './src/index.ts',
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
+  output: {
+    library: {
+      name: 'WebApplication1',
+      type: 'var'
+    },
+    filename: 'app-client.js',
+    path: path.resolve(__dirname, '../wwwroot/js'),
+  }
+};
+    
+```
+    
+Далее ```npm run build```
+   
+Можно подключить файл в макете:
+
+```html
+<script src="~/dist/site.entry.js" defer></script>
+```
+    
