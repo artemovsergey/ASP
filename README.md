@@ -3122,7 +3122,7 @@ namespace UserApp.Components
     
 ## package.json
     
-```js
+```json
     
 {
   "name": "myapp-client-bundle",
@@ -3208,9 +3208,21 @@ module.exports = {
         site: './src/js/site.js',
         bootstrap_js: './src/js/bootstrap_js.js',
         validation: './src/js/validation.js',
-        index: './src/js/index.js'
+        index: './src/js/index.js',
+        indexTs: './src/ts/index.ts'
     },
+
+    resolve: {
+        extensions: ['.tsx', '.ts', '.js'],
+    },
+
     output: {
+
+        library: {
+            name: 'MYAPP',
+            type: 'var'
+        },
+
         filename: '[name].entry.js',
         path: path.resolve(__dirname, '..', 'wwwroot', 'dist')
     },
@@ -3227,6 +3239,13 @@ module.exports = {
                 test: /\.(eot|woff(2)?|ttf|otf|svg)$/i,
                 type: 'asset'
             },
+
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            }
+
         ]
     },
 
@@ -3237,6 +3256,52 @@ module.exports = {
 };
     
 ```
+
+## tsconfig.json
+ 
+```json
+ 
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "module": "es6",
+    "target": "es5",
+    "allowJs": true,
+    "moduleResolution": "node"
+  }
+}
+    
+```
+    
+## index.ts
+  
+```ts
+export * from './hello';  
+```
+    
+## hello.ts
+  
+```ts
+export namespace funcs {
+    export function hello(): void {
+        const message = 'Hello world!';
+        console.log(message);
+    }
+}
+```    
+ 
+Можно подключать
+    
+```js
+<script src="/dist/indexTs.entry.js"></script>
+
+
+<script>
+MYAPP.funcs.hello();
+</script>
+```
+    
     
 Далее ```npm run build```
    
