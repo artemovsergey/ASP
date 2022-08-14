@@ -3430,18 +3430,538 @@ MYAPP.funcs.hello();
 Наша система сборки расширяема: Хотите Sass? Без проблем! Хотите использовать самые последние функции ECMAScript? Ты понял! Нужна минификация или обфускация? Без проблем!
 
 
+## Сортировка
+
+ ```Csharp
+ 
+    
+public enum SortState
+{
+    NameAsc,    // по имени по возрастанию
+    NameDesc,   // по имени по убыванию
+    AgeAsc, // по возрасту по возрастанию
+    AgeDesc,    // по возрасту по убыванию
+    CompanyAsc, // по компании по возрастанию
+    CompanyDesc // по компании по убыванию
+}
+    
+    
+ public async Task<IActionResult> SortUsers(SortState sortOrder)
+    {
+
+        IQueryable<User>? users = db.Users.Include(x => x.Company);
+
+        ViewData["NameSort"] = sortOrder == SortState.NameAsc ? SortState.NameDesc : SortState.NameAsc;
+        ViewData["AgeSort"] = sortOrder == SortState.AgeAsc ? SortState.AgeDesc : SortState.AgeAsc;
+        ViewData["CompSort"] = sortOrder == SortState.CompanyAsc ? SortState.CompanyDesc : SortState.CompanyAsc;
+
+
+        users = sortOrder switch
+        {
+            SortState.NameDesc => users.OrderByDescending(s => s.Name),
+            SortState.AgeAsc => users.OrderBy(s => s.Age),
+            SortState.AgeDesc => users.OrderByDescending(s => s.Age),
+            SortState.CompanyAsc => users.OrderBy(s => s.Company!.Name),
+            SortState.CompanyDesc => users.OrderByDescending(s => s.Company!.Name),
+            _ => users.OrderBy(s => s.Name),
+        };
+
+
+
+        return View(await users.AsNoTracking().ToListAsync());
+    }
+    
+ ```
+
+### Сортировка (view)
+
+```html
+    
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Learning.Models
+@model IEnumerable<User>
+
+<h1>Список пользователей</h1>
+<table>
+    <tr>
+        <th>
+            <a asp-action="SortUsers" asp-route-sortOrder="@ViewData["NameSort"]">
+                Имя
+            </a>
+        </th>
+        <th>
+            <a asp-action="SortUsers" asp-route-sortOrder="@ViewBag.AgeSort">
+                Возраст
+            </a>
+        </th>
+        <th>
+            <a asp-action="SortUsers" asp-route-sortOrder="@ViewBag.CompSort">
+                Компания
+            </a>
+        </th>
+        @foreach (User u in Model)
+        {
+        <tr><td>@u.Name</td><td>@u.Age</td><td>@u.Company?.Name</td></tr>
+        }
+</table>
+    
+```
+
+### helper for sorting
+ 
+```Csharp
+
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using Learning.Models;
+
+namespace Learning.TagHelpers
+{
+    public class SortHeaderTagHelper : TagHelper
+    {
+        public SortState Property { get; set; } // значение текущего свойства, для которого создается тег
+        public SortState Current { get; set; }  // значение активного свойства, выбранного для сортировки
+        public string? Action { get; set; }  // действие контроллера, на которое создается ссылка
+        public bool Up { get; set; }    // сортировка по возрастанию или убыванию
+
+        [ViewContext]
+        [HtmlAttributeNotBound]
+        public ViewContext ViewContext { get; set; } = null!;
+
+        IUrlHelperFactory urlHelperFactory;
+        public SortHeaderTagHelper(IUrlHelperFactory helperFactory)
+        {
+            urlHelperFactory = helperFactory;
+        }
+
+        public override void Process(TagHelperContext context, TagHelperOutput output)
+        {
+            IUrlHelper urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
+            output.TagName = "a";
+            string? url = urlHelper.Action(Action, new { sortOrder = Property });
+            output.Attributes.SetAttribute("href", url);
+            // если текущее свойство имеет значение CurrentSort
+            if (Current == Property)
+            {
+                TagBuilder tag = new TagBuilder("i");
+                tag.AddCssClass("glyphicon");
+
+                if (Up == true)   // если сортировка по возрастанию
+                    tag.AddCssClass("glyphicon-chevron-up");
+                else   // если сортировка по убыванию
+                    tag.AddCssClass("glyphicon-chevron-down");
+
+                output.PreContent.AppendHtml(tag);
+            }
+        }
+    }
+}
+    
+```
+
+## Фильтрация
+ 
+### Viewmodel
+ 
+```Csharp
+    
+    using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+
+
+namespace Learning.Models
+{
+    public class FilterViewModel
+    {
+        public FilterViewModel(List<Company> companies, int company, string name)
+        {
+            // устанавливаем начальный элемент, который позволит выбрать всех
+            companies.Insert(0, new Company { Name = "Все", Id = 0 });
+            Companies = new SelectList(companies, "Id", "Name", company);
+            SelectedCompany = company;
+            SelectedName = name;
+        }
+        public SelectList Companies { get; } // список компаний
+        public int SelectedCompany { get; } // выбранная компания
+        public string SelectedName { get; } // введенное имя
+    }
+}
+
+    
+```
+    
+    
+```Csharp
+    
+    public async Task<IActionResult> FilterUsers(int company)
+    {
+
+        IQueryable<User> users = db.Users.Include(p => p.Company);
+
+        if (company != null && company != 0)
+        {
+            users = users.Where(u => u.CompanyId == company);
+        }
+
+
+
+        List<Company> companies = db.Companies.ToList();
+        // устанавливаем начальный элемент, который позволит выбрать всех
+        companies.Insert(0, new Company { Name = "Все", Id = 0 });
+
+
+
+        FilterUsersModel filterModel = new FilterUsersModel
+        {
+            Users = users.ToList(),
+            Companies = new SelectList(companies, "Id", "Name", company),
+            
+        };
+
+
+        return View(filterModel);
+    }
+```
+
+### Фильтрация (view)
+ 
+```htnl
+   
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Learning.Models
+
+@model FilterUsersModel
+
+
+<form method="get">
+    <div>
+        <label>Компания: </label>
+        <select name="company" asp-items="Model.Companies"></select>
+
+        <input type="submit" value="Фильтр" />
+    </div>
+</form>
+
+
+
+<h1>Список пользователей</h1>
+<table>
+    <tr>
+        <th>
+            
+                Имя
+         
+        </th>
+        <th>
+            
+                Возраст
+        
+        </th>
+        <th>
+            
+                Компания
+         
+        </th>
+        @foreach (User u in Model.Users)
+        {
+        <tr><td>@u.Name</td><td>@u.Age</td><td>@u.Company?.Name</td></tr>
+        }
+</table>
+    
+```
+
+## Поиск
+ 
+### Viewmodel
+ 
+```Csharp
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace Learning.Models
+{
+    public class SearchUsersModel
+    {
+        public IEnumerable<User> Users { get; set; } = new List<User>();
+        public string Name { get; set; }
+    }
+}
+```
+    
+    
+```Csharp
+ 
+    public async Task<IActionResult> SearchUsers(string name)
+    {
+        IQueryable<User> users = db.Users.Include(p => p.Company);
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            users = users.Where(p => p.Name!.Contains(name));
+        }
+
+
+        SearchUsersModel searchModel = new SearchUsersModel
+        {
+            Users = users.ToList(),
+            Name = name
+        };
+
+
+        return View(searchModel);
+    }
+    
+```
+
+### Поиск (view)
+ 
+```html
+    @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+    @using Learning.Models
+
+    @model SearchUsersModel
+
+
+<form method="get">
+    <div>
+        <label>Имя: </label>
+
+        <input asp-for="Name" />
+
+       
+
+        <input type="submit" value="Поиск" />
+    </div>
+</form>
+
+
+
+<h1>Список пользователей</h1>
+<table>
+    <tr>
+        <th>
+            
+                Имя
+         
+        </th>
+        <th>
+            
+                Возраст
+        
+        </th>
+        <th>
+            
+                Компания
+         
+        </th>
+        @foreach (User u in Model.Users)
+        {
+        <tr><td>@u.Name</td><td>@u.Age</td><td>@u.Company?.Name</td></tr>
+        }
+</table>    
+```
+
+## Пагинация
+
+### Viewmodel
+    
+```Csharp
+  using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+
+
+namespace Learning.Models
+{
+    public class PageUsersModel
+    {
+
+        public IEnumerable<User> Users { get; set; }
+        public int PageNumber { get; }
+        public int TotalPages { get; }
+        public bool HasPreviousPage => PageNumber > 1;
+        public bool HasNextPage => PageNumber < TotalPages;
+
+    
+
+        public PageUsersModel(int count, int pageNumber, int pageSize)
+        {
+            PageNumber = pageNumber;
+            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+        }
+
+
+        
+
+    }
+}
+
+```
+    
+```Csharp
+    public async Task<IActionResult> PageUsers(int page = 1)
+    {
+
+        int pageSize = 3;   // количество элементов на странице
+
+        IQueryable<User> source = db.Users.Include(x => x.Company);
+
+        var count = await source.CountAsync();
+        var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
 
 
 
+        PageUsersModel pageViewModel = new PageUsersModel(count, page, pageSize)
+        {
+            Users = items
+        };
 
 
 
+        return View(pageViewModel);
+    }
+```
+    
+### Пагинация (view)
+  
+```html
+   @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Learning
+
+@using Learning.Models
+
+@model PageUsersModel
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+
+<style>
+    .glyphicon {
+        display: inline-block;
+        padding: 0 5px;
+    }
+
+    .glyphicon-chevron-right:after {
+        content: "\00BB";
+    }
+
+    .glyphicon-chevron-left:before {
+        content: "\00AB";
+    }
+</style>
 
 
 
+<h1>Список пользователей</h1>
 
+<table class="table">
+    <tr><th>Имя</th><th>Возраст</th><th>Компания</th></tr>
+    @foreach (User u in Model.Users)
+    {
+        <tr><td>@u.Name</td><td>@u.Age</td><td>@u.Company?.Name</td></tr>
+    }
+</table>
 
+<p>
+    @if (Model.HasPreviousPage)
+    {
+        <a asp-action="PageUsers" asp-route-page="@(Model.PageNumber - 1)" class="glyphicon glyphicon-chevron-left">
+            Назад
+        </a>
+    }
+    @if (Model.HasNextPage)
+    {
+        <a asp-action="PageUsers" asp-route-page="@(Model.PageNumber + 1)" class="glyphicon glyphicon-chevron-right">
+            Вперед
+        </a>
+    }
+</p>
 
-
-
+ 
+```
+  
+### helper for sorting, filter, search and pagination
+  
+```Csharp
+   using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using MvcApp.Models;
+ 
+namespace MvcApp.TagHelpers
+{
+    public class PageLinkTagHelper : TagHelper
+    {
+        private IUrlHelperFactory urlHelperFactory;
+        public PageLinkTagHelper(IUrlHelperFactory helperFactory)
+        {
+            urlHelperFactory = helperFactory;
+        }
+        [ViewContext]
+        [HtmlAttributeNotBound]
+        public ViewContext ViewContext { get; set; } = null!;
+        public PageViewModel? PageModel { get; set; }
+        public string PageAction { get; set; } = "";
+ 
+        [HtmlAttributeName(DictionaryAttributePrefix = "page-url-")]
+        public Dictionary<string, object> PageUrlValues { get; set; } = new();
+ 
+        public override void Process(TagHelperContext context, TagHelperOutput output)
+        {
+            if(PageModel == null) throw new Exception("PageModel is not set");
+            IUrlHelper urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
+            output.TagName = "div";
+ 
+            // набор ссылок будет представлять список ul
+            TagBuilder tag = new TagBuilder("ul");
+            tag.AddCssClass("pagination");
+ 
+            // формируем три ссылки - на текущую, предыдущую и следующую
+            TagBuilder currentItem = CreateTag(PageModel.PageNumber, urlHelper);
+ 
+            // создаем ссылку на предыдущую страницу, если она есть
+            if (PageModel.HasPreviousPage)
+            {
+                TagBuilder prevItem = CreateTag(PageModel.PageNumber - 1, urlHelper);
+                tag.InnerHtml.AppendHtml(prevItem);
+            }
+ 
+            tag.InnerHtml.AppendHtml(currentItem);
+            // создаем ссылку на следующую страницу, если она есть
+            if (PageModel.HasNextPage)
+            {
+                TagBuilder nextItem = CreateTag(PageModel.PageNumber + 1, urlHelper);
+                tag.InnerHtml.AppendHtml(nextItem);
+            }
+            output.Content.AppendHtml(tag);
+        }
+ 
+        TagBuilder CreateTag(int pageNumber, IUrlHelper urlHelper)
+        {
+            TagBuilder item = new TagBuilder("li");
+            TagBuilder link = new TagBuilder("a");
+            if (pageNumber == PageModel?.PageNumber)
+            {
+                item.AddCssClass("active");
+            }
+            else
+            {
+                PageUrlValues["page"] = pageNumber;
+                link.Attributes["href"] = urlHelper.Action(PageAction, PageUrlValues);
+            }
+            item.AddCssClass("page-item");
+            link.AddCssClass("page-link");
+            link.InnerHtml.Append(pageNumber.ToString());
+            item.InnerHtml.AppendHtml(link);
+            return item;
+        }
+    }
+} 
+```
+    
+    
