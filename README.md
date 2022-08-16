@@ -1546,13 +1546,15 @@ namespace MobileStore.Models
   },
   "Logging": {
     "LogLevel": {
-      "Default": "Information",
+      "Default": "None",
       "Microsoft": "Warning",
-      "Microsoft.Hosting.Lifetime": "Information"
+      "Microsoft.Hosting.Lifetime": "Information",
+      "Microsoft.EntityFrameworkCore": "Information"
     }
   },
   "AllowedHosts": "*"
 }
+
 
 ```
 
