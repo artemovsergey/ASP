@@ -131,9 +131,9 @@ public class AppTimeService { };
 
 ---
 
-```dotnet new mvc --output TestMVC```
+### Команды
 
-### Установить CLI-инструмент Scaffolding
+```dotnet new mvc --output TestMVC```
 
 ```dotnet tool install -g dotnet-aspnet-codegenerator```
 
@@ -147,20 +147,25 @@ public class AppTimeService { };
 
 ```dotnet add package Microsoft.EntityFrameworkCore.SqlServer```
 
-### Создать модель
-
 ```Csharp
-namespace TestMVC.Models
-{
-    public class Beer{
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int Rating { get; set; }
-    }
-}
+dotnet aspnet-codegenerator controller --controllerName Home --model Beer --dataContext BeerContext --useDefaultLayout -outDir Controllers -f --useSqlite
 ```
 
-### Создание контекста BeerContext c EntityFrameworkCore
+```dotnet ef database drop --force```
+
+```dotnet ef migrations add InitialCreate```
+
+**Замечание:** возможно надо перезапустить Visual Studio
+
+**Замечание**: --project Name, если несколько проектов. Помогает также очистка и пересборка решения.
+
+```dotnet ef database update```
+
+**Замечание**: --connection "Data Source=My.db"
+
+
+
+### Context for SQLite
 
 ```Csharp
 using Microsoft.EntityFrameworkCore;
@@ -178,34 +183,6 @@ namespace TestMVC.Data
 }
 ```
 
-### Добавить службу контекста
-
-```Csharp
-builder.Services.AddDbContext<BeerContext>();
-```
-### Сделать скаффолдинг
-
-```Csharp
-dotnet aspnet-codegenerator controller --controllerName Home --model Beer --dataContext BeerContext --useDefaultLayout -outDir Controllers -f --useSqlite
-```
-
-### Выполнить миграции в базу данных
-
-```dotnet ef database drop --force```
-
-```dotnet ef migrations add InitialCreate```
-**Замечание:** возможно надо перезапустить Visual Studio
-
-**Замечание**: --project Name, если несколько проектов. Помогает также очистка и пересборка решения.
-
-```dotnet ef database update```
-
-**Замечание**: --connection "Data Source=My.db"
-
-```dotnet run```
-
-
-**Замечание**: это можно только для тренировки.
 
 ---
 
