@@ -191,9 +191,12 @@ dotnet aspnet-codegenerator controller --controllerName Home --model Beer --data
 
 ### Выполнить миграции в базу данных
 
-```dotnet ef migrations add InitialCreate```
+```dotnet ef database drop --force```
 
-**Замечание**: --project Name, если несколько проекто. Помогает также очистка и пересборка решения.
+```dotnet ef migrations add InitialCreate```
+**Замечание:** возможно надо перезапустить Visual Studio
+
+**Замечание**: --project Name, если несколько проектов. Помогает также очистка и пересборка решения.
 
 ```dotnet ef database update```
 
