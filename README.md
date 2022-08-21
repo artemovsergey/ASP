@@ -11,10 +11,13 @@
 
 ```csharp
 
+using SportStore.Models;
+using SportStore.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
-using TestASP.Models;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,8 +43,12 @@ builder.Services.AddMvc();
 //builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
 
 // Подключение базы данных SQL Server
-string connection = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<TestStoreContext>(options => options.UseSqlServer(connection));
+string connection = builder.Configuration.GetConnectionString("PostgreSQL");
+//builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
+builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(connection));
+//builder.Services.AddDbContext<DataContext>(options => options.UseMySql(connection, new MySqlServerVersion(new Version(8, 0, 30))));
+//builder.Services.AddDbContext<DataContext>(options => options.UseSqlite(connection));
+
 
 
 // Это значит совместное использоване объекта класса AppTimeService во всем приложении.
@@ -59,6 +66,11 @@ builder.Services.AddSession();
 // Сервисы, это любой функционал, который мы хотим зарегистрировать, чтобы другие части приложения, могли его использовать (эл почта, бд…).
 
 // Configure the HTTP request pipeline.
+
+
+builder.Services.AddTransient<IRepository,DataRepository>(); // одие раз создается одиночный объект для всего приложенияы
+builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
+builder.Services.AddTransient<IOrderRepository, OrderRepository>();
 
 var app = builder.Build();
 
@@ -90,36 +102,13 @@ app.MapControllerRoute(
 // тоже самое
 //app.MapDefaultControllerRoute();
 
-IHostEnvironment? env = app.Services.GetService<IHostEnvironment>();
-if (env != null)
-{
-    // добавляем поддержку каталога node_modules
-    app.UseFileServer(new FileServerOptions()
-    {
-        FileProvider = new PhysicalFileProvider(
-            Path.Combine(env.ContentRootPath, "node_modules")
-        ),
-        RequestPath = "/node_modules",
-        EnableDirectoryBrowsing = false
-    });
-}
-
-/*
- Последний вызов app.UseFileServer() позволит сопоставлять 
-все запросы с "/node_modules" с каталогом "node_modules".
-
-В реальности, конечно, в большинстве случаев для библиотек из node_modules 
-используют минификацию/бандлинг с помощью BundleConfig из первой 
-темы этой главы с последующим копированием в папку wwwroot, 
-поэтому не придется прибегать к проекции запросов на каталог node_modules. 
-Но тем не менее так мы тоже можем обращаться к файлам в каталоге node_modules.
-
- */
 
 app.Run();
 //
 
 public class AppTimeService { };
+
+
 
 
 ```
