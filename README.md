@@ -107,13 +107,43 @@ app.Run();
 //
 
 public class AppTimeService { };
+```
+
+---
+
+### appsettings.json
+
+По умолчанию у нас база данных отсутствуют. Поэтому в конструктор MobileContext определен вызов Database.EnsureCreated(), который при отсутствии базы данных автоматически создает ее. Если база данных уже есть, то ничего не происходит.
+Чтобы подключаться к базе данных, нам надо задать параметры подключения. Для этого изменим файл appsettings.json. По умолчанию он содержит только настройки логгирования:
+
+```JSON
+
+{
+  "ConnectionStrings": {
 
 
+
+    "MSSQL": "Server=WIN-PO9SVP3KRMT\\MSSQLSERVER01;Database=SportStore;Trusted_Connection=True;MultipleActiveResultSets=true",
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=SportStore;Trusted_Connection=True;MultipleActiveResultSets=true",
+    "PostgreSQL": "Host=localhost;Port=5432;Database=SportStore;Username=postgres;Password=root",
+    "MySQL": "server=localhost;user=root;password=root;database=SportStore;",
+    "SQLite": "Data Source=SportStore.db"
+
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "None",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "Microsoft.EntityFrameworkCore": "Information"
+    }
+  },
+  "AllowedHosts": "*"
+}
 
 
 ```
 
----
 
 ### Команды
 
@@ -873,30 +903,7 @@ namespace MobileStore.Models
 }
 ```
 
-### appsettings.json
 
-По умолчанию у нас база данных отсутствуют. Поэтому в конструктор MobileContext определен вызов Database.EnsureCreated(), который при отсутствии базы данных автоматически создает ее. Если база данных уже есть, то ничего не происходит.
-Чтобы подключаться к базе данных, нам надо задать параметры подключения. Для этого изменим файл appsettings.json. По умолчанию он содержит только настройки логгирования:
-
-```JSON
-
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=mobilestore;Trusted_Connection=True;MultipleActiveResultSets=true"
-  },
-  "Logging": {
-    "LogLevel": {
-      "Default": "None",
-      "Microsoft": "Warning",
-      "Microsoft.Hosting.Lifetime": "Information",
-      "Microsoft.EntityFrameworkCore": "Information"
-    }
-  },
-  "AllowedHosts": "*"
-}
-
-
-```
 
 
 
