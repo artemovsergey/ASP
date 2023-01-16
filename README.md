@@ -1,6 +1,6 @@
 # ASP.Net Core
 
-## Tехнологии
+## Версия
 
 ### ASP.Net Core 6
 ### EntityFrameworkCore (6.0.7)
