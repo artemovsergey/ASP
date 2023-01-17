@@ -20,7 +20,7 @@ dotnet aspnet-codegenerator controller --controllerName ProductController --mode
 
 ```cmd
 dotnet ef migrations add Initial
-dotnet ef migrations add Initial
+dotnet ef database update
 ```
   
 2. Развернуть на VPS Ubuntu
