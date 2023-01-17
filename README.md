@@ -12,6 +12,10 @@
 
 - Применить скаффолд
 
+```cmd
+dotnet aspnet-codegenerator controller --controllerName ProductController --model Product  --dataContext ProductContext --useDefaultLayout -outDir Controllers
+```
+
 - Применить миграции
   
 2. Развернуть на VPS Ubuntu
