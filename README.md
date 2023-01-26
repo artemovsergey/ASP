@@ -5,6 +5,24 @@
 ### ASP.Net Core 6
 ### EntityFrameworkCore (6.0.7)
 
+
+---
+
+## Post
+```cmd
+Invoke-RestMethod https://localhost:7091/api/products -Method Post -Body (@{Name="1";Description="1";PurchasePrice=1;RetailPrice=1;CategoryId=141}    | ConvertTo-Json) -ContentType "application/json"
+```
+## Put
+```cmd
+Invoke-RestMethod https://localhost:7091/api/products -Method Put -Body (@{Id=1425;Name="1";Description="1";PurchasePrice=3;RetailPrice=1;CategoryId=141}    | ConvertTo-Json) -ContentType "application/json"
+```
+
+## Delete
+``cmd
+Invoke-RestMethod https://localhost:7091/api/products/1425 -Method delete
+```
+
+
 ---
 **Заметка**. Интерфейс определяет свойства и методы, предназначенные для доступа к данным, а для работы с механихзмом хранения данных применяется класс реализации. Это про паттерн ```Repository```
 
