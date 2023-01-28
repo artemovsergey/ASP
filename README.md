@@ -37,6 +37,9 @@ sudo apt-get update && \
 
 ``dotnet run```
 
+7. Установка базы данных SQL Server.
+**Замечание**. Ubuntu 22.04 не работает пока с SQL Server 2019 >
+
 
 ---
 
