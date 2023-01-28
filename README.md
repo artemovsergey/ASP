@@ -6,7 +6,7 @@
 ### EntityFrameworkCore (6.0.7)
 
 
-# Развертывание приложения ASP Core на Ubuntu 20.04
+# Развертывание приложения ASP Core на Ubuntu 22.04
 
 **Замечание**: MS SQL требует минимум 2GB свободной оперативной памяти для установки и запуска.
 
@@ -23,8 +23,14 @@ rm packages-microsoft-prod.deb
 sudo apt-get update && \
   sudo apt-get install -y dotnet-sdk-7.0
 ```
+5. Возможно, нужна библиотека
+```cmd
+sudo apt install apt-transport-https
 
-
+sudo apt-get update && \
+  sudo apt-get install -y aspnetcore-runtime-7.0
+```
+**Замечание**: если будет ошибка, то поменять ```aspnetcore-runtime``` на ```dotnet-runtime```
 
 ---
 
