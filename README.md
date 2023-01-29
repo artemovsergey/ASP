@@ -75,13 +75,17 @@ sudo -u mssql /opt/mssql/bin/sqlservr -c \
 
 
 
-8. Установка ```PostgreSQL``` на Ubuntu 20.04
+8. ## Установка ```PostgreSQL``` на Ubuntu 20.04
 
 ```sudo apt update```
 
 ```sudo apt install postgresql postgresql-contrib```
 
 ```sudo -i -u postgres```
+
+Запуск сервиса ```postgresql```
+
+```sudo service postgresql start```
 
 ```psql```
 
