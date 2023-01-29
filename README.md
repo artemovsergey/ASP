@@ -41,6 +41,8 @@
 ssh -p 2022 iof@localhost
 ```
 
+
+
 # Развертывание приложения ASP Core на Ubuntu 22.04
 
 **Замечание**: MS SQL требует минимум 2GB свободной оперативной памяти для установки и запуска.
@@ -127,8 +129,17 @@ sudo -u mssql /opt/mssql/bin/sqlservr -c \
 
 https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart-ru
 
-
 ---
+
+## Настройка применения миграций при публикации приложения
+
+https://stackoverflow.com/questions/37562122/is-there-a-way-to-run-ef-core-rc2-tools-from-published-dll/59269689#59269689
+
+Простой способ 
+
+```Csharp
+context.Database.Migrate();
+```
 
 ## Post
 ```cmd
