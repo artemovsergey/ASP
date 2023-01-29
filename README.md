@@ -20,15 +20,15 @@ rm packages-microsoft-prod.deb
 ```
 4. Установите SDK
 ```cmd
-sudo apt-get update && \
-  sudo apt-get install -y dotnet-sdk-7.0
+sudo apt update && \
+  sudo apt install -y dotnet-sdk-7.0
 ```
 5. Возможно, нужна библиотека
 ```cmd
 sudo apt install apt-transport-https
 
-sudo apt-get update && \
-  sudo apt-get install -y aspnetcore-runtime-7.0
+sudo apt update && \
+  sudo apt install -y aspnetcore-runtime-7.0
 ```
 **Замечание**: если будет ошибка, то поменять ```aspnetcore-runtime``` на ```dotnet-runtime```
 6. Можно протестить без базы данных и веб-сервера ```nginx```, создать в домашней директории папку ```app``` в ней создать 
