@@ -11,7 +11,7 @@
 **Замечание**: MS SQL требует минимум 2GB свободной оперативной памяти для установки и запуска.
 
 1. В Visual Studio опубликоватьь проект ASP в ```Release``` (учитывать версию сервера Ubuntu и dotnet sdk)
-2. Установить в ``Ubuntu 22.04``` в WSL
+2. Установить в ```Ubuntu 22.04``` в WSL
 3. Перед установкой .NET выполните следующие команды, чтобы добавить ключ подписи пакета Microsoft в список доверенных ключей и добавить репозиторий пакетов.
 ```cmd
 wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
