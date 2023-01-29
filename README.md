@@ -38,7 +38,22 @@ sudo apt update && \
 ```dotnet run```
 
 7. Установка базы данных SQL Server.
-**Замечание**. Ubuntu 22.04 не работает пока с SQL Server 2019 >
+
+**Замечание**. Ubuntu 22.04 не работает пока с SQL Server 2019
+
+На wsl устанавливается через настройку ручного запуска сервиса
+
+8. Установка ```PostgreSQL``` на Ubuntu 20.04
+
+```sudo apt update```
+
+```sudo apt install postgresql postgresql-contrib```
+
+```sudo -i -u postgres```
+
+```psql```
+
+https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart-ru
 
 
 ---
