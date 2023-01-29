@@ -1,10 +1,45 @@
-# ASP.Net Core
+# ASP Core
 
 ## Версия
 
-### ASP.Net Core 6
-### EntityFrameworkCore (6.0.7)
+### ASP.Net Core 6,7
 
+### Подключение по ssh к WSL Ubuntu
+
+```sudo apt remove openssh-server```
+
+```sudo apt install openssh-server```
+
+```sudo nano /etc/ssh/sshd_config```
+
+Настройка
+
+```PasswordAuthentication   yes```
+```ChallengeResponseAuthentication no```
+```AllowUsers <your_username>```
+```PermitRootLogin yes``` для root
+
+
+```sudo service ssh restart```
+
+```sudo service ssh status```
+
+```sudo service ssh --full-restart```
+
+```sudo ssh -i key.pem ubuntu@<remote_host_ip>```
+
+порт переопределяем для WSL не 22, а 2022
+Проверить работу сервиса ssh на wsl
+
+Можно ```FileZilla``` проверить по протоколу SFTP подключиться к удаленному серверу Ubuntu
+
+Настройка пароля root
+
+```sudo passwd root```
+
+```
+ssh -p 2022 iof@localhost
+```
 
 # Развертывание приложения ASP Core на Ubuntu 22.04
 
@@ -31,6 +66,7 @@ sudo apt update && \
   sudo apt install -y aspnetcore-runtime-7.0
 ```
 **Замечание**: если будет ошибка, то поменять ```aspnetcore-runtime``` на ```dotnet-runtime```
+
 6. Можно протестить без базы данных и веб-сервера ```nginx```, создать в домашней директории папку ```app``` в ней создать 
 
 ```dotnet new mvc```
