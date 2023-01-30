@@ -1,5 +1,57 @@
 # ASP Core
 
+---
+# Теория
+
+**Интерфейс** определяет свойства и методы, предназначенные для доступа к данным, а для работы с механихзмом хранения данных применяется **класс реализации**. Это паттерн ```Repository```
+
+---
+
+# План обучения
+
+1. Добавить базу данных Postgre, MySQL, SQLite, удаленную базу данных в облаке, Redis, Mongodb
+
+1.1 Развернуть на VPS Ubuntu
+
+1.2 Развернуть на VPS через docker
+
+1.3 Настроить CI/CD c тестированием
+
+- Применить механизм генерации тестовых данных
+
+2. Настроить связи межуд таблицами. Минимум 5 штук
+
+3. В репозитории проекта описать UML
+
+4. В архитектуру проекта добавить интерфейсы
+
+5. На VPS применить домен и SSL сертификат
+
+6. Применить задачи RabbitMQ
+
+7. Применить кеширование
+
+8. Подключить новый API к проекту
+
+9. Фронт React, Angular, Vue
+
+10. Сделать микросервисную архитектуру
+
+11. Применить kubernetes
+
+12. Тестирование API
+
+13. Автоматизированное тестирование Selenium
+
+14. Написание ручных тестов UI
+
+15. Подключить клиент WPF
+
+16. Подключить мобильный клиент 
+
+---
+
+
 # Подключение по ssh к WSL Ubuntu
 
 ```sudo apt remove openssh-server```
@@ -36,8 +88,6 @@
 
 
 # Развертывание приложения ASP Core на Ubuntu 22.04
-
-**Замечание**: MS SQL требует минимум 2GB свободной оперативной памяти для установки и запуска.
 
 1. В Visual Studio опубликоватьь проект ASP в ```Release``` (учитывать версию сервера Ubuntu и dotnet sdk)
 2. Установить в ```Ubuntu 22.04``` в WSL
@@ -133,90 +183,23 @@ https://stackoverflow.com/questions/37562122/is-there-a-way-to-run-ef-core-rc2-t
 context.Database.Migrate();
 ```
 
-## Post
+
+## Тестирование API контроллера c помощью ```PowerShell```
+
+### Post
 ```cmd
 Invoke-RestMethod https://localhost:7091/api/products -Method Post -Body (@{Name="1";Description="1";PurchasePrice=1;RetailPrice=1;CategoryId=141}    | ConvertTo-Json) -ContentType "application/json"
 ```
-## Put
+### Put
 ```cmd
 Invoke-RestMethod https://localhost:7091/api/products -Method Put -Body (@{Id=1425;Name="1";Description="1";PurchasePrice=3;RetailPrice=1;CategoryId=141}    | ConvertTo-Json) -ContentType "application/json"
 ```
 
-## Delete
+### Delete
 ``cmd
 Invoke-RestMethod https://localhost:7091/api/products/1425 -Method delete
 ```
-
-
 ---
-**Заметка**. Интерфейс определяет свойства и методы, предназначенные для доступа к данным, а для работы с механихзмом хранения данных применяется класс реализации. Это про паттерн ```Repository```
-
----
-
-
----
-
-
-
-# План работы
-
-1. Написать CRUD c базой данных SQL Server и на фронт bootstrap
-
-- Применить скаффолд
-
-```cmd
-dotnet aspnet-codegenerator controller --controllerName ProductController --model Product  --dataContext ProductContext --useDefaultLayout -outDir Controllers
-```
-
-- Применить миграции
-
-```cmd
-dotnet ef migrations add Initial
-dotnet ef database update
-```
-  
-2. Развернуть на VPS Ubuntu
-
-3. Развернуть на VPS через docker
-
-4. Настроить CI/CD c тестированием
-
-# Обновление
-
-1. Добавить базу данных Postgre, MySQL, SQLite, удаленную базу данных в облаке, Redis, Mongodb
-
-- Применить механизм генерации тестовых данных
-
-2. Настроить связи межуд таблицами. Минимум 5 штук
-
-3. В репозитории проекта описать UML
-
-4. В архитектуру проекта добавить интерфейсы
-
-5. На VPS применить домен и SSL сертификат
-
-6. Применить задачи RabbitMQ
-
-7. Применить кеширование
-
-8. Подключить новый API к проекту
-
-9. Фронт React, Angular, Vue
-
-10. Сделать микросервисную архитектуру
-
-11. Применить kubernetes
-
-12. Тестирование API
-
-13. Автоматизированное тестирование Selenium
-
-14. Написание ручных тестов UI
-
-15. Подключить клиент WPF
-
-16. Подключить мобильный клиент 
-
 
 ## Program.cs
 
