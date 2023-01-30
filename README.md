@@ -186,6 +186,30 @@ builder.Services.AddDbContext<DataContext>(options => options.UseMySQL(connectio
 
 ```dotnet-ef database update```
 
+```sudo apt update```
+
+```sudo apt install mysql-server```
+
+```sudo service mysql start```
+
+Конфигурация сервера ```MySQl```
+
+```sudo mysql```
+```ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';```
+
+https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-22-04
+
+Автоматические миграции
+
+```Csharp
+        public ProductController(DataContext context)
+        {
+            _context = context;
+            _context.Database.Migrate();
+        }
+```
+
+
 
 ## Настройка применения миграций при публикации приложения
 
@@ -196,6 +220,10 @@ https://stackoverflow.com/questions/37562122/is-there-a-way-to-run-ef-core-rc2-t
 ```Csharp
 context.Database.Migrate();
 ```
+Права при публикации
+
+```sudo chmod 777 -R AspMySqlTest```
+
 
 
 ## Тестирование API контроллера c помощью ```PowerShell```
