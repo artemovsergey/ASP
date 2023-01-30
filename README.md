@@ -1,10 +1,6 @@
 # ASP Core
 
-## Версия
-
-### ASP.Net Core 6,7
-
-### Подключение по ssh к WSL Ubuntu
+# Подключение по ssh к WSL Ubuntu
 
 ```sudo apt remove openssh-server```
 
@@ -26,21 +22,17 @@
 
 ```sudo service ssh --full-restart```
 
+Пример подключение
+
 ```sudo ssh -i key.pem ubuntu@<remote_host_ip>```
 
-порт переопределяем для WSL не 22, а 2022
-Проверить работу сервиса ssh на wsl
+**Замечание:**
 
-Можно ```FileZilla``` проверить по протоколу SFTP подключиться к удаленному серверу Ubuntu
+- порт ssh, по умрочанию 22, может переопределен для WSL, например, не 22, а 2022: ```ssh -p 2022 iof@localhost```
 
-Настройка пароля root
+- проверить, что сервис ssh работает на wsl
 
-```sudo passwd root```
-
-```
-ssh -p 2022 iof@localhost
-```
-
+- можно ```FileZilla``` проверить по протоколу ```SFTP``` подключиться к удаленному серверу ```Ubuntu```
 
 
 # Развертывание приложения ASP Core на Ubuntu 22.04
