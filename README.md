@@ -173,6 +173,20 @@ https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ub
 
 ---
 
+## Установка ```MySQL``
+
+```dotnet add package MySql.EntityFrameworkCore --version 7.0.0```
+
+```Csharp
+// Подключение базы данных MySQL 
+string connection = builder.Configuration.GetConnectionString("MySQL");
+builder.Services.AddDbContext<DataContext>(options => options.UseMySQL(connection));
+```
+```dotnet-ef migrations add Initial```
+
+```dotnet-ef database update```
+
+
 ## Настройка применения миграций при публикации приложения
 
 https://stackoverflow.com/questions/37562122/is-there-a-way-to-run-ef-core-rc2-tools-from-published-dll/59269689#59269689
