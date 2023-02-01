@@ -240,7 +240,7 @@ Invoke-RestMethod https://localhost:7091/api/products -Method Put -Body (@{Id=14
 ```
 
 ### Delete
-``cmd
+```cmd
 Invoke-RestMethod https://localhost:7091/api/products/1425 -Method delete
 ```
 ---
