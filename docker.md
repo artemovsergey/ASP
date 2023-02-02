@@ -1,3 +1,26 @@
+## Установка docker на Ubuntu 22.04
+
+```
+https://docs.docker.com/language/dotnet/develop/
+```
+
+
+## Установка docker-compose в WSL2
+```
+sudo curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+```
+
+## Добавление пользователя в sudo группу в Ubuntu
+
+```
+usermod -aG sudo newuser
+groups newuser
+su - newuser
+```
+
+
 
 # Решение проблемы запуска docker в WSL
 
