@@ -91,16 +91,16 @@ services:
 # Команды
 
 ### Собрать образ
-```docker build -t test-image .```
+```docker build --tag imagename .```
 
 ### Поднять образ
-```docker run test-image```
+```docker run imagename```
 
 ### Собрать композицию образов
 ```docker-compose build``` 
 
-### Поднять композицию образов
-```docker-compose up -d```
+### Поднять композицию образов c пересборкой
+```docker-compose up -d --build```
 
 ## ASP Core + Postgres + Adminer
 ```
