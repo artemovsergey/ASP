@@ -211,6 +211,10 @@ https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-
         }
 ```
 
+## Установка git
+
+```sudo apt update```
+```sudo apt install git```
 
 
 ## Настройка применения миграций при публикации приложения
