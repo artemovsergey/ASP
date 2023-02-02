@@ -129,3 +129,9 @@ volumes:
 
 ```
 
+## Строка подключения appsettings.json
+
+```
+ "PostgreSQL": "Host=db;Port=5432;Database=postgres;Username=postgres;Password=postgres",
+```
+
