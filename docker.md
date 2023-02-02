@@ -104,28 +104,36 @@ services:
 
 ## ASP Core + Postgres + Adminer
 ```
+version: '2'
+
 services:
- db:
-   image: postgres
-   restart: always
-   environment:
-     POSTGRES_PASSWORD: example
-   volumes:
-     - postgres-data:/var/lib/postgresql/data
- adminer:
-   image: adminer
-   restart: always
-   ports:
-     - 8080:8080
- app:
-   build:
-     context: .
-   ports:
-     - 5000:80
-   depends_on:
-     - db
+
+  asp:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+       - 3000:80
+    depends_on:
+      - db
+
+  db:
+      image: postgres:13.0
+      restart: always
+      ports:
+        - 5432:5432
+      volumes:
+        - postgres-data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+      
 volumes:
- postgres-data:
+  postgres-data:
+
 
 ```
 
