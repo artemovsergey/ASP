@@ -1,5 +1,6 @@
 ## Установка docker на Ubuntu 22.04
 
+### Хороший мануал. Прочитать
 ```
 https://docs.docker.com/language/dotnet/develop/
 ```
@@ -101,5 +102,30 @@ services:
 ### Поднять композицию образов
 ```docker-compose up -d```
 
+## ASP Core + Postgres + Adminer
+```
+services:
+ db:
+   image: postgres
+   restart: always
+   environment:
+     POSTGRES_PASSWORD: example
+   volumes:
+     - postgres-data:/var/lib/postgresql/data
+ adminer:
+   image: adminer
+   restart: always
+   ports:
+     - 8080:8080
+ app:
+   build:
+     context: .
+   ports:
+     - 5000:80
+   depends_on:
+     - db
+volumes:
+ postgres-data:
 
+```
 
