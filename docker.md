@@ -5,6 +5,13 @@
 https://docs.docker.com/language/dotnet/develop/
 ```
 
+### Переключение docker между Windows и Linux
+
+Если полетел docker на WSL2 после запуска на Windows
+
+В файле ```~/.docker/config.json``` будет "currentContext": "some-name"строчка. Вы можете удалить эту строку, чтобы вернуться к контексту по умолчанию. Если это последняя строка, обязательно удалите запятую в предыдущей строке, чтобы сохранить json действительным.
+
+
 
 ## Установка docker-compose в WSL2
 ```
