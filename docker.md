@@ -161,3 +161,44 @@ volumes:
  "PostgreSQL": "Host=db;Port=5432;Database=postgres;Username=postgres;Password=postgres",
 ```
 
+---
+
+## Dockerfile для WEB API ASP Core
+
+```
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+WORKDIR /src
+COPY ["WebApiTestLinux.csproj", "."]
+RUN dotnet restore "WebApiTestLinux.csproj"
+COPY . .
+RUN dotnet build "WebApiTestLinux.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "WebApiTestLinux.csproj" -c Release -o /app/publish /p:UseAppHost=false
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "WebApiTestLinux.dll"]
+```
+
+## Docker-compose for WEB API ASP Core
+
+```yml
+version: '3.4'
+
+services:
+  webapitestlinux:
+    build:
+      context: .
+      dockerfile: WebApiTestLinux/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5000:80" 
+```
+
