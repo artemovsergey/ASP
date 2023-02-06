@@ -129,7 +129,7 @@ https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ub
 
 ---
 
-# Установка ```MySQL``
+# Установка MySQL
 
 ```dotnet add package MySql.EntityFrameworkCore --version 7.0.0```
 
