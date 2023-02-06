@@ -1,3 +1,63 @@
+# Начало работы
+```cmd
+sudo dotnet new webapi -n webapitest
+sudo chmode 777 -R webapitest
+sudo chmod 777 -R /tmp
+dotnet run
+code . -r
+```
+
+# Node. Установка или обновление node.js на Ubuntu 22.04
+```cmd
+curl -sL https://deb.nodesource.com/setup_18.x | sudo bash -
+sudo apt remove libnode-dev
+sudo apt remove libnode72:amd64
+sudo apt install nodejs
+node -v
+npm -v
+
+powershell: wsl --shutdown
+```
+
+# React
+```cmd
+sudo npx create-react-app my-app
+sudo chmod -R 777 my-app/
+npm start
+```
+
+```docker
+FROM node:15.13-alpine 
+WORKDIR /app 
+COPY . . 
+RUN  npm run build 
+CMD ["npm","start"]
+```
+```cmd
+docker build --tag client .
+docker run -d --rm -p 5000:3000 client
+```
+
+```yml
+version: '2' 
+services: 
+  backend: 
+    restart: always 
+    build: 
+      context: . 
+      dockerfile: dockerfile 
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=Development 
+    ports: 
+      - "5000:80" 
+  client: 
+    image: client 
+    ports: 
+      - "5001:3000"
+```
+
+
+
 # Теория
 ## Применение
 
