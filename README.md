@@ -111,7 +111,7 @@ sudo -u mssql /opt/mssql/bin/sqlservr -c \
     -x
 ```
 
-8. ## Установка ```PostgreSQL``` на Ubuntu 20.04
+8. Установка ```PostgreSQL``` на Ubuntu 20.04
 
 ```sudo apt update```
 
@@ -129,7 +129,7 @@ https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ub
 
 ---
 
-## Установка ```MySQL``
+# Установка ```MySQL``
 
 ```dotnet add package MySql.EntityFrameworkCore --version 7.0.0```
 
@@ -165,13 +165,13 @@ https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-
         }
 ```
 
-## Установка git
+# Установка git
 
 ```sudo apt update```
 ```sudo apt install git```
 
 
-## Настройка применения миграций при публикации приложения
+# Настройка применения миграций при публикации приложения
 
 https://stackoverflow.com/questions/37562122/is-there-a-way-to-run-ef-core-rc2-tools-from-published-dll/59269689#59269689
 
