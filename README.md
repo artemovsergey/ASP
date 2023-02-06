@@ -334,21 +334,34 @@ public class AppTimeService { };
 # Команды
 
 ```dotnet new mvc --output TestMVC```
+
 ```dotnet tool install -g dotnet-aspnet-codegenerator```
+
 ```dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design```
+
 ```dotnet add package Microsoft.EntityFrameworkCore.Design```
+
 ```dotnet tool install --global dotnet-ef```
+
 ```dotnet add package Microsoft.EntityFrameworkCore.SQLite```
+
 ```dotnet add package Microsoft.EntityFrameworkCore.SqlServer```
+
 ```dotnet aspnet-codegenerator controller --controllerName Home --model Beer --dataContext BeerContext --useDefaultLayout -outDir Controllers -f --useSqlite```
+
 ```dotnet ef database drop --force```
+
 ```dotnet ef migrations add InitialCreate```
 
 **Замечание:** возможно надо перезапустить Visual Studio
+
 **Замечание**: --project Name, если несколько проектов. Помогает также очистка и пересборка решения.
 ```dotnet ef database update```
+
 **Замечание**: --connection "Data Source=My.db"
----
+
+
+
 
 # Context for SQLite
 ```Csharp
