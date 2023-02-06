@@ -343,6 +343,7 @@ public class AppTimeService { };
 ```dotnet aspnet-codegenerator controller --controllerName Home --model Beer --dataContext BeerContext --useDefaultLayout -outDir Controllers -f --useSqlite```
 ```dotnet ef database drop --force```
 ```dotnet ef migrations add InitialCreate```
+
 **Замечание:** возможно надо перезапустить Visual Studio
 **Замечание**: --project Name, если несколько проектов. Помогает также очистка и пересборка решения.
 ```dotnet ef database update```
