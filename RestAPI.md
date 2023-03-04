@@ -40,7 +40,7 @@ app.Run();
 
 ```
 
-# ReestAPI контроллер для модели User
+# RestAPI контроллер для модели User
 
 ```Csharp
 using Microsoft.AspNetCore.Mvc;
