@@ -211,5 +211,26 @@ namespace WebAPILearning.Data
 
 ```
 
+# Autogeneration API Controller with EF
+
+1. Visual Studio from Solution Explorer
+2. ```dotnet aspnet-codegenerator controller --controllerName Home --model Beer --dataContext BeerContext --useDefaultLayout -outDir Controllers -f --useSqlite```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
