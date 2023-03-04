@@ -1,59 +1,46 @@
 ## Program.cs для API
 
 ```Csharp
-using WebAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.InMemory;
+using WebAPILearning.Data;
+
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
 
 /*
- 
+ * 
 В ASP.NET Core службы (такие как контекст базы данных) должны быть зарегистрированы с помощью 
 контейнера внедрения зависимостей. Контейнер предоставляет службу контроллерам.
-
+ 
  */
 
-string connection = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(connection));
+string connection = builder.Configuration.GetConnectionString("PostgreSQL");
+builder.Services.AddDbContext<UserContext>(options => options.UseNpgsql(connection));
 
 //builder.Services.AddDbContext<UserContext>(opt =>opt.UseInMemoryDatabase("UsersDatabase"));
 // Добавляет контекст базы данных в контейнер внедрения зависимостей.
 // Указывает, что контекст базы данных будет использовать базу данных в памяти.
 
 builder.Services.AddEndpointsApiExplorer();
-
-// тестирование api
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    
-    // тестирвоание api 
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
+
 
 ```
 
-### API контроллер для модели User
+# ReestAPI контроллер для модели User
 
 ```Csharp
 using Microsoft.AspNetCore.Mvc;
@@ -170,3 +157,59 @@ namespace WebAPI.Controllers
     }
 }
 ```
+
+# UserContext
+
+```Csharp
+using Microsoft.EntityFrameworkCore;
+using WebAPILearning.Models;
+
+namespace WebAPILearning.Data
+{
+    public class UserContext : DbContext
+    {
+        public UserContext()
+        {
+            Database.EnsureCreated();    
+        }
+
+        public UserContext(DbContextOptions<UserContext> options) : base(options)
+        {
+            Database.EnsureCreated();
+        }
+
+        public DbSet<User> Users { get; set; } 
+    }
+}
+
+```
+
+# appsettings.json
+
+```json
+{
+  "ConnectionStrings": {
+
+    "MSSQL": "Server=WIN-PO9SVP3KRMT\\MSSQLSERVER01;Database=SportStore;Trusted_Connection=True;MultipleActiveResultSets=true",
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=SportStore;Trusted_Connection=True;MultipleActiveResultSets=true",
+    "PostgreSQL": "Host=localhost;Port=5432;Database=SportStore1;Username=postgres;Password=root",
+    "MySQL": "server=localhost;user=root;password=root;database=SportStore;",
+    "SQLite": "Data Source=SportStore.db"
+
+  },
+
+  "Logging": {
+    "LogLevel": {
+      "Default": "None",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "Microsoft.EntityFrameworkCore": "Information"
+    }
+  },
+  "AllowedHosts": "*"
+}
+
+```
+
+
+
