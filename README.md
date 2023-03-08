@@ -1120,6 +1120,7 @@ public IActionResult Index()
 
 <footer>@RenderSection("Footer", false)</footer>
 
+    
 ```Второй``` вариант позволяет задать содержание секции по умолчанию, если данная секция не определена в представлении:
 
 ```html
