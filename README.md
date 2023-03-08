@@ -163,6 +163,11 @@ public class AppTimeService { };
 
 **Замечание**: --connection "Data Source=My.db"
 
+Установка доверия к сертификату разработки
+
+```csharp
+dotnet dev-certs https --trust
+```   
 
 
 
