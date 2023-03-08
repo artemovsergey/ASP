@@ -136,4 +136,63 @@ namespace MvcApp.TagHelpers
     }
 } 
 ```
+ # Пагинация
+# Viewmodel
     
+```Csharp
+  using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+
+
+namespace Learning.Models
+{
+    public class PageUsersModel
+    {
+
+        public IEnumerable<User> Users { get; set; }
+        public int PageNumber { get; }
+        public int TotalPages { get; }
+        public bool HasPreviousPage => PageNumber > 1;
+        public bool HasNextPage => PageNumber < TotalPages;
+
+    
+
+        public PageUsersModel(int count, int pageNumber, int pageSize)
+        {
+            PageNumber = pageNumber;
+            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+        }
+
+
+        
+
+    }
+}
+
+```
+    
+```Csharp
+    public async Task<IActionResult> PageUsers(int page = 1)
+    {
+
+        int pageSize = 3;   // количество элементов на странице
+
+        IQueryable<User> source = db.Users.Include(x => x.Company);
+
+        var count = await source.CountAsync();
+        var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+
+
+
+        PageUsersModel pageViewModel = new PageUsersModel(count, page, pageSize)
+        {
+            Users = items
+        };
+
+
+
+        return View(pageViewModel);
+    }
+```
+       
