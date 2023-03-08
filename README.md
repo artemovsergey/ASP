@@ -1537,43 +1537,6 @@ string name = р?.Name ?? "No name";
 
 Finally fixed it by turning off File > Settings > General > SSL Certificate Verification
 
-
-# Миграции
-
-```dotnet ef migrations add Itinial```
-
-```dotnet ef database update```
-
----
-    
-## dotnet cli
-
-    
-Веб-приложение
-```dotnet new webapp -o aspnetcoreapp```
-
-MVC
-```dotnet new mvc -o aspnetcoreapp```    
-    
-Все шаблоны
-```dotnet new --list```
-    
-Установка доверия к сертификату разработки
-```csharp
-dotnet dev-certs https --trust
-```    
-    
-```dotnet watch run```  
-    
- ```dotnet run```
-    
-```cmd
-dotnet new webapi -o TodoApi
-cd TodoApi
-dotnet add package Microsoft.EntityFrameworkCore.InMemory
-code -r ../TodoApi
-```
-
 # Компоненты представлений
 
 View Component или компонент представлений представляет код, который объединяет логику на языке C# и связанную с ней разметку razor и который решает какую-то определенную задачу, например, создание динамических меню, облако тегов, панель входа на сайт, корзина покупок и так далее.
@@ -1581,7 +1544,6 @@ View Component или компонент представлений предст
 View Component состоит из двух частей: класса на C# и частичного представления, которое вызывает методы этого класса. При этом View Component не может обрабатывать HTTP-запросы, а генерируемый им контент включается в код родительского представления, в котором вызывается компонент.
 
 View Component поддерживает внедрение зависимостей, поэтому в коде view component можно получить зависимости из провайдера сервисов. В то же время комопонент не является частью жизненного цикла контроллера, поэтому к нему нельзя применять фильтры.
-
 
 # Создание компоненты 
     
@@ -1615,7 +1577,6 @@ namespace UserApp.Components
 
 - Views/Shared/Components/Название_Компонента/Название_Представления.cshtml
     
-    
 ```Csharp
 @{
 
@@ -1644,8 +1605,7 @@ namespace UserApp.Components
 # Сортировка
 
  ```Csharp
- 
-    
+
 public enum SortState
 {
     NameAsc,    // по имени по возрастанию
