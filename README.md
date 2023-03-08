@@ -168,19 +168,24 @@ public class AppTimeService { };
 
 # Context for SQLite
 ```Csharp
-using Microsoft.EntityFrameworkCore;
-namespace TestMVC.Data
-{
-    public class BeerContext : DbContext
+ public class UserContext : DbContext
     {
-        public DbSet<TestMVC.Models.Beer> Beers { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+
+        public DbSet<User> Users { get; set; }
+
+        public UserContext(DbContextOptions<UserContext> options): base(options)
         {
-            //Don't hardcode like this in a real app:
-            optionsBuilder.UseSqlite("Data Source=beers.db");
+            Database.EnsureCreated();
         }
+
+
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    //Don't hardcode like this in a real app:
+        //    //optionsBuilder.UseSqlite("Data Source=beers.db");
+        //}
+
     }
-}
 ```
 # Модель
 # Валидация модели на стороне сервера
