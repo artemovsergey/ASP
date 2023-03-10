@@ -78,3 +78,38 @@ internal class Program
 
 }
 ```
+
+# Json
+
+```Csharp
+app.MapGet("/", () => new Person() { Id=1,Name="user1"}); // auto serialize to json
+```
+
+```Csharp
+app.MapGet("/{id?}", (int? id) =>
+{
+    if (id is null)
+        return Results.BadRequest(new { Message = "Некорректные данные в запросе" });
+    else if (id != 1)
+        return Results.NotFound(new { Message = $"Объект с id={id} не существует" });
+    else
+        return Results.Json(new Person() { Id=2,Name="user2"});
+});
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
