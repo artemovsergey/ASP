@@ -79,7 +79,7 @@ internal class Program
 }
 ```
 
-# Json
+# Json from Program.cs
 
 ```Csharp
 app.MapGet("/", () => new Person() { Id=1,Name="user1"}); // auto serialize to json
@@ -96,7 +96,33 @@ app.MapGet("/{id?}", (int? id) =>
         return Results.Json(new Person() { Id=2,Name="user2"});
 });
 ```
+# Json
 
+```Csharp
+
+        Console.WriteLine("------------------------------------------");
+
+        try
+        {
+            object? data = await httpClient.GetFromJsonAsync("https://localhost:7009/1", typeof(Person));
+            if (data is Person person)
+            {
+                Console.WriteLine($"Name: {person.Name} ");
+            }
+        }
+        catch(Exception ex) 
+        {
+           Console.WriteLine(ex.Message);
+        }
+
+        Console.WriteLine("------------------------------------------");
+        
+        HttpResponseMessage response2 = await httpClient.GetAsync("https://localhost:7009/1");
+        // если запрос завершился успешно, получаем объект Person
+        Person? person1 = await response2.Content.ReadFromJsonAsync<Person>();
+        Console.WriteLine($"Name: {person1?.Name}");
+        
+```
 
 
 
