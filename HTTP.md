@@ -236,17 +236,143 @@ public class Person
         
 ```
 
+# API Endpoint for User
 
+```Csharp
+int id = 1; // для генерации id объектов
+// начальные данные
+List<Person> users = new List<Person>
+{
+    new() { Id = id++, Name = "Tom", Age = 37 },
+    new() { Id = id++, Name = "Bob", Age = 41 },
+    new() { Id = id++, Name = "Sam", Age = 24 }
+};
+ 
+var builder = WebApplication.CreateBuilder();
+var app = builder.Build();
+ 
+app.MapGet("/api/users", () => users);
+ 
+app.MapGet("/api/users/{id}", (int id) =>
+{
+    // получаем пользователя по id
+    Person? user = users.FirstOrDefault(u => u.Id == id);
+    // если не найден, отправляем статусный код и сообщение об ошибке
+    if (user == null) return Results.NotFound(new { message = "Пользователь не найден" });
+ 
+    // если пользователь найден, отправляем его
+    return Results.Json(user);
+});
+ 
+app.MapDelete("/api/users/{id}", (int id) =>
+{
+    // получаем пользователя по id
+    Person? user = users.FirstOrDefault(u => u.Id == id);
+ 
+    // если не найден, отправляем статусный код и сообщение об ошибке
+    if (user == null) return Results.NotFound(new { message = "Пользователь не найден" });
+ 
+    // если пользователь найден, удаляем его
+    users.Remove(user);
+    return Results.Json(user);
+});
+ 
+app.MapPost("/api/users", (Person user) =>
+{
+ 
+    // устанавливаем id для нового пользователя
+    user.Id = id++;
+    // добавляем пользователя в список
+    users.Add(user);
+    return user;
+});
+ 
+app.MapPut("/api/users", (Person userData) =>
+{
+ 
+    // получаем пользователя по id
+    var user = users.FirstOrDefault(u => u.Id == userData.Id);
+    // если не найден, отправляем статусный код и сообщение об ошибке
+    if (user == null) return Results.NotFound(new { message = "Пользователь не найден" });
+    // если пользователь найден, изменяем его данные и отправляем обратно клиенту
+ 
+    user.Age = userData.Age;
+    user.Name = userData.Name;
+    return Results.Json(user);
+});
+ 
+app.Run();
+ 
+public class Person
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public int Age { get; set; }
+}
+```
 
+# Определение клиента на ASP Core
 
+## GET-запрос
 
+```Csharp
+    List<Person>? people = await httpClient.GetFromJsonAsync<List<Person>> ("https://localhost:7094/api/users");
+    if (people != null)
+    {
+        foreach (var person in people)
+        {
+            Console.WriteLine(person.Name);
+        }
+    }
+```
 
+## Получение одного объекта
 
+```Csharp
+int id = 1; // получаем объект с id=1
+Person? person = await httpClient.GetFromJsonAsync<Person>($"https://localhost:7094/api/users/{id}");
+```
 
+## Добавление данных
 
+```Csharp
+// отправляемый объект
+var mike = new Person { Name = "Mike", Age = 31 };
+using var response = await httpClient.PostAsJsonAsync("https://localhost:7094/api/users/", mike);
+// считываем ответ и десериализуем данные в объект Person
+Person? person = await response.Content.ReadFromJsonAsync<Person>();
+Console.WriteLine($"{person?.Id} - {person?.Name}");
+```
 
+## Изменение данных
 
+```Csharp
+// id изменяемого объекта
+int id = 1;
+// отправляемый объект
+var tom = new Person { Id = id, Name = "Tomas", Age = 38 };
+using var response = await httpClient.PutAsJsonAsync("https://localhost:7094/api/users/", tom);
+if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+{
+    // если возникла ошибка, считываем сообщение об ошибке
+    Error? error = await response.Content.ReadFromJsonAsync<Error>();
+    Console.WriteLine(error?.Message);
+}
+else if (response.StatusCode == System.Net.HttpStatusCode.OK)
+{
+    // десериализуем ответ в объект Person
+    Person? person = await response.Content.ReadFromJsonAsync<Person>();
+    Console.WriteLine($"{person?.Id} - {person?.Name} ({person?.Age})");
+}
+```
+## Удаление данных
 
+```Csharp
+// id удаляемого объекта
+int id = 1;
+Person? person = await httpClient.DeleteFromJsonAsync<Person>($"https://localhost:7094/api/users/{id}");
+Console.WriteLine($"{person?.Id} - {person?.Name} ({person?.Age})");
+```
 
 
 
