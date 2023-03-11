@@ -374,6 +374,24 @@ Person? person = await httpClient.DeleteFromJsonAsync<Person>($"https://localhos
 Console.WriteLine($"{person?.Id} - {person?.Name} ({person?.Age})");
 ```
 
+# Отправка форм и класс FormUrlEncodedContent
 
+https://metanit.com/sharp/net/2.8.php
+
+# Отправка потоков и массива байтов
+
+https://metanit.com/sharp/net/2.9.php
+
+# Отправка файлов и класс MultipartFormDataContent
+
+https://metanit.com/sharp/net/2.10.php
+
+# Отправка и получение куки с HttpClient
+
+https://metanit.com/sharp/net/2.12.php
+
+# HttpListener. HTTP-сервер
+
+https://metanit.com/sharp/net/7.1.php
 
 
