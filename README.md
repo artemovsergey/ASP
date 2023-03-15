@@ -3,6 +3,9 @@
 
 https://learn.microsoft.com/ru-ru/aspnet/core/?view=aspnetcore-7.0
 
+## Паттерны проектирования
+
+![](image/Patterns.png)
 
 # Теория
 **Интерфейс** определяет свойства и методы, предназначенные для доступа к данным, а для работы с механизмом хранения данных применяется **класс реализации**. Это паттерн ```Repository```
@@ -131,6 +134,27 @@ public class AppTimeService { };
   "AllowedHosts": "*"
 }
 
+```
+
+# Scaffold
+
+**Замечание**: надо установить ```Microsoft.EntityFrameworkCore.Tools```.
+
+В консоли диспетчера пакетов Nuget прописать команду
+
+```Scaffold-DbContext "Server=localhost;Database=Users;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models```
+	
+Команда создает модели из каждой сущности в базе данных, учитывая связи, а также создает класс контекста для работы с данными как с классами.
+
+```Scaffold-DbContext "Data Source=.\ComputerDatabase.db" Microsoft.EntityFrameworkCore.Sqlite -OutputDir Models```
+
+**Примечание**: если Scaffold для SQLite, ему нужна база из проекта, а не в ```Debug```. При инициализации контекста база данных ```SQLite``` создается в ```Debug``` по умолчанию.
+
+
+В консоле диспетчера пакетов для SQLServer
+
+```
+Scaffold-DbContext "Server=(localdb)\mssqllocaldb;Database=UserDatabase;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models2
 ```
 
 # Команды
