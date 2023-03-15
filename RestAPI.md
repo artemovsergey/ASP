@@ -221,7 +221,7 @@ namespace WebAPILearning.Data
 1. Visual Studio from Solution Explorer
 2. ```dotnet aspnet-codegenerator controller --controllerName Home --model Beer --dataContext BeerContext --useDefaultLayout -outDir Controllers -f --useSqlite```
 
-
+3. ```dotnet aspnet-codegenerator controller --controllerName StatementsController --model Statement --dataContext KeeperContext -outDir Controllers --restWithNoViews```
 
 
 
