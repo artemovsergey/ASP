@@ -1,11 +1,18 @@
 # ASP Core
 
-
 https://learn.microsoft.com/ru-ru/aspnet/core/?view=aspnetcore-7.0
 
 ## Паттерны проектирования
 
 ![](/Patterns.png)
+
+# dotnet cli
+
+```
+dotnet new sln
+dotnet new webapi -o APIname
+dotnet sln add APIname
+```
 
 # Теория
 **Интерфейс** определяет свойства и методы, предназначенные для доступа к данным, а для работы с механизмом хранения данных применяется **класс реализации**. Это паттерн ```Repository```
