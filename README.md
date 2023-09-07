@@ -12,6 +12,9 @@ https://learn.microsoft.com/ru-ru/aspnet/core/?view=aspnetcore-7.0
 dotnet new sln
 dotnet new webapi -o APIname
 dotnet sln add APIname
+
+dotnet new gitignore
+
 ```
 
 # Настройка VS Code для .NET
