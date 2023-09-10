@@ -27,6 +27,14 @@ dotnet new gitignore
 # Теория
 **Интерфейс** определяет свойства и методы, предназначенные для доступа к данным, а для работы с механизмом хранения данных применяется **класс реализации**. Это паттерн ```Repository```
 
+# Cors
+
+```Csharp
+builder.Services.AddCors();
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
+```
+
+
 # Program.cs
 
 ```csharp
