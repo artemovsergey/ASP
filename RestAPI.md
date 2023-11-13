@@ -12,6 +12,12 @@ using WebAPILearning.Data;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
+// если происходит цикл при связи 1:M через API
+builder.Services.AddControllersWithViews()
+    .AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
+
 /*
  * 
 В ASP.NET Core службы (такие как контекст базы данных) должны быть зарегистрированы с помощью 
