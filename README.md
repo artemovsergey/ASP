@@ -1,7 +1,5 @@
 # ASP Core
 
-https://learn.microsoft.com/ru-ru/aspnet/core/?view=aspnetcore-7.0
-
 ## Паттерны проектирования
 
 ![](/Patterns.png)
