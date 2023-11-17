@@ -4,17 +4,6 @@
 
 ![](/Patterns.png)
 
-# dotnet cli
-
-```
-dotnet new sln
-dotnet new webapi -o APIname
-dotnet sln add APIname
-
-dotnet new gitignore
-
-```
-
 # Настройка VS Code для .NET
 
 - FontSize
@@ -185,7 +174,13 @@ public class AppTimeService { };
 Scaffold-DbContext "Server=(localdb)\mssqllocaldb;Database=UserDatabase;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models2
 ```
 
-# Команды
+# dotnet cli
+
+dotnet new sln
+dotnet new webapi -o APIname
+dotnet sln add APIname
+
+dotnet new gitignore
 
 ```dotnet new mvc --output TestMVC```
 
