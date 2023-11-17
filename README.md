@@ -95,6 +95,7 @@ app.UseStatusCodePages(); // отправка кодов состояния в �
 // должен вызываться перед методом app.UseMvc()
 app.UseSession();
 
+//app.UseNodeModules();
 
 //app.UseMvc();
 //app.UseMvcWithDefaultRoute();
