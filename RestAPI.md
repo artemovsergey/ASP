@@ -1,15 +1,3 @@
-# Материалы
-
-https://learn.microsoft.com/en-us/aspnet/core/tutorials/min-web-api?view=aspnetcore-7.0&tabs=visual-studio
-
-Замечания:
-
-Трехслойная архитектура
-Между слоями передаются dto ( часто при помощи mappers)
- Определение протоколов взаимодействия
-Паттерн репозиторий и адаптер
-
-
 # Program.cs для API
 
 ```Csharp
