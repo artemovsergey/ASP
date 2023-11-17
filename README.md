@@ -12,12 +12,6 @@ builder.Services.AddCors();
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
 ```
 
-# NodeModules
-
-```Csharp
-app.UseNodeModules();
-```
-
 # Program.cs
 
 ```csharp
