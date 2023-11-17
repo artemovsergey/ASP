@@ -184,9 +184,6 @@ dotnet new gitignore
 
 ```dotnet aspnet-codegenerator controller --controllerName Home --model Beer --dataContext BeerContext --useDefaultLayout -outDir Controllers -f --useSqlite```
 
-https://learn.microsoft.com/ru-ru/aspnet/core/fundamentals/tools/dotnet-aspnet-codegenerator?view=aspnetcore-7.0
-
-
 ```dotnet ef database drop --force```
 
 ```dotnet ef migrations add InitialCreate```
