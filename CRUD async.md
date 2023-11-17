@@ -1,6 +1,6 @@
-## Асинхронный CRUD
+# Асинхронный CRUD
 
-### Index
+# Index
 
 ```Csharp
      private readonly TestStoreContext _context;
@@ -19,7 +19,7 @@
         }
 ```
 
-### Details id
+# Details id
 
 ```Csharp
   // GET: Users/Details/5
@@ -41,7 +41,7 @@
         }
 ```
 
-### Create
+# Create
 
 ```Csharp
         // POST: Users/Create
@@ -71,7 +71,7 @@
 ```
 
 
-### Edit
+# Edit
 
 ```Csharp
         // GET: Users/Edit/5
@@ -91,7 +91,7 @@
         }
 ```
 
-### Edit POST
+# Edit POST
 
 ```Csharp
         // POST: Users/Edit/5
@@ -136,7 +136,7 @@
         
 ```
 
-### Delete
+# Delete
 
 ```Csharp
         // GET: Users/Delete/5
@@ -158,7 +158,7 @@
         }
 ```
 
-### Delete POST
+# Delete POST
 
 ```Csharp
         // POST: Users/Delete/5
@@ -181,7 +181,7 @@
         }
 ```
 
-### Index.cshtml
+# Index.cshtml
 
 ```html
 @model IEnumerable<TestASP.Models.User>
@@ -228,7 +228,7 @@
 
 ```
 
-### Edit.cshtml
+# Edit.cshtml
 
 ```html
 @model TestASP.Models.User
@@ -273,7 +273,7 @@
 
 ```
 
-### Details.cshtml
+# Details.cshtml
 
 ```html
 @model TestASP.Models.User
@@ -309,7 +309,7 @@
 
 ```
 
-### Delete.cshtml
+# Delete.cshtml
 
 ```html
 @model TestASP.Models.User
@@ -348,7 +348,7 @@
 
 ```
 
-### Create.cshtml
+# Create.cshtml
 
 ```html
 @model TestASP.Models.User
