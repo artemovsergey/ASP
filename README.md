@@ -163,7 +163,9 @@ Scaffold-DbContext "Server=(localdb)\mssqllocaldb;Database=UserDatabase;Trusted_
 # dotnet cli
 
 dotnet new sln
+
 dotnet new webapi -o APIname
+
 dotnet sln add APIname
 
 dotnet new gitignore
