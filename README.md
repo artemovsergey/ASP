@@ -1,5 +1,9 @@
 # ASP Core
 
+- [ ] Use Bootstrap 5
+- [ ] Angular
+- [ ] Vue
+
 ## Паттерны проектирования
 
 ![](/Patterns.png)
