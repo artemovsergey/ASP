@@ -88,3 +88,8 @@ git add . && git commit -m "%1" && git push origin master
 ```
 ./fast.bat new_message
 ```
+
+git config --global init.defaultBranch main
+git config --global alias.co checkout
+
+
