@@ -117,5 +117,18 @@ Page.cshtml
 <!-- универсальные параметры *other или **other-->
 ```
 
+# Binding Model
 
+Binding to Property
+```Csharp
+
+        [BindProperty(SupportsGet = true)]
+        public string user { get; set; } = "User";
+
+
+        public void OnGet()
+        {
+            ViewData["user"] = $"Пользователь из запроса: {this.user}";            
+        }
+```
 
