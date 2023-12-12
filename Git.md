@@ -78,18 +78,8 @@ git checkout -b [название-ветки]
 - Можно ли коммитить незаконченный функционал?
 - Какой метод работы вы должны использовать? (Merge? Topic Branches? Git-Flow? Rebase?). Подсказка: здесь нет правильного ответа.
 
-# Быстрое добавление изменений на сервер Git
 
-```bash
-git add . && git commit -m "%1" && git push origin master
-```
-Далее в командной строке Git Bash можно просто запустить файл fast.bat с параметром message
-
-```
-./fast.bat new_message
-```
-
-git config --global init.defaultBranch main
-git config --global alias.co checkout
+- git config --global init.defaultBranch main
+- git config --global alias.co checkout
 
 
