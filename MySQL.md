@@ -1,6 +1,4 @@
-# Справка по командам
-
-## Чтобы посмотреть в MySQL все текущие кодировки и настройки
+## кодировки и настройки
 ```SQL
 show variables like "character_set_%";
 ```
@@ -25,13 +23,3 @@ mysql -u username -p password -h localhost databasename < "C:\script.sql"
  ```sql 
  set names "cp866" 
  ```
-
-
-### MySQL connector не работает с Visual Studio 2022 на начало 2022 года
-#### Решение: подключение через NuGet пакет MySQL.Data в каждый проект или подключать локально
-
-<!-- <details> 
-  <summary> Problems </summary>
-   A1: JavaScript 
-</details> -->
-****
