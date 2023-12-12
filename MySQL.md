@@ -1,4 +1,4 @@
-## кодировки и настройки
+## Кодировки и настройки
 ```SQL
 show variables like "character_set_%";
 ```
