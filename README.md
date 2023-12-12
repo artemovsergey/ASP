@@ -126,54 +126,12 @@ public class AppTimeService { };
 
 # dotnet cli
 
-dotnet new gitignore
-dotnet tool install --global dotnet-ef
-dotnet ef database drop --force
-dotnet ef migrations add InitialCreate
-dotnet ef database update
-dotnet dev-certs https --trust
-
-
-# Request.
-
-Параметры представляют самый простой способ получения данных, но в действительности нам необязательно их использовать. В контроллере доступен объект Request, у которого можно получить как данные строки запроса, так и данные отправленных форм.
-
-Данные строки запроса доступны через свойство Request.Query, которое представляет объект IQueryCollection. Например:
-
-```csharp
-public string Area()
-{
-    string altitudeString = Request.Query.FirstOrDefault(p => p.Key == "altitude").Value;
-    int altitude = Int32.Parse(altitudeString);
- 
-    string heightString = Request.Query.FirstOrDefault(p => p.Key == "height").Value;
-    int height = Int32.Parse(heightString);
- 
-    double square = altitude * height / 2;
-    return $"Площадь треугольника с основанием {altitude} и высотой {height} равна {square}";
-}
-```
-
-В данном случае метод Area обрабатывает GET-запросы, и мы можем к нему обратиться через запрос типа http://localhost:57086/Home/Area?altitude=20&height=4.
-
-# Request. Получение данных отправленных форм
-
-Для получения данных отправленных форм можно использовать свойство ```Request.Form```. Это свойство представляет объект IFormsCollection, но работает аналогично Request.Query:
-
-```csharp
-[HttpPost]
-public string Area()
-{
-    string altitudeString = Request.Form.FirstOrDefault(p => p.Key == "altitude").Value;
-    int altitude = Int32.Parse(altitudeString);
- 
-    string heightString = Request.Form.FirstOrDefault(p =>p.Key == "height").Value;
-    int height = Int32.Parse(heightString);
- 
-    double square = altitude * height / 2;
-    return $"Площадь треугольника с основанием {altitude} и высотой {height} равна {square}";
-}
-```
+- dotnet new gitignore
+- dotnet tool install --global dotnet-ef
+- dotnet ef database drop --force
+- dotnet ef migrations add InitialCreate
+- dotnet ef database update
+- dotnet dev-certs https --trust
 
 # Переадресация
 
