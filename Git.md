@@ -27,6 +27,11 @@ git fetch получаем актуальную информацию о репо
 git pull origin dev (ключевое слово origin указывает на удаленный репозиторий). Извлечь и скопировать все изменения из удалённого репозитория
 
 git merge name_new_brahch
+
+git config --global init.defaultBranch main
+
+git config --global alias.co checkout
+
 ```
 
 # Порядок работы c Git
@@ -79,7 +84,6 @@ git checkout -b [название-ветки]
 - Какой метод работы вы должны использовать? (Merge? Topic Branches? Git-Flow? Rebase?). Подсказка: здесь нет правильного ответа.
 
 
-- git config --global init.defaultBranch main
-- git config --global alias.co checkout
+
 
 
