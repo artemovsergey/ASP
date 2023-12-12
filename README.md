@@ -8,8 +8,7 @@
 # Cors
 
 ```Csharp
-builder.Services.AddCors();
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
+
 ```
 
 # Program.cs
@@ -62,15 +61,13 @@ builder.Services.AddSingleton<AppTimeService>();
 // Создание служю необходимых для управления сеансом
 builder.Services.AddMemoryCache();
 builder.Services.AddSession();
-
-// Сервисы, это любой функционал, который мы хотим зарегистрировать, чтобы другие части приложения, могли его использовать (эл почта, бд…).
-
-// Configure the HTTP request pipeline.
-
-
 builder.Services.AddTransient<IRepository,DataRepository>(); // одие раз создается одиночный объект для всего приложенияы
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<IOrderRepository, OrderRepository>();
+
+builder.Services.AddCors();
+
+
 
 var app = builder.Build();
 
@@ -88,6 +85,8 @@ app.UseStatusCodePages(); // отправка кодов состояния в �
 // и добавляет cookie наборы к ответам
 // должен вызываться перед методом app.UseMvc()
 app.UseSession();
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
+
 
 //app.UseNodeModules();
 
