@@ -5,12 +5,6 @@
 ![](/Patterns.png)
 
 
-# Cors
-
-```Csharp
-
-```
-
 # Program.cs
 
 ```csharp
