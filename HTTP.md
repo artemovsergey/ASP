@@ -1,5 +1,15 @@
 # HTTPClient
 
+
+- сокеты
+- DNS
+
+```Csharp
+builder.Services.AddHttpClient()
+
+```
+
+
 ```Csharp
 using Microsoft.Extensions.DependencyInjection;
 using System;
