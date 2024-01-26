@@ -1,3 +1,5 @@
+# Application слой
+
 ```cproj
 <ItemGroup>
     <PackageReference Include="FluentResults" Version="3.15.2" />
@@ -9,12 +11,66 @@
 </ItemGroup>
 ```
 
-
-
-
 FluentResults - Это библиотека для .NET, которая позволяет возвращать результаты выполнения методов в более читаемом и удобном формате. Она предоставляет класс Result, который может быть использован для обозначения успешного или неуспешного выполнения операции и включает информацию об ошибках5.
 FluentValidation.AspNetCore - Это пакет FluentValidation, специально предназначенный для ASP.NET Core. Он используется для создания валидаторов с использованием строго типизированных объектов, что делает код более понятным и безопасным.
 Mapster - Mapster - это быстрый, легкий и мощный маппер для .NET. Он позволяет копировать данные между объектами различных типов, поддерживает трансформацию и преобразование данных.
 MediatR - MediatR - это библиотека для .NET, которая реализует шаблон проектирования Mediator для упрощения взаимодействия между компонентами системы. Она позволяет изолировать вызывающий код от вызываемого кода, что улучшает тестируемость и модульность приложения.
 Microsoft.IdentityModel.Tokens - Это библиотека, которая предоставляет набор классов для работы с токенами безопасности. Она включает в себя классы для создания и проверки JSON Web Tokens (JWT)1.
 System.IdentityModel.Tokens.Jwt - Это часть Microsoft.IdentityModel.Tokens, которая предоставляет классы для работы с JSON Web Tokens (JWT). Эти классы могут быть использованы для создания, декодирования и проверки JWT4.
+
+# Сервисы для Application
+
+ApplicationServicesRegistration.cs
+
+```Csharp
+// Importing the required libraries
+using Application.Features.Users.Create;
+using Application.Pipelines;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
+
+// Namespace for the application
+namespace Application
+{
+    // Static class for registering application services
+    public static class ApplicationServicesRegistration
+    {
+        // Extension method for IServiceCollection
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        {
+            // Add logging services
+            services.AddLogging();
+
+            // Add MediatR services and register services from the current assembly
+            services.AddMediatR(config => config.RegisterServicesFromAssemblies(
+                   Assembly.GetExecutingAssembly()));
+
+            // Add validators from the assembly of CreateUserCommandValidator
+            services.AddValidatorsFromAssembly(typeof(CreateUserCommandValidator).Assembly);
+
+            // Add transient service for the validation pipeline
+            services.AddTransient(
+               typeof(IPipelineBehavior<,>),
+               typeof(RequestValidationPipeline<,>));
+
+            // Return the service collection
+            return services;
+        }
+    }
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
