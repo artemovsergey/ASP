@@ -1,4 +1,4 @@
-# Application слой
+# Application
 
 ```cproj
 <ItemGroup>
