@@ -1,0 +1,20 @@
+```cproj
+<ItemGroup>
+    <PackageReference Include="FluentResults" Version="3.15.2" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="Mapster" Version="7.4.0" />
+    <PackageReference Include="MediatR" Version="12.1.1" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.0.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
+</ItemGroup>
+```
+
+
+
+
+FluentResults - Это библиотека для .NET, которая позволяет возвращать результаты выполнения методов в более читаемом и удобном формате. Она предоставляет класс Result, который может быть использован для обозначения успешного или неуспешного выполнения операции и включает информацию об ошибках5.
+FluentValidation.AspNetCore - Это пакет FluentValidation, специально предназначенный для ASP.NET Core. Он используется для создания валидаторов с использованием строго типизированных объектов, что делает код более понятным и безопасным.
+Mapster - Mapster - это быстрый, легкий и мощный маппер для .NET. Он позволяет копировать данные между объектами различных типов, поддерживает трансформацию и преобразование данных.
+MediatR - MediatR - это библиотека для .NET, которая реализует шаблон проектирования Mediator для упрощения взаимодействия между компонентами системы. Она позволяет изолировать вызывающий код от вызываемого кода, что улучшает тестируемость и модульность приложения.
+Microsoft.IdentityModel.Tokens - Это библиотека, которая предоставляет набор классов для работы с токенами безопасности. Она включает в себя классы для создания и проверки JSON Web Tokens (JWT)1.
+System.IdentityModel.Tokens.Jwt - Это часть Microsoft.IdentityModel.Tokens, которая предоставляет классы для работы с JSON Web Tokens (JWT). Эти классы могут быть использованы для создания, декодирования и проверки JWT4.
