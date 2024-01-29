@@ -42,10 +42,17 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-
-
 ```
 
+# Настройка отображения Json
+
+```Csharp
+builder.Services.AddControllers()
+ .AddJsonOptions(options =>
+ {
+ options.JsonSerializerOptions.WriteIndented = true;
+ });
+```
 
 
 
