@@ -54,3 +54,32 @@ COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "webapitest.dll"]
 ```
 
+# Nginx
+
+```
+worker_processes 4;
+
+events { worker_connections 1024; }
+
+http {
+
+    server {
+    
+        listen 80;
+
+        location /
+        {
+         proxy_pass http://client:3000;
+        }
+
+        location /api/users 
+        {
+         proxy_pass http://backend:80/api/user/users;
+        }
+    }
+
+
+
+}
+```
+
