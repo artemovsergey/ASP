@@ -170,3 +170,48 @@ docker compose watch
 docker compose run --build --rm server dotnet test /source/tests
 
 docker build -t dotnet-docker-image-test --progress=plain --no-cache --target build .
+
+# DockerCompose Postgres
+
+```yml
+services:
+  server:
+    build:
+      context: .
+      target: development
+    ports:
+      - 8080:80
+    depends_on:
+      db:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+    environment:
+       - ASPNETCORE_ENVIRONMENT=Development
+       - ASPNETCORE_URLS=http://+:80'
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=example
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+    expose:
+      - 5432
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  db-data:
+secrets:
+  db-password:
+    file: db/password.txt
+```
