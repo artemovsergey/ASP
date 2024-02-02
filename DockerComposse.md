@@ -149,4 +149,24 @@ USER appuser
 ENTRYPOINT ["dotnet", "myWebApp.dll"]
 ```
 
+docker compose up --build
+docker compose up --build -d
+docker compose down
 
+git stash -u  сохраняет все изменения перед созданием новой ветки
+
+docker container ls  - список все запущенных контейнеров
+
+docker exec -it 39fdcf0aff7b bash  - запуск команды в контейнере по id контейнера
+
+example=# INSERT INTO "Students" ("ID", "LastName", "FirstMidName", "EnrollmentDate") VALUES (DEFAULT, 'Whale', 'Moby', '2013-03-20');
+
+docker compose rm
+docker compose up --build
+
+docker compose watch
+
+Запуск тестов
+docker compose run --build --rm server dotnet test /source/tests
+
+docker build -t dotnet-docker-image-test --progress=plain --no-cache --target build .
