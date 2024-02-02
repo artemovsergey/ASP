@@ -136,3 +136,111 @@ context.Database.Migrate();
 Права при публикации
 
 ```sudo chmod 777 -R AspMySqlTest```
+
+# Nginx
+
+```
+sudo apt update
+sudo apt install nginx
+```
+## открытие портов в брендмауере
+
+```
+sudo ufw allow 'Nginx Full'
+sudo ufw allow 22
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw enable
+sudo ufw status 
+```
+
+```
+sudo nano /etc/nginx/sites-available/mirtek.com
+```
+
+Конфиг для сайта mirtek.com
+```
+server
+ {
+ listen 80;
+ server_name mirtek;
+   location / {
+   proxy_pass http://localhost:5000/weatherforecast;
+   proxy_http_version 1.1;
+   proxy_set_header Upgrade $http_upgrade;
+   proxy_set_header Connection keep-alive;
+   proxy_set_header Host $host;
+   proxy_cache_bypass $http_upgrade;
+   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+   proxy_set_header X-Forwarded-Proto $scheme;
+   }
+ }
+```
+Настройка ссылки
+sudo ln -s ```/etc/nginx/sites-available/excalib.ru``` ```/etc/nginx/sites-enabled/```
+
+Редактирование sudo nano ```/etc/nginx/nginx.conf```
+Раскоментировать в http блоке ```#server_names_hash_bucket_size 64;```
+
+# Kestrel
+
+```
+sudo nano /etc/systemd/system/kestrel-deploy-guide.service
+```
+
+```
+[Unit]
+Description=Example .NET Web API App running on Linux
+
+[Service]
+WorkingDirectory=/home/iof/TestApp
+ExecStart=/usr/bin/dotnet /home/iof/TestApp/bin/Debug/net7.0/TestApp.dll
+Restart=always
+
+#Restart service after 10 seconds if the dotnet service crashes:
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-example
+User=iof
+#envs
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```
+sudo systemctl enable kestrel-deploy-guide.service
+sudo systemctl start kestrel-deploy-guide.service
+sudo systemctl status kestrel-deploy-guide.service
+```
+
+# Настройка ДНС
+
+#настроил днсы(не забыл создать днс хост на стороне провайдера вдс)
+
+# Настройка ssl сертификата и метода продления (по умолчанию на 3 месяца)
+
+#настраиваем https с сертом letsencrypt certbot
+
+sudo apt install snapd
+sudo snap install core; sudo snap refresh core
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+#если нжинкс слушает 80ый порт то надо вырубить нжинкс
+sudo systemctl stop nginx
+
+sudo certbot --nginx -d excalib.ru
+sudo certbot renew --dry-run
+
+
+
+
+
+
+
+
+
+
+
