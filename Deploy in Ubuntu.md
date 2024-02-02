@@ -220,6 +220,8 @@ sudo systemctl status kestrel-deploy-guide.service
 
 #настроил днсы(не забыл создать днс хост на стороне провайдера вдс)
 
+Замечание: для локального домена mirtek надо в файле c:\Windows\System32\drivers\etc\hosts прописать 127.0.0.1 mirtek. На основе этих правил формируется /etc/hosts в Ubuntu WSL
+
 # Настройка ssl сертификата и метода продления (по умолчанию на 3 месяца)
 
 #настраиваем https с сертом letsencrypt certbot
