@@ -492,4 +492,90 @@ public class ApiResult<T>
 }
 ```
 
+# Валидация
+
+```Csharp
+    public class UserValidator : AbstractValidator<User>
+    {
+        public UserValidator()
+        {
+            RuleFor(user => user.Email)
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("A valid email address is required.");
+
+            // Добавьте другие правила валидации здесь...
+        }
+    }  
+```
+
+Program.cs
+```Csharp
+builder.Services.AddScoped<IValidator<User>, UserValidator>();
+```
+
+# Проверка валидатора
+
+```Csharp
+        private readonly IValidator<User> _userValidator;
+        var validationResult = _userValidator.Validate(user);
+
+        if (!validationResult.IsValid)
+        {
+            foreach (var failure in validationResult.Errors)
+            {
+                ModelState.AddModelError(failure.PropertyName, failure.ErrorMessage);
+            }
+
+            return BadRequest(ModelState);
+        }
+```
+
+
+
+# Настройка отображения json для API
+Program.cs
+```Csharp
+builder.Services.AddControllers()
+ .AddJsonOptions(options =>
+ {
+     // влияет на производительность
+     options.JsonSerializerOptions.WriteIndented = true;
+ });
+```
+
+# Запрос на проверку уникальности
+
+```Csharp
+    [HttpPost]
+    [Route("isUniqName")]
+    public async Task<bool> IsNameUniq(string role)
+    {
+       return await _db.Roles.AnyAsync(r => r.Name == role);
+    }
+```
+
+# Тестовые данные
+
+```Csharp
+ [HttpGet("/generate")]
+ public async Task<IActionResult> SeedUsers()
+ {
+
+     var faker = new Faker<User>()
+     //.RuleFor(u => u.Id, f => f.UniqueIndex)
+     .RuleFor(u => u.Email, f => f.Internet.Email())
+     .RuleFor(u => u.Login, f => f.Person.UserName)
+     .RuleFor(u => u.Password, f => f.Internet.Password());
+
+     List<User> users = faker.Generate(100);
+
+     using (var context = new KeeperContext())
+     {
+         context.Users.AddRangeAsync(users);
+         await context.SaveChangesAsync();
+     }
+
+     return Ok();
+ }
+```
 
