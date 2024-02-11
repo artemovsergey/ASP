@@ -333,3 +333,163 @@ namespace UserApp.Components
  ```
  
 При использовании тег-хелпера параметры компонента определяются как атрибуты тега, которым присваивается необходимое значение. Причем если у нас исползуется camelcase, при котором каждое подслово в составе составного слова пишется с большой буквы, например, includeSeconds, то в названии атрибута все подслова разделяются дефисом и начинаются со строчной буквы.
+
+
+# Фильтрация, сортировка
+
+```Csharp
+public async Task<IEnumerable<News>> GetNews(int pageIndex,
+                                            int pageSize,
+                                            string sortColumn,
+                                            string sortOrder,
+                                            string filterColumn,
+                                            string filterQuery)
+{
+
+    if (!string.IsNullOrEmpty(sortColumn) && IsValidProperty(sortColumn))
+    {
+        sortOrder = !string.IsNullOrEmpty(sortOrder) && sortOrder.ToUpper() == "ASC"
+        ? "ASC"
+        : "DESC";
+    }
+
+    IQueryable<News> newsList = _db.NewsList;
+
+    if (!string.IsNullOrEmpty(filterColumn)
+        && !string.IsNullOrEmpty(filterQuery)
+        && IsValidProperty(filterColumn))
+    {
+        //users = users.Where(u => $"{filterColumn}".Contains($"{filterQuery})"));
+        newsList = newsList.Where($"{filterColumn}.Contains(@0)", filterQuery);
+
+        Console.WriteLine($"Фильтрация: {newsList.Count()}");
+    }
+
+    return await newsList.OrderBy($"{sortColumn} {sortOrder}")
+                          .Skip(pageIndex * pageSize)
+                          .Take(pageSize)
+
+                          .ToListAsync();
+}
+
+public static bool IsValidProperty(string propertyName,
+                              bool throwExceptionIfNotFound = true)
+{
+    var prop = typeof(News).GetProperty(
+    propertyName,
+
+    BindingFlags.IgnoreCase |
+    BindingFlags.Public |
+    BindingFlags.Instance);
+    if (prop == null && throwExceptionIfNotFound)
+        throw new NotSupportedException(
+        string.Format($"ERROR: Property '{propertyName}' does not exist.")
+     );
+    return prop != null;
+
+}
+
+```
+
+# Настройка формата даты для PostgreSQL в файле Context.cs
+
+```
+    static NewsAggregationContext()
+    {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+    }
+```
+
+# Hash md5
+
+```Csharp
+    public async Task<string> HashNews(string title)
+    {
+        // Реализация хеширования пароля с использованием MD5
+        using (MD5 md5 = MD5.Create())
+        {
+            byte[] inputBytes = Encoding.ASCII.GetBytes(title);
+            byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            // Конвертируем байты обратно в строку
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hashBytes.Length; i++)
+            {
+                sb.Append(hashBytes[i].ToString("X2"));
+            }
+            return sb.ToString();
+        }
+    }
+```
+
+# Parsing XML
+
+```Csharp
+    private SyndicationFeed Fetch(string url)
+    {
+
+        using (var client = new WebClient())
+        {
+            var rssData = client.DownloadString(url);
+            using (var reader = XmlReader.Create(new StringReader(rssData)))
+            {
+                var feed = SyndicationFeed.Load(reader);
+                return feed;
+            }
+        }
+    }
+```
+
+# API Result для фильтрации, сортировки и пагинации
+
+```Csharp
+public class ApiResult<T>
+{
+
+    public List<T> Data { get; private set; }
+    public int PageIndex { get; private set; }
+    public int PageSize { get; private set; }
+    public int TotalCount { get; private set; }
+    public int TotalPages { get; private set; }
+    public bool HasPreviousPage
+    {
+        get
+        {
+            return (PageIndex > 0);
+        }
+    }
+    public bool HasNextPage
+    {
+        get
+        {
+            return ((PageIndex + 1) < TotalPages);
+        }
+    }
+    public string? SortColumn { get; set; }
+    public string? SortOrder { get; set; }
+    public string FilterColumn { get; set; }
+    public string FilterQuery { get; set; }
+
+    public ApiResult(List<T> data,
+                     int count,
+                     int pageIndex,
+                     int pageSize,
+                     string? sortColumn,
+                     string? sortOrder,
+                     string filterColumn,
+                     string filterQuery)
+    {
+        Data = data;
+        PageIndex = pageIndex;
+        PageSize = pageSize;
+        TotalCount = count;
+        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+        SortColumn = sortColumn;
+        SortOrder = sortOrder;
+        FilterColumn = filterColumn;
+        FilterQuery = filterQuery;
+    }
+}
+```
+
+
