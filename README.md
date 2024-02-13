@@ -338,6 +338,8 @@ namespace UserApp.Components
 # Фильтрация, сортировка
 
 ```Csharp
+using System.Linq.Dynamic.Core
+
 public async Task<IEnumerable<News>> GetNews(int pageIndex,
                                             int pageSize,
                                             string sortColumn,
