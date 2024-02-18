@@ -118,6 +118,16 @@ public class AppTimeService { };
 
 ```
 
+# OnConfiguring
+
+```Csharp
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=Myrtex;Trusted_Connection=True;");
+    }
+```
+
+
 # Scaffold
 
 В консоли диспетчера пакетов
