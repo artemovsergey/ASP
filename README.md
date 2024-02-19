@@ -4,105 +4,6 @@
 
 ![](/Patterns.png)
 
-
-# Program.cs
-
-```csharp
-
-using SportStore.Models;
-using SportStore.Interface;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
-using System.Configuration;
-
-var builder = WebApplication.CreateBuilder(args);
-
-
-builder.Services.AddMvc();
-//добавляет все сервисы фреймворка MVC
-// (в том числе сервисы для работы с аутентификацией и авторизацией, валидацией и т.д.)
-
-// AddMvcCore(): добавляет только основные сервисы фреймворка MVC,
-// а всю дополнительную функциональность, типа аутентификацией и авторизацией, валидацией и т.д.,
-// необходимо добавлять самостоятельно
-
-// AddControllersWithViews(): добавляет только те сервисы фреймворка MVC,
-// которые позволяют использовать контроллеры и представления и связанную функциональность.
-// При создании проекта по типу ASP.NET Core Web App (Model-View-Controller) используется именно этот метод
-
-// AddControllers(): позволяет использовать контроллеры, но без представлений.
-
-//builder.Services.AddControllersWithViews();
-//builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
-
-// Подключение базы данных SQL Server
-string connection = builder.Configuration.GetConnectionString("PostgreSQL");
-//builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
-builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(connection));
-//builder.Services.AddDbContext<DataContext>(options => options.UseMySql(connection, new MySqlServerVersion(new Version(8, 0, 30))));
-//builder.Services.AddDbContext<DataContext>(options => options.UseSqlite(connection));
-
-// Это значит совместное использоване объекта класса AppTimeService во всем приложении.
-// Общая функциональность для приложения
-builder.Services.AddSingleton<AppTimeService>();
-
-
-//Какие преимущества? Нам не придется возиться с созданием объекта, удалением его или управлением этим объектом в коде наших страниц.
-
-
-// Создание служю необходимых для управления сеансом
-builder.Services.AddMemoryCache();
-builder.Services.AddSession();
-builder.Services.AddTransient<IRepository,DataRepository>(); // одие раз создается одиночный объект для всего приложенияы
-builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
-builder.Services.AddTransient<IOrderRepository, OrderRepository>();
-
-builder.Services.AddCors();
-
-
-
-var app = builder.Build();
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
-}
-app.UseDeveloperExceptionPage(); // Ошибки при отладке
-app.UseHttpsRedirection();
-app.UseStaticFiles(); // доставка статического содержимого
-app.UseStatusCodePages(); // отправка кодов состояния в ответе
-
-// добавляет в конвейер новый компонент, который ассоциирует данные сеанса с запросами
-// и добавляет cookie наборы к ответам
-// должен вызываться перед методом app.UseMvc()
-app.UseSession();
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
-
-
-//app.UseNodeModules();
-
-//app.UseMvc();
-//app.UseMvcWithDefaultRoute();
-//app.MapDefaultControllerRoute();
-
-// Определение маршрутов
-app.MapControllerRoute(
-  name: "default",
-  pattern: "/{controller=Home}/{action=Index}/{id?}");
-
-// тоже самое
-//app.MapDefaultControllerRoute();
-
-
-app.Run();
-//
-
-public class AppTimeService { };
-```
-
 # appsettings.json
 
 ```JSON
@@ -126,7 +27,6 @@ public class AppTimeService { };
         optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=Myrtex;Trusted_Connection=True;");
     }
 ```
-
 
 # Scaffold
 
@@ -221,64 +121,6 @@ public IActionResult GetVirtualFile() => File("files/test.txt", "text/plain", "h
 Передача через поток данных(stream) выручает тогда, когда мы не хотим занимать лишнюю память при передаче.
 Вот в примере сверху мы сначала заняли память под массив byte[], а потом отправили его.
 А открыв поток, мы как бы одновременно считываем и передаем, без промежуточного хранения.
-
-# Внедрение зависимостей
-
-Dependency injection (DI) или внедрение зависимостей представляет механизм, который позволяет сделать взаимодействующие в приложении объекты слабосвязанными. Такие объекты связаны между собой через абстракции, например, через интерфейсы, что делает всю систему более гибкой, более адаптируемой и расширяемой.
-
-В центре подобного механизма находится понятие зависимость - некоторая сущность, от которой зависит другая сущность. Например:
-
-```Csharp
-class Logger
-{
-    public void Log(string message) => Console.WriteLine(message);
-}
-class Message
-{
-    Logger logger = new Logger();
-    public string Text { get; set; } = "";
-    public void Print() => logger.Log(Text);
-}
-```
-
-Здесь сущность Message, которая представляет некоторое сообщение, зависит от другой сущности - Logger, которая представляет логгер. В методе Print() класса Message имитируется логгирование текста сообщения путем вызова у объекта Logger метода Log, который выводит сообщение на консоль. Однако здесь класс Message тесно связан с классом Loger. Класс Message отвечает за создание объекта Logger. Это имеет ряд недостатков. Прежде всего, если мы захотим вместо класса Logger использовать другой тип тип логгера, например, логгировать в файл, а не на консоль, то нам придется менять класс Message. Один класс не составит труда поменять, но если в проекте таких классов много, то поменять во всех класс Logger на другой будет труднее. Кроме того, класс Logger может иметь свои зависимости, которые тоже может потребоваться поменять. В итоге такими системами сложнее управлять и сложнее тестировать.
-Чтобы отвязать объект Logger от класса Message, мы можем создать абстракцию, которая будет представлять логгер, и передавать ее извне в объект Message:
-
-```Csharp
-interface ILogger
-{
-    void Log(string message);
-}
-class Logger : ILogger
-{
-    public void Log(string message) => Console.WriteLine(message);
-}
-class Message
-{
-    ILogger logger;
-    public string Text { get; set; } = "";
-    public Message(ILogger logger)
-    {
-        this.logger = logger;
-    }
-    public void Print() => logger.Log(Text);
-}
-```
-
-Теперь класс Message не зависит от конкретной реализации класса Logger - это может быть любая реализация интерфейса ILogger. Кроме того, создание объекта логгера выносится во внешний код. Класс Message больше ничего не знает о логгере кроме того, что у него есть метод Log, который позволяет логгировать его текст.
-Тем не менее остается проблема управления подобными зависимостями, особенно если это касается больших приложений. Нередко для установки зависимостей в подобных системах используются специальные контейнеры - IoC-контейнеры
-
-Такие контейнеры служат своего рода фабриками, которые устанавливают зависимости между абстракциями и конкретными объектами и, как правило, управляют созданием этих объектов.
-Преимуществом ASP.NET Core в этом оношении является то, что фреймворк уже по умолчанию имеет встроенный контейнер внедрения зависимостей, который представлен интерфейсом IServiceProvider. А сами зависимости еще называются сервисами, собственно поэтому контейнер можно назвать провайдером сервисов. Этот контейнер отвечает за сопоставление зависимостей с конкретными типами и за внедрение зависимостей в различные объекты
-
-**Примечание**:  Статические переменные класса - это способ хранить состояние объекта в памяти (во время работы приложения)
-
-     
-# Null условная проверка с объединением
-
-```csharp
-string name = р?.Name ?? "No name";
-```
 
 # Компоненты представлений
 
@@ -434,34 +276,6 @@ public static bool IsValidProperty(string propertyName,
     }
 ```
 
-```Csharp
-        // Hash a password
-        private string HashPassword(string password)
-        {
-            var hashedBytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
-            var hash = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
-            return hash;
-        }
-```
-
-
-# Parsing XML
-
-```Csharp
-    private SyndicationFeed Fetch(string url)
-    {
-
-        using (var client = new WebClient())
-        {
-            var rssData = client.DownloadString(url);
-            using (var reader = XmlReader.Create(new StringReader(rssData)))
-            {
-                var feed = SyndicationFeed.Load(reader);
-                return feed;
-            }
-        }
-    }
-```
 
 # API Result для фильтрации, сортировки и пагинации
 
@@ -553,8 +367,6 @@ builder.Services.AddScoped<IValidator<User>, UserValidator>();
         }
 ```
 
-
-
 # Настройка отображения json для API
 Program.cs
 ```Csharp
@@ -567,7 +379,6 @@ builder.Services.AddControllers()
 ```
 
 # Запрос на проверку уникальности
-
 ```Csharp
     [HttpPost]
     [Route("isUniqName")]
@@ -578,12 +389,10 @@ builder.Services.AddControllers()
 ```
 
 # Тестовые данные
-
 ```Csharp
  [HttpGet("/generate")]
  public async Task<IActionResult> SeedUsers()
  {
-
      var faker = new Faker<User>()
      //.RuleFor(u => u.Id, f => f.UniqueIndex)
      .RuleFor(u => u.Email, f => f.Internet.Email())
@@ -803,6 +612,7 @@ public static class InfrastructureServicesRegistration
 ```
 
 # Configure Swagger for API documentation
+
 ```Csharp
 builder.Services.AddSwaggerGen(c =>
 {
@@ -883,6 +693,8 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 ```
+
+# Middleware
 
 ```Csharp
 public sealed class ExceptionHandlingMiddlwere : IMiddleware
