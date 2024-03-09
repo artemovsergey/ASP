@@ -1,6 +1,7 @@
 # Blazor
-dotnet new blazor -o ClientBlazorApp -e --interactivity WebAssembly
-dotnet new blazor -o ServerBlazorApp -e --interactivity None
+
+- dotnet new blazor -o ClientBlazorApp -e --interactivity WebAssembly
+- dotnet new blazor -o ServerBlazorApp -e --interactivity None
 
 
 ## Подключение сервисов для интерактивного рендеринга на стороне клиента и сервера
