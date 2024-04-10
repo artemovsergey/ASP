@@ -115,3 +115,123 @@ app.MapRazorComponents<App>()
 ```
 @rendermode InteractiveAuto
 ```
+
+## Partial class for component
+
+Можно попробовать применить Code behind с помощью partial для компонента Blazor
+То есть, если есть компонент User.razor, то можно добавить к нему User.razor.cs с partial
+
+Для применения своего Layout в компоненте @layout name
+
+@on{Dom Event} = "Delegate"
+
+Значение по умолчанию для обработчиков событий 
+
+```Csharp
+<button @onclick = "Show">
+@code{
+ 
+  private void Show(MouseEventArgs e)
+   {
+
+   }
+}
+```
+
+## Lambda
+```Csharp
+<button @onclick = "@(e => Show(e, buttonNumber)">
+@code{
+ 
+  private void Show(MouseEventArgs e, int ButtonNumber)
+   {
+
+   }
+}
+```
+
+## Жизненынй цикл компонента
+
+OnInitialized
+OnParameterSet
+OnAfterRender
+
+
+## Передача события из дочернего компонента в родительский
+
+Дочерний компонент:
+```Csharp
+<button @onclick = "NameEvent">
+@code{
+ 
+    [Parameter]
+    public EventCallBack<MouseEventArgs> NameEvent {get; set;}
+}
+```
+
+Родительский компонент:
+```Csharp
+<ChildComponent NameEvent = "NameHandler"></ChildComponent>
+@code{
+ 
+  private void NameHandler()
+   {
+
+   }
+}
+```
+
+## Динамические компоненты
+RenderFragment @ChildContent
+DynamicComponent
+
+## Обработка ошибок
+
+<ErrorBoundary>
+	<ChildContent>
+ 	
+	</ChildContent>
+
+        <ErrorContent>
+
+        </ErrorContent>
+</ErrorBoundary>
+
+
+## Настройка клиента Http в API 
+
+builder.Services.AddHttpClient<IServiceName, ServiceName>(c => c.BaseAddress = new Uri(builder.HostEnviroment.BaseAddress))
+
+## Инкапсуляция вызовов API
+
+Так можно отдельно вынести получение и отправку данных данных через API в методы
+
+```Csharp
+public async Task<IEnumerable<Employee>> GetAllEmployees(){
+
+return await JsonSerializer.DeserializeAsync<IEnumerable<Employee>> (await _httpClien.GetStreamAsync(), new JsonSerializerOption() { PropertyNameCaseInsensitive = true } );
+}
+```
+
+## LocalStorage
+
+Для хранения состояния в LocalStorege можно применить пакет
+Blazored LocalStorege
+
+## Result
+Есть библиотека для возврата Result
+
+## Поиск
+Результат обработки события поиска
+```
+<input @bind-value="Employee.LastName" @bind-value:event="oninput"/>
+```
+
+## Загрузка изображений
+- рассмотреть файл про загрузку изображений
+
+## Валидация
+- Валидация
+DataAnnotation
+DataAnnotationValidator
+ValidationSummary
