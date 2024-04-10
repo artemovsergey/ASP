@@ -237,6 +237,8 @@ DataAnnotationValidator
 ValidationSummary
 
 ## Вызор Js из Blazor
+OnAfterRenderAsync
+
 
 ## Создание Razor Class Library
 
