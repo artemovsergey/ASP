@@ -241,5 +241,5 @@ OnAfterRenderAsync
 
 
 ## Создание Razor Class Library
-
+Также можно сделать Lazy Loading
 
