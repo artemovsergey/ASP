@@ -236,6 +236,24 @@ DataAnnotation
 DataAnnotationValidator
 ValidationSummary
 
+Замечание: при работе с формами в компоненте надо поинмать с каким режимом мы работаетм. Если не указывать rendermode, то это обычные запросы, а не интерактивный режим
+
+```Csharp
+    <EditForm method="post" Model="user" FormName="Sign" OnSubmit="@Submit">
+
+	<input class="input-group" type="text" placeholder="Login" @bind-value="user.Name" />
+	<input class="input-group" type="text" placeholder="Email" @bind-value="user.Email" />
+	<input class="input-group" type="text" placeholder="Password" @bind-value="user.Password" />
+	<input class="input-group" type="text" placeholder="PasswordConfirmation" @bind-value="user.PasswordConfirmation" />
+	
+	<input type="submit" class="btn btn-primary" value="Создать" />
+
+    </EditForm>
+```
+
+
+
+
 ## Вызор Js из Blazor
 OnAfterRenderAsync
 
