@@ -239,16 +239,86 @@ ValidationSummary
 Замечание: при работе с формами в компоненте надо поинмать с каким режимом мы работаетм. Если не указывать rendermode, то это обычные запросы, а не интерактивный режим
 
 ```Csharp
-    <EditForm method="post" Model="user" FormName="Sign" OnSubmit="@Submit">
+@page "/"
+@page "/Sign"
+@using SampleApp.Domen.Models
+@using System.ComponentModel.DataAnnotations
+@using SampleApp.Domen.Validations
+<PageTitle> Регистрация </PageTitle>
+@rendermode RenderMode.InteractiveServer
 
-	<input class="input-group" type="text" placeholder="Login" @bind-value="user.Name" />
-	<input class="input-group" type="text" placeholder="Email" @bind-value="user.Email" />
-	<input class="input-group" type="text" placeholder="Password" @bind-value="user.Password" />
-	<input class="input-group" type="text" placeholder="PasswordConfirmation" @bind-value="user.PasswordConfirmation" />
-	
-	<input type="submit" class="btn btn-primary" value="Создать" />
+<div class="container text-center">
+    <h3> Регистрация </h3>
 
-    </EditForm>
+    <div class="row border border-0 border-warning">
+        <div class="col-6 offset-3 border border-0 border-primary">
+
+            <EditForm method="post" EditContext="model" OnValidSubmit="@Submit" OnInvalidSubmit="@Submit">
+
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+
+                <InputText class="input-group" placeholder="Login" @bind-Value="p.Name" />
+                <ValidationMessage For="@(() => p.Name)"/>
+
+                <button type="submit">Submit</button>
+
+            </EditForm>
+
+        </div>
+    </div>
+
+</div>
+
+@code {
+
+    public Person p { get; set; } = new();
+    EditContext model;
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = new(p);
+    }
+
+    public class Person()
+    {
+        [PersonNameValidator(new[] { "admin" })]
+        [Required(ErrorMessage = "Имя должно быть не пустое")]
+        public string Name { get; set; }
+    }
+
+    public async Task Submit()
+    {
+        Console.WriteLine($"Модель: {model.Validate()}");
+    }
+}
+
+```
+
+Пользовательский валидатор
+
+```Csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace SampleApp.Domen.Validations;
+
+public class PersonNameValidator : ValidationAttribute
+{
+    string[] names;
+    public PersonNameValidator(string[] names)
+    {
+        this.names = names;
+    }
+    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+    {
+        if (names.Contains(value?.ToString()))
+        {
+            return new ValidationResult("Некорректное имя!");
+        }
+        return ValidationResult.Success;
+    }
+}
+
 ```
 
 
