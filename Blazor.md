@@ -214,7 +214,7 @@ return await JsonSerializer.DeserializeAsync<IEnumerable<Employee>> (await _http
 ```
 
 ## LocalStorage
-
+using Blazored LocalStorage
 Для хранения состояния в LocalStorege можно применить пакет
 Blazored LocalStorege
 
