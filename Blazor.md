@@ -334,3 +334,8 @@ OnAfterRenderAsync
 # Тестирование компонентов
 
 - bUnit
+
+# ModelState
+
+В методах контроллера API можно применять ModelState
+
