@@ -213,10 +213,21 @@ return await JsonSerializer.DeserializeAsync<IEnumerable<Employee>> (await _http
 }
 ```
 
+- SetItem()
+- GetItem()
+- ContainKey()
+- RemoveItem()
+
+
 ## LocalStorage
 using Blazored LocalStorage
 Для хранения состояния в LocalStorege можно применить пакет
 Blazored LocalStorege
+
+```Csharp
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+var firstName = await localStorage.GetItemAsync<string>("EmployeeFirstName");
+```
 
 ## Result
 Есть библиотека для возврата Result
