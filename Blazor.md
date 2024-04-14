@@ -339,3 +339,36 @@ OnAfterRenderAsync
 
 В методах контроллера API можно применять ModelState
 
+
+# Загрузка изображения
+
+```Csharp
+ [HttpPost]
+ public IActionResult CreateEmployee([FromBody] Employee employee)
+ {
+     if (employee == null)
+         return BadRequest();
+
+     if (employee.FirstName == string.Empty || employee.LastName == string.Empty)
+     {
+         ModelState.AddModelError("Name/FirstName", "The name or first name shouldn't be empty");
+     }
+
+     if (!ModelState.IsValid)
+         return BadRequest(ModelState);
+
+     //handle image upload
+     //string currentUrl = _httpContextAccessor.HttpContext.Request.Host.Value;
+     //var path = $"{_webHostEnvironment.WebRootPath}\\uploads\\{employee.ImageName}";
+     //var fileStream = System.IO.File.Create(path);
+     //fileStream.Write(employee.ImageContent, 0, employee.ImageContent.Length);
+     //fileStream.Close();
+
+    // employee.ImageName = $"https://{currentUrl}/uploads/{employee.ImageName}";
+
+     var createdEmployee = _employeeRepository.AddEmployee(employee);
+
+     return Created("employee", createdEmployee);
+ }
+```
+
