@@ -32,6 +32,13 @@ git config --global init.defaultBranch main
 
 git config --global alias.co checkout
 
+
+git cherry-pick abc - перенос одного коммита
+
+git revert abc - отмена коммита с помощью сосздания нового коммита
+git --soft reset abc  - раскоммичивает изменения, изменения остаются в индексе
+git --hard reset abc
+
 ```
 
 # Порядок работы c Git
