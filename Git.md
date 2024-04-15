@@ -27,6 +27,7 @@ git fetch получаем актуальную информацию о репо
 git pull origin dev (ключевое слово origin указывает на удаленный репозиторий). Извлечь и скопировать все изменения из удалённого репозитория
 
 git merge name_new_brahch
+git rebase name_new_branch - перенос с историями изменений
 
 git config --global init.defaultBranch main
 
