@@ -492,4 +492,13 @@ OnAfterRenderAsync
 
 ```
 
+# Logger
 
+```Csharp
+    @inject ILoggerFactory LoggerFactory
+    protected override async Task OnInitializedAsync()
+    {
+        _logger = LoggerFactory.CreateLogger<Auth>();
+    }
+
+```
