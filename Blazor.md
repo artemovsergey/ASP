@@ -1,17 +1,13 @@
 # Blazor
 
-- dotnet new blazor -o ClientBlazorApp -e --interactivity WebAssembly
-- dotnet new blazor -o ServerBlazorApp -e --interactivity None
+# Подключение сервисов для интерактивного рендеринга на стороне клиента и сервера
 
-
-## Подключение сервисов для интерактивного рендеринга на стороне клиента и сервера
 ```Csharp
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddInteractiveServerComponents();
 ```
 
-## Применение сервисов
 ```Csharp
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
@@ -19,7 +15,9 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(ClientBlazorApp.Client._Imports).Assembly);
 ```
 
-## Router
+# Router
+
+
 ```razor
 <Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
@@ -29,7 +27,7 @@ app.MapRazorComponents<App>()
 </Router>
 ```
 
-## MainLayout
+# MainLayout
 
 ```razor
 @inherits LayoutComponentBase
@@ -57,14 +55,16 @@ app.MapRazorComponents<App>()
 </div>
 ```
 
-## _Imports.razor
+# _Imports.razor
+
 ```razor
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
 ```
 
-## Компонент NavMenu
+# Компонент NavMenu
+
 ```razor
 <div class="nav-scrollable" >
     <nav class="flex-column">
@@ -89,7 +89,8 @@ app.MapRazorComponents<App>()
 </div>
 ```
 
-## Компонент App
+# Компонент App
+
 ```Csharp
 <!DOCTYPE html>
 <html>
@@ -111,12 +112,13 @@ app.MapRazorComponents<App>()
 </html>
 ```
 
-## Применение автоматического рендеринга в компоненте
+# Применение автоматического рендеринга в компоненте
+
 ```
 @rendermode InteractiveAuto
 ```
 
-## Partial class for component
+# Partial class for component
 
 Можно попробовать применить Code behind с помощью partial для компонента Blazor
 То есть, если есть компонент User.razor, то можно добавить к нему User.razor.cs с partial
@@ -138,7 +140,8 @@ app.MapRazorComponents<App>()
 }
 ```
 
-## Lambda
+# Lambda
+
 ```Csharp
 <button @onclick = "@(e => Show(e, buttonNumber)">
 @code{
@@ -150,16 +153,17 @@ app.MapRazorComponents<App>()
 }
 ```
 
-## Жизненынй цикл компонента
+# Жизненынй цикл компонента
 
-OnInitialized
-OnParameterSet
-OnAfterRender
+- OnInitialized
+- OnParameterSet
+- OnAfterRender
 
 
-## Передача события из дочернего компонента в родительский
+# Передача события из дочернего компонента в родительский
 
 Дочерний компонент:
+
 ```Csharp
 <button @onclick = "NameEvent">
 @code{
@@ -170,6 +174,7 @@ OnAfterRender
 ```
 
 Родительский компонент:
+
 ```Csharp
 <ChildComponent NameEvent = "NameHandler"></ChildComponent>
 @code{
@@ -181,11 +186,12 @@ OnAfterRender
 }
 ```
 
-## Динамические компоненты
+# Динамические компоненты
+
 RenderFragment @ChildContent
 DynamicComponent
 
-## Обработка ошибок
+# Обработка ошибок
 
 <ErrorBoundary>
 	<ChildContent>
@@ -198,11 +204,13 @@ DynamicComponent
 </ErrorBoundary>
 
 
-## Настройка клиента Http в API 
+# Настройка клиента Http в API 
 
+```Csharp
 builder.Services.AddHttpClient<IServiceName, ServiceName>(c => c.BaseAddress = new Uri(builder.HostEnviroment.BaseAddress))
+```
 
-## Инкапсуляция вызовов API
+# Инкапсуляция вызовов API
 
 Так можно отдельно вынести получение и отправку данных данных через API в методы
 
@@ -213,13 +221,8 @@ return await JsonSerializer.DeserializeAsync<IEnumerable<Employee>> (await _http
 }
 ```
 
-- SetItem()
-- GetItem()
-- ContainKey()
-- RemoveItem()
+#  LocalStorage
 
-
-## LocalStorage
 using Blazored LocalStorage
 Для хранения состояния в LocalStorege можно применить пакет
 Blazored LocalStorege
@@ -229,23 +232,28 @@ Blazored LocalStorege
 var firstName = await localStorage.GetItemAsync<string>("EmployeeFirstName");
 ```
 
-## Result
+- SetItem()
+- GetItem()
+- ContainKey()
+- RemoveItem()
+
+# Result
+
 Есть библиотека для возврата Result
 
-## Поиск
+# Поиск
+
 Результат обработки события поиска
+
 ```
 <input @bind-value="Employee.LastName" @bind-value:event="oninput"/>
 ```
 
-## Загрузка изображений
-- рассмотреть файл про загрузку изображений
+# Валидация
 
-## Валидация
-- Валидация
-DataAnnotation
-DataAnnotationValidator
-ValidationSummary
+- DataAnnotation
+- DataAnnotationValidator
+- ValidationSummary
 
 Замечание: при работе с формами в компоненте надо поинмать с каким режимом мы работаетм. Если не указывать rendermode, то это обычные запросы, а не интерактивный режим
 
@@ -333,13 +341,13 @@ public class PersonNameValidator : ValidationAttribute
 ```
 
 
+# Вызор Js из Blazor
 
-
-## Вызор Js из Blazor
 OnAfterRenderAsync
 
 
-## Создание Razor Class Library
+# Создание Razor Class Library
+
 Также можно сделать Lazy Loading
 
 # Тестирование компонентов
@@ -350,10 +358,10 @@ OnAfterRenderAsync
 
 В методах контроллера API можно применять ModelState
 
-
 # Загрузка изображения
 
 Компонент
+
 ```Csharp
  private IBrowserFile selectedFile;
  protected async Task HandleValidSubmit()
