@@ -551,3 +551,14 @@ OnAfterRenderAsync
     }
 
 ```
+
+# Компонент ImputSelect
+
+```Csharp
+    <InputSelect @bind-Value="@user.RoleId" multiple>
+	@foreach (var r in Roles)
+	{
+	    <option value="@r.Id">@r.Name</option>
+	}
+    </InputSelect>
+```
