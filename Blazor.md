@@ -574,5 +574,33 @@ OnAfterRenderAsync
  <link href="SportStore.Blazor.styles.css" rel="stylesheet" type="text/css">
 ```
 
+# События
+
+Если элемент html имеет атрибуты вида on{СОБЫТИЕ}, которые позволяют связать событие с некоторой функцией javascript (например, атрибут onclick), то Blazor предоставляет их двойники - атрибуты типа @on{СОБЫТИЕ}, которые позвляют прикрепить к событию в качестве обработчика метод компонента.
+
+Табилца событий https://metanit.com/sharp/blazor/2.5.php
+
+# Каскадные значения
+
+```Csharp
+<CascadingValue Value="@now">
+    <Main />
+</CascadingValue>
+ 
+@code {
+    DateTime now = DateTime.Now;
+}
+```
+
+```Csharp
+<h2>Date: @DateTime?.ToShortDateString()</h2>
+<Time />
+ 
+@code {
+ 
+    [CascadingParameter]
+    DateTime? DateTime { get; set; }
+}
+```
 
 
