@@ -564,3 +564,15 @@ OnAfterRenderAsync
 	}
     </InputSelect>
 ```
+
+# Подключение css в компонентах
+
+- создать файл Name.razor.css
+- подключить в index файл имя_проекта.styles.css
+
+```
+ <link href="SportStore.Blazor.styles.css" rel="stylesheet" type="text/css">
+```
+
+
+
