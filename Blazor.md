@@ -342,6 +342,8 @@ public class PersonNameValidator : ValidationAttribute
 
 # FluentValidation
 
+В проекте домена надо поставить FluetnValidation.
+
 На клиенте в Blazor надо:
 
 - зарегистрировать класс в контейнере.
