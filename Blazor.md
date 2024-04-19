@@ -669,6 +669,32 @@ OnAfterRenderAsync
 
 ```
 
+# Заметки
+
+- можно огранизовать работу отдельно с razor, cs, css
+- можно сделать компонент без интерфейса
+
+# Использование ссылки на компонент ref
+
+```Csharp
+<Alert @bind-Show="Show" @ref="alert" >
+    <span class="oi oi-check mr-2" aria-hidden="true"></span>
+    <strong>Blazor is so cool!</strong>
+</Alert>
+
+<button @onclick="@(() => alert.Dismiss())"> Закрыть компонент Alert</button>
+
+
+@code{
+
+    public bool Show { get; set; } = true;
+    private Alert alert { get; set; }
+
+}
+```
+
+
+
 
 
 
