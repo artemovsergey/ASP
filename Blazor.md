@@ -423,6 +423,15 @@ OnAfterRenderAsync
 
 Также можно сделать Lazy Loading
 
+ Если ресурс находится в проекте приложения Blazor
+проект приложения, путь начинается с папки wwwroot, но для библиотечных проектов
+URL должен начинаться с _content/{LibraryProjectName} и ссылаться на папку wwwroot
+папку вашего библиотечного проекта.
+
+```
+<img src="_content/Components.Library/cloud.png" alt="Cloud"/>
+```
+
 # Тестирование компонентов
 
 - bUnit
