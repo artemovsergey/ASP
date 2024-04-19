@@ -222,6 +222,7 @@ DynamicComponent
 
 # Обработка ошибок
 
+```
 <ErrorBoundary>
 	<ChildContent>
  	
@@ -231,7 +232,7 @@ DynamicComponent
 
         </ErrorContent>
 </ErrorBoundary>
-
+```
 
 # Настройка клиента Http в API 
 
