@@ -632,4 +632,44 @@ OnAfterRenderAsync
 }
 ```
 
+# Alert Component
+
+```
+<Alert Show="@ShowAlert">
+ <span class="oi oi-check mr-2" aria-hidden="true"></span>
+ <strong>Blazor is so cool!</strong>
+</Alert>
+```
+```
+@if (Show)
+{
+    <div class="alert alert-secondary alert-dismissible fade show mt-4"
+         role="alert">
+         @ChildContent
+        <button type="button" class="close" data-dismiss="alert"
+                aria-label="Close" @onclick="Dismiss">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    public void Dismiss()
+    {
+        Show = false;
+    }
+}
+
+```
+
+
+
+
 
