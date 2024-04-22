@@ -748,6 +748,13 @@ Blazor WebAssembly экземпляры Scoped по умолчанию прив�
 забывайте, что вам придется передать JsonSerializerOptions в качестве дополнительного аргумента с помощью функции
 GetFromJsonAsync и аналогичных методов.
 
+# Loader
 
-
+```
+<div class="mx-auto text-center mb-3 mt-3">
+ <div class="spinner-border text-danger" role="status">
+ <span class="visually-hidden">Loading...</span>
+ </div>
+ </div>
+```
 
