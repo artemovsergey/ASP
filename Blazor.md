@@ -758,3 +758,65 @@ GetFromJsonAsync и аналогичных методов.
  </div>
 ```
 
+# Alert Component
+
+```Csharp
+@if (Show)
+{
+
+    <div class="modal show" tabindex="-1" role="dialog" style="display:block">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Modal body text goes here.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => Close()">Close</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+}
+else
+{
+    <h3> Show: @Show </h3>
+}
+
+@code {
+
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
+    private async Task OnShowChanged(bool newValue)
+    {
+        Show = newValue;
+        await ShowChanged.InvokeAsync(Show);
+    }
+
+    public void Open()
+    {
+        Show = true;
+      
+    }
+
+    public void Close()
+    {
+        Show = false;
+        //StateHasChanged();
+    }
+}
+```
+
+
