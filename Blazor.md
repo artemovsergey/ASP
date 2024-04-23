@@ -819,4 +819,50 @@ else
 }
 ```
 
+## Edit
+
+Методика изучения Blazor:
+- привязка, события, валидация
+
+
+
+- попробовать обработчики писать через лямбда функции
+
+- альтернативная техника для атрибута @bind
+
+<input type="number"
+ value="@increment"
+ @onchange="@((ChangeEventArgs e)
+ => increment = int.Parse($"{e.Value}"))" />
+
+- Preventing Default Actions - отмена действий браузера по умолчанию
+- Stopping Event Propagation - отмена действий событий вверх по дереву
+
+
+- форматирование даты  <input @bind="@Today" @bind:format="yyyy-MM-dd" />
+
+
+Blazor будет повторно отображать страницу при каждом возникновении события. Он также будет повторно отображать страница в случае асинхронных операций. Однако некоторые изменения не могут быть обнаружены.
+
+
+- Таймер
+
+
+private void AutoIncrement()
+{
+ var timer = new System.Threading.Timer(
+ callback: (_) => { IncrementCount(); StateHasChanged(); },
+ state: null,
+ dueTime: TimeSpan.FromSeconds(1),
+ period: TimeSpan.FromSeconds(1));
+}
+
+StateHasChanged()
+
+
+В EF модно настроить отдельно конфигурации для каждой сущности
+В методе Update можно сделать все одним запросом
+
+Связка: Rider + Postman
+
 
