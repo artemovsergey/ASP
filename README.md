@@ -930,3 +930,10 @@ Scoped или Transient, внедрите их в метод Invoke
  */
 ```
 
+# Регистрация в контейнере конкретного конструктора
+
+```Csharp
+services.AddSingleton( new EmailServerSettings ( host: "smtp.server.com", port: 25 ));
+services.AddScoped( provider => new EmailServerSettings ( host: "smtp.server.com", port: 25 ));
+```
+
