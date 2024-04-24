@@ -26,7 +26,6 @@ COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Keeper.Web.dll"]
 ```
 
-
 # DockerCompose
 
 docker-compose.yml
@@ -178,27 +177,21 @@ USER appuser
 ENTRYPOINT ["dotnet", "myWebApp.dll"]
 ```
 
-docker compose up --build
-docker compose up --build -d
-docker compose down
+- docker compose up --build
+- docker compose up --build -d
+- docker compose down
+- git stash -u  сохраняет все изменения перед созданием новой ветки
+- docker container ls  - список все запущенных контейнеров
+- docker exec -it 39fdcf0aff7b bash  - запуск команды в контейнере по id контейнера
+- example=# INSERT INTO "Students" ("ID", "LastName", "FirstMidName", "EnrollmentDate") VALUES (DEFAULT, 'Whale', 'Moby', '2013-03-20');
+- docker compose rm
+- docker compose up --build
+- docker compose watch
 
-git stash -u  сохраняет все изменения перед созданием новой ветки
+## Запуск тестов
 
-docker container ls  - список все запущенных контейнеров
-
-docker exec -it 39fdcf0aff7b bash  - запуск команды в контейнере по id контейнера
-
-example=# INSERT INTO "Students" ("ID", "LastName", "FirstMidName", "EnrollmentDate") VALUES (DEFAULT, 'Whale', 'Moby', '2013-03-20');
-
-docker compose rm
-docker compose up --build
-
-docker compose watch
-
-Запуск тестов
-docker compose run --build --rm server dotnet test /source/tests
-
-docker build -t dotnet-docker-image-test --progress=plain --no-cache --target build .
+- docker compose run --build --rm server dotnet test /source/tests
+- docker build -t dotnet-docker-image-test --progress=plain --no-cache --target build .
 
 # DockerCompose Postgres
 
@@ -245,36 +238,7 @@ secrets:
     file: db/password.txt
 ```
 
-# Dockerfile для .net core 7
-
-```
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
-
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["WebApplication3/WebApplication3.csproj", "WebApplication3/"]
-RUN dotnet restore "./WebApplication3/./WebApplication3.csproj"
-COPY . .
-WORKDIR "/src/WebApplication3"
-RUN dotnet build "./WebApplication3.csproj" -c $BUILD_CONFIGURATION -o /app/build
-
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./WebApplication3.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "WebApplication3.dll"]
-```
-
-# Docker Angular
+# Dockerfile Angular
 
 ```
 FROM node:14-alpine as build
@@ -291,7 +255,7 @@ FROM nginx as runtime
 COPY --from=build /app/dist/client /usr/share/nginx/html
 ```
 
-# Dockerfile API Clean Architecture
+# Dockerfile Clean Architecture
 
 ```
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
@@ -328,7 +292,7 @@ RUN ls -l
 ENTRYPOINT [ "dotnet", "ContainerNinja.API.dll" ]
 ```
 
-# Docker Compose Debug
+# DockerCompose Debug
 
 ```yml
 version: '3.8'
