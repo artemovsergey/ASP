@@ -139,8 +139,6 @@ app.MapRazorComponents<App>()
 
 # Жизненынй цикл компонента
 
-
-  
 - Метод SetParametersAsync() устанавливает параметры компонента значениями, предоставленными родительским компонентом. В качестве параметра метод принимает объект типа ParameterView, который содержит набор значений для параметров компонента.
 ```Csharp
 @code{
@@ -251,18 +249,6 @@ var firstName = await localStorage.GetItemAsync<string>("EmployeeFirstName");
 - GetItem()
 - ContainKey()
 - RemoveItem()
-
-# Result
-
-Есть библиотека для возврата Result
-
-# Поиск
-
-Результат обработки события поиска
-
-```
-<input @bind-value="Employee.LastName" @bind-value:event="oninput"/>
-```
 
 # Валидация DataAnnotation
 
