@@ -124,28 +124,6 @@ app.MapRazorComponents<App>()
 @rendermode InteractiveAuto
 ```
 
-# Partial class for component
-
-Можно попробовать применить Code behind с помощью partial для компонента Blazor
-То есть, если есть компонент User.razor, то можно добавить к нему User.razor.cs с partial
-
-Для применения своего Layout в компоненте @layout name
-
-@on{Dom Event} = "Delegate"
-
-Значение по умолчанию для обработчиков событий 
-
-```Csharp
-<button @onclick = "Show">
-@code{
- 
-  private void Show(MouseEventArgs e)
-   {
-
-   }
-}
-```
-
 # Lambda
 
 ```Csharp
@@ -260,8 +238,9 @@ return await JsonSerializer.DeserializeAsync<IEnumerable<Employee>> (await _http
 #  LocalStorage
 
 using Blazored LocalStorage
+
 Для хранения состояния в LocalStorege можно применить пакет
-Blazored LocalStorege
+Blazored LocalStorage
 
 ```Csharp
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
