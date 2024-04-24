@@ -188,7 +188,7 @@ public class ApiResult<T>
 }
 ```
 
-# Валидация
+# Валидация FluetnValidation
 
 ```Csharp
     public class UserValidator : AbstractValidator<User>
@@ -198,8 +198,6 @@ public class ApiResult<T>
             RuleFor(user => user.Email)
                 .NotEmpty().WithMessage("Email is required.")
                 .EmailAddress().WithMessage("A valid email address is required.");
-
-            // Добавьте другие правила валидации здесь...
         }
     }  
 ```
@@ -226,17 +224,6 @@ builder.Services.AddScoped<IValidator<User>, UserValidator>();
         }
 ```
 
-# Настройка отображения json для API
-Program.cs
-```Csharp
-builder.Services.AddControllers()
- .AddJsonOptions(options =>
- {
-     // влияет на производительность
-     options.JsonSerializerOptions.WriteIndented = true;
- });
-```
-
 # Запрос на проверку уникальности
 ```Csharp
     [HttpPost]
@@ -247,7 +234,7 @@ builder.Services.AddControllers()
     }
 ```
 
-# Тестовые данные
+# Тестовые данные Bogus
 ```Csharp
  [HttpGet("/generate")]
  public async Task<IActionResult> SeedUsers()
