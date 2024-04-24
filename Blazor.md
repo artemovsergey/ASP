@@ -312,11 +312,9 @@ var firstName = await localStorage.GetItemAsync<string>("EmployeeFirstName");
         Console.WriteLine($"Модель: {model.Validate()}");
     }
 }
-
 ```
 
-Пользовательский валидатор
-
+Пользовательский валидатор:
 ```Csharp
 using System.ComponentModel.DataAnnotations;
 
@@ -343,14 +341,15 @@ public class PersonNameValidator : ValidationAttribute
 
 # FluentValidation
 
-В проекте домена надо поставить FluetnValidation.
+В проекте домена надо поставить ```FluetnValidation```.
 
 На клиенте в Blazor надо:
 
 - зарегистрировать класс в контейнере.
 - применить атрибут в форме ```<FluentValidationValidator/>```
 - установить пакет Blazored.FluentValidation
-- 
+  
+
 Domen/Validations/LoginValidator.cs
 ```Csharp
 public class LoginValidator : AbstractValidator<User>
@@ -383,7 +382,6 @@ public class LoginValidator : AbstractValidator<User>
 	}
 }
 ```
-
 
 # Вызор Js из Blazor
 
