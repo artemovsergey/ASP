@@ -408,6 +408,51 @@ OnAfterRenderAsync
 
 Также можно сделать Lazy Loading
 
+```Csharp
+@using System.Reflection
+@using Microsoft.AspNetCore.Components.WebAssembly.Services
+@inject LazyAssemblyLoader assemblyLoader
+<Router AppAssembly="@typeof(Program).Assembly"
+ AdditionalAssemblies="@additionalAssemblies"
+ OnNavigateAsync="OnNavigate">
+ <Found Context="routeData">
+ <RouteView RouteData="@routeData" DefaultLayout="@typeof
+(MainLayout)" />
+ </Found>
+ <NotFound>
+ <LayoutView Layout="@typeof(MainLayout)">
+<p>Sorry, there's nothing at this address.</p>
+ </LayoutView>
+ </NotFound>
+<Navigating>
+ Loading additional components...
+ </Navigating>
+</Router>
+@code {
+ private List<Assembly> additionalAssemblies =
+ new List<Assembly>
+ {
+ };
+ private async Task OnNavigate(NavigationContext context)
+ {
+ if( context.Path == "counter")
+ {
+ var assembliesToLoad = new List<string>
+ {
+ "LazyLoading.Library.dll"
+ };
+ var assemblies = await assemblyLoader.LoadAssembliesAsync
+(assembliesToLoad);
+ additionalAssemblies.AddRange(assemblies);
+ }
+ }
+}
+```
+
+```
+builder.Services.AddScoped<LazyAssemblyLoader>();
+```
+
  Если ресурс находится в проекте приложения Blazor
 проект приложения, путь начинается с папки wwwroot, но для библиотечных проектов
 URL должен начинаться с _content/{LibraryProjectName} и ссылаться на папку wwwroot
