@@ -879,6 +879,11 @@ Java, JavaScript, Go, Swift, C++, Python, Node.js и других языков. 
 раз быстрее, чем эквивалентный вызов REST. Поскольку в нем используется бинарная сериализация, сообщения
 могут быть на 60-80 % меньше, чем JSON.
 
+- Google.Protobuf
+- Grpc.Net.Client
+- Grpc.Net.Client.Web
+- Grpc.Tools
+
 
 # Заметки
 
