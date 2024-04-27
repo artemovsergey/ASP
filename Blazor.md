@@ -892,3 +892,13 @@ Java, JavaScript, Go, Swift, C++, Python, Node.js и других языков. 
 - альтернативная техника для атрибута @bind
 - огранизовать работу отдельно с razor, cs, css
 - сделать компонент без интерфейса
+
+
+- https://www.blazortrain.com/
+- https://www.youtube.com/watch?v=b1GI2vuD_nQ
+
+- https://blazor-university.com/
+
+- https://www.pragimtech.com/blog/blazor/what-is-blazor/
+- https://jonhilton.net/
+- https://blazorise.com/
