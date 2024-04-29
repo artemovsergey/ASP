@@ -884,6 +884,35 @@ Java, JavaScript, Go, Swift, C++, Python, Node.js и других языков. 
 - Grpc.Net.Client.Web
 - Grpc.Tools
 
+# Binding
+
+Двусторонняя привязка в Blazor использует соглашение об именах. Если мы хотим привязаться к свойству с именем SomeProperty, нам понадобится обратный вызов события с именем SomeProperyChanged. Этот обратный вызов должен вызываться каждый раз при обновлении компонента SomeProperty.
+
+```
+<MyFirstComponent @bind-CurrentCounterValue=currentCount/>
+```
+
+```
+<div>
+    CurrentCounterValue in MyFirstComponent is @CurrentCounterValue
+</div>
+
+<button @onclick=@UpdateCurrentCounterValue>Update</button>
+
+@code {
+    [Parameter]
+    public int CurrentCounterValue { get; set; }
+
+    [Parameter]
+    public EventCallback<int> CurrentCounterValueChanged { get; set; }
+
+    async Task UpdateCurrentCounterValue()
+    {
+        CurrentCounterValue++;
+        await CurrentCounterValueChanged.InvokeAsync(CurrentCounterValue);
+    }
+}
+```
 
 # Заметки
 
