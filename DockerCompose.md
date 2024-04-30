@@ -57,6 +57,61 @@ services:
       - "5000:80"
 ```
 
+```
+version: '1'
+
+networks:
+  asp-dotnet-network:
+    driver: bridge
+
+services:
+ 
+  api:
+    restart: always
+    build:
+      context: ./SportStore.APIWithDocker
+      dockerfile: Dockerfile
+    container_name: ContainerAPI
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "3001:8080"
+    networks:
+      - asp-dotnet-network
+    depends_on:
+      - db
+  db:
+    image: postgres:latest
+    container_name: ContainerPostgreSQL
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: MirtekNewsAggregation
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - asp-dotnet-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    volumes:
+      - postgres_data:/var/lib/postgresql/dbadmin
+    ports:
+      - "5050:80"
+    networks:
+      - asp-dotnet-network 
+
+volumes:
+    postgres_data:
+```
+
+
 # Docker for API
 
 ```docker
