@@ -4,26 +4,24 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Keeper.Web/Keeper.Web.csproj", "Keeper.Web/"]
-RUN dotnet restore "./Keeper.Web/./Keeper.Web.csproj"
+COPY ["./SportStore.APIWithDocker.csproj", "./SportStore.APIWithDocker.csproj"]
+RUN dotnet restore "./SportStore.APIWithDocker.csproj"
 COPY . .
-WORKDIR "/src/Keeper.Web"
-RUN dotnet build "./Keeper.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+RUN dotnet build "./SportStore.APIWithDocker.csproj" -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Keeper.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./SportStore.APIWithDocker.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Keeper.Web.dll"]
+ENTRYPOINT ["dotnet", "SportStore.APIWithDocker.dll"]
 ```
 
 # DockerCompose
