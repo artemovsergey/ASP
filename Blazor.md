@@ -949,3 +949,4 @@ Java, JavaScript, Go, Swift, C++, Python, Node.js и других языков. 
 
 - https://bitplatform.dev/
 - https://github.com/fullstackhero/blazor-starter-kit
+- https://github.com/AdrienTorris/awesome-blazor
