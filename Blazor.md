@@ -944,3 +944,8 @@ Java, JavaScript, Go, Swift, C++, Python, Node.js и других языков. 
 - https://www.pragimtech.com/blog/blazor/what-is-blazor/
 - https://jonhilton.net/
 - https://blazorise.com/
+
+# Ресурсы
+
+- https://bitplatform.dev/
+- https://github.com/fullstackhero/blazor-starter-kit
