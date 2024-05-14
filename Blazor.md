@@ -950,3 +950,23 @@ Java, JavaScript, Go, Swift, C++, Python, Node.js и других языков. 
 - https://bitplatform.dev/
 - https://github.com/fullstackhero/blazor-starter-kit
 - https://github.com/AdrienTorris/awesome-blazor
+- https://tobiasahlin.com/spinkit/
+
+Работа с Git в команде
+https://habr.com/ru/articles/192614/
+
+free
+somee.com
+https://freeasphosting.net/
+
+free trial
+https://www.smarterasp.net/
+https://www.discountasp.net/
+https://www.mywindowshosting.com/
+https://www.myasp.net/
+https://www.sharkasp.net/
+
+pay
+https://v2.d-f.pw/ 300 руб
+https://amvera.ru/cloud#rec719087781 170 руб
+https://fly.io/docs/languages-and-frameworks/dotnet/
