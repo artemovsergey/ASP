@@ -1,3 +1,10 @@
+# Migration
+
+```
+Add-Migraion Init -Project "RusRoads.Application" -StartupProject "RusRoads.Application"
+Update-database -Project "RusRoads.Application" -StartupProject "RusRoads.Application"
+```
+
 # Тестовые данные
 
 ```Csharp
