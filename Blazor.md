@@ -1,5 +1,247 @@
 # Blazor
 
+# Компонент ViewSwitcher
+
+```Csharp
+<div class="container pt-5">
+    <div class="mb-3 text-end">
+        <div class="btn-group">
+            <button @onclick="@(() => _mode = ViewMode.Grid)" title="Grid View" type="button"
+                    class="btn @(_mode == ViewMode.Grid ? "btn-secondary" : "btn-outline-secondary")">
+                <i class="bi bi-grid-fill"></i>
+            </button>
+            <button @onclick="@(() => _mode = ViewMode.Table)" title="Table View" type="button"
+                    class="btn @(_mode == ViewMode.Table ? "btn-secondary" : "btn-outline-secondary")">
+                <i class="bi bi-table"></i>
+            </button>
+        </div>
+    </div>
+
+    @if (_mode == ViewMode.Grid)
+    {
+        @GridTemplate
+    }
+    else if (_mode == ViewMode.Table)
+    {
+        @TableTemplate
+    }
+</div>
+
+@code {
+
+    private ViewMode _mode = ViewMode.Grid;
+
+    [Parameter, EditorRequired]
+    public RenderFragment GridTemplate { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public RenderFragment TableTemplate { get; set; } = default!;
+
+    private enum ViewMode { Grid, Table }
+}
+```
+
+# Компонент ViewSwitcherGeneric
+
+```Csharp
+@typeparam TItem
+
+<div class="container pt-5">
+    <div class="mb-3 text-end">
+        <div class="btn-group">
+            <button @onclick="@(() => _mode = ViewMode.Grid)" title="Grid View" type="button"
+                    class="btn @(_mode == ViewMode.Grid ? "btn-secondary" : "btn-outline-secondary")">
+                <i class="bi bi-grid-fill"></i>
+            </button>
+            <button @onclick="@(() => _mode = ViewMode.Table)" title="Table View" type="button"
+                    class="btn @(_mode == ViewMode.Table ? "btn-secondary" : "btn-outline-secondary")">
+                <i class="bi bi-table"></i>
+            </button>
+        </div>
+    </div>
+
+    @if (_mode == ViewMode.Grid)
+    {
+        <div class="grid">
+            @foreach (var item in Items)
+            {
+                @GridTemplate(item)
+            }
+        </div>
+    }
+    else if (_mode == ViewMode.Table)
+    {
+        <table>
+            <thead>
+                <tr>
+                    @HeaderTemplate
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Items)
+                {
+                    <tr>
+                        @RowTemplate(item)
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private ViewMode _mode = ViewMode.Grid;
+    
+    [Parameter, EditorRequired]
+    public IEnumerable<TItem> Items { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public RenderFragment<TItem> GridTemplate{get; set;} = default!;
+    
+    [Parameter, EditorRequired]
+    public RenderFragment HeaderTemplate { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public RenderFragment<TItem> RowTemplate{get;set;} = default!;
+
+    private enum ViewMode { Grid, Table }
+}
+```
+
+# Компонент Select
+
+```Csharp
+<InputSelect @bind-Value="@user.RoleId" multiple>
+    @foreach (var r in Roles)
+    {
+	<option value="@r.Id">@r.Name</option>
+    }
+</InputSelect>
+```
+
+# Компонент InputFile
+
+```Csharp
+<InputFile OnChange="LoadUserImage" class="form-control-file" id="UserImage" accept=".png,.jpg,.jpeg" />
+```
+```Csharp
+   private void LoadUserImage(InputFileChangeEventArgs e) {
+
+       _userImage = e.File;
+       user.ImageAction = ImageAction.Add;
+       //StateHasChanged();
+   }
+```
+
+
+# Подключение сборки в Mediatr
+
+```
+var assembly = AppDomain.CurrentDomain.Load("SportStore.Application");
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly(), assembly));
+```
+
+# BootstrapClassProvider
+
+```Csharp
+public class BootstrapCssClassProvider : FieldCssClassProvider
+{
+    public override string GetFieldCssClass(EditContext editContext,in FieldIdentifier fieldIdentifier)
+    {
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+        if (editContext.IsModified(fieldIdentifier))
+        {
+            return isValid ? " is-valid" : "is-invalid";
+        }
+
+        return isValid ? "" : "is-invalid";
+    }
+}
+```
+
+EditContext.cs
+```Csharp
+ _editContext.SetFieldCssClassProvider(new BootstrapCssClassProvider());
+```
+
+
+
+# AppState
+
+```Csharp
+public class AppState
+{
+    private bool _isInitialized;
+    public FavoriteUsersState FavoriteUsersState { get; }
+
+    public AppState(ILocalStorageService localStorageService)
+    {
+        Console.WriteLine("Хранитель состояния создан!");
+        FavoriteUsersState = new FavoriteUsersState(localStorageService);
+    }
+
+    public User _unsavedNewUser { get; set; } = new();
+    public User GetUser() => _unsavedNewUser;
+    public void SaveUser(User User) => _unsavedNewUser = User;
+    public void ClearUser() => _unsavedNewUser = new();
+
+    public async Task Initialize()
+    {
+        if (!_isInitialized)
+        {
+            await FavoriteUsersState.Initialize();
+            _isInitialized = true;
+        }
+    }
+
+}
+```
+
+# LocalStorage
+
+```Csharp
+public class FavoriteUsersState
+{
+    private const string FavouriteUsersKey = "favoriteUsers";
+    private bool _isInitialized;
+    private List<User> _favoriteUsers = new();
+    private readonly ILocalStorageService _localStorageService;
+    public IReadOnlyList<User> FavoriteUsers => _favoriteUsers.AsReadOnly();
+ 
+    public event Action? OnChange;
+    public FavoriteUsersState(ILocalStorageService localStorageService)
+    {
+        _localStorageService = localStorageService;
+    }
+    public async Task Initialize()
+    {
+        if (!_isInitialized)
+        {
+            _favoriteUsers = await _localStorageService.GetItemAsync<List<User>>(FavouriteUsersKey)?? new List<User>();
+            _isInitialized = true;
+            NotifyStateHasChanged();
+        }
+    }
+    public async Task AddFavorite(User User)
+    {
+        if (_favoriteUsers.Any(_ => _.Id == User.Id)) return;
+        _favoriteUsers.Add(User);
+        await _localStorageService.SetItemAsync(FavouriteUsersKey, _favoriteUsers);
+        NotifyStateHasChanged();
+    }
+    public async Task RemoveFavorite(User User)
+    {
+        var existingUser = _favoriteUsers.SingleOrDefault(_ => _.Id == User.Id);
+        if (existingUser is null) return;
+        _favoriteUsers.Remove(existingUser);
+        await _localStorageService.SetItemAsync(FavouriteUsersKey, _favoriteUsers);
+        NotifyStateHasChanged();
+    }
+    public bool IsFavorite(User User) => _favoriteUsers.Any(_ => _.Id == User.Id);
+    private void NotifyStateHasChanged() => OnChange?.Invoke();
+}
+```
+
 # Режим рендеринга
 
 ```Csharp
