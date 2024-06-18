@@ -975,6 +975,76 @@ Java, JavaScript, Go, Swift, C++, Python, Node.js и других языков. 
 Всегда используйте ```@key``` для компонентов, которые генерируются в цикле во время выполнения.
 
 
+# Scss
+
+- package.json
+  
+```json
+{
+  "scripts": {
+    "sass": "sass"
+  },
+  "devDependencies": {
+    "sass": "1.28.0"
+  }
+}
+```
+
+- пример настройки файла proj
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<NpmLastInstall>
+		node_modules/.last-install
+	</NpmLastInstall>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="package.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="RouteMap.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
+	<Target Name="CheckForNpm" BeforeTargets="RunNpmInstall">
+		<Exec Command="npm --version" ContinueOnError="true">
+			<Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+		</Exec>
+		<Error Condition="'$(ErrorCode)' != '0'" Text="NPM is required to build this project." />
+	</Target>
+	<Target Name="RunNpmInstall" BeforeTargets="CompileScopedScss" Inputs="package.json" Outputs="$(NpmLastInstall)">
+		<Exec Command="npm install" />
+		<Touch Files="$(NpmLastInstall)" AlwaysCreate="true" />
+	</Target>
+	<Target Name="CompileScopedScss" BeforeTargets="Compile">
+		<ItemGroup>
+			<ScopedScssFiles Include="**/*.razor.scss" />
+		</ItemGroup>
+		<Exec Command="npm run sass -- %(ScopedScssFiles.Identity) %(relativedir)%(filename).css" />
+	</Target>
+	
+
+</Project>
+
+```
+
+
 # Заметки
 
 - методика изучения Blazor: привязка, события, валидация
