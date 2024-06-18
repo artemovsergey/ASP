@@ -462,9 +462,57 @@ URL должен начинаться с _content/{LibraryProjectName} и ссы
 <img src="_content/Components.Library/cloud.png" alt="Cloud"/>
 ```
 
-# Тестирование компонентов
+# Проект для тестирование компонентов
+
+- Пакеты
+
+```xml
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.18.1" />
+    <PackageReference Include="Blazored.LocalStorage.TestExtensions" Version="4.5.0" />
+    <PackageReference Include="bunit" Version="1.28.9" />
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Moq" Version="4.20.70" />
+    <PackageReference Include="xunit" Version="2.5.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+  </ItemGroup>
+```
 
 - bUnit
+
+```Csharp
+public class CounterShould : TestContext
+{
+    [Fact]
+    public void RenderCorrectlyWithInitialZero()
+    {
+        var cut = RenderComponent<Home>();
+        cut.MarkupMatches(@"<h1>Hello World</h1>");
+
+    }
+
+    [Fact]
+    public void RenderParagraphCorrectlyWithInitialZero()
+    {
+        var cut = RenderComponent<Home>();
+        cut.Find(cssSelector: "h1")
+        .MarkupMatches("<h1>Hello World</h1>");
+    }
+
+
+    [Fact]
+    public void IncrementCounterWhenButtonIsClicked()
+    {
+        var cut = RenderComponent<Home>();
+        cut.Find(cssSelector: "button")
+        .Click();
+        cut.Find(cssSelector: "p")
+        .MarkupMatches(@"<p>Current count: 1</p>");
+    }
+}
+```
+
 
 # ModelState
 
