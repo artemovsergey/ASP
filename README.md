@@ -1,8 +1,99 @@
 # ASP Core
 
-## Паттерны проектирования
+# Project.Domen
 
-![](/Patterns.png)
+- Models
+- Validations
+
+```xml
+  <ItemGroup>
+	  <PackageReference Include="FluentValidation" Version="11.9.1" />
+  </ItemGroup>
+```
+
+- Валидация
+```Csharp
+public class UserValidator : AbstractValidator<User>
+{
+    public UserValidator()
+    {
+        RuleFor(x => x.Name).Length(5).WithMessage("Please enter a name");
+        RuleFor(x => x.Surname).NotEmpty().WithMessage("Please enter a description");
+        RuleFor(x => x.Password).NotEmpty().WithMessage("Please enter a location");
+        //RuleFor(x => x.Patronymic).GreaterThan(0).WithMessage("Please enter a length");
+        RuleFor(x => x.Login).NotEmpty().WithMessage("Please add a route instruction");
+        RuleForEach(x => x.Items).SetValidator(new ItemValidator());
+        RuleFor(x => x.Items).NotEmpty().WithMessage("Please add a route instruction");
+        RuleFor(x => x.Waypoints).NotEmpty().WithMessage("Please add a waypoint");
+        Console.WriteLine("Работает валидатор UserValidator!");
+    }
+}
+```
+
+# Project.Infrastructure
+
+- Configurations
+- Migrations
+- Data/Context.cs
+
+- Пакеты
+```xml
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+```
+
+- Конфигурация
+```Csharp
+public class UserConfig : IEntityTypeConfiguration<User>
+{
+    public void Configure(EntityTypeBuilder<User> builder)
+    {
+        builder.Property(x => x.Name).IsRequired();
+        builder.Property(x => x.Description).IsRequired();
+        builder.Property(x => x.Location).IsRequired();
+        builder.Property(x => x.TimeInMinutes).IsRequired();
+        builder.Property(x => x.Length).IsRequired();
+    }
+}
+```
+
+- Контекст
+```Csharp
+public  class SportStoreContext : DbContext
+{
+    public DbSet<User> Users { get; set; }
+    public DbSet<Role> Role { get; set; }
+    public DbSet<Item> Items { get; set; }
+
+    public SportStoreContext()
+    {
+        //Database.EnsureDeleted();
+        //Database.EnsureCreated();    
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=SportStoreBlazor;Trusted_Connection=True;");
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        //modelBuilder.ApplyConfiguration(new UserConfig());
+    }
+}
+```
+
 
 # appsettings.json
 
