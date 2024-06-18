@@ -94,6 +94,120 @@ public  class SportStoreContext : DbContext
 }
 ```
 
+# Project.Application
+
+Структура
+- Interfaces
+- Repositories
+- Handlers
+- Requests
+- ApplicationService.cs
+
+
+Пакеты
+- Mediatr
+
+
+Сервисы
+```Csharp
+public static class ApplicationServicesRegistration
+{
+    // Extension method for IServiceCollection
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
+        // Add logging services
+        services.AddLogging();
+
+        // Add MediatR services and register services from the current assembly
+        services.AddMediatR(config => config.RegisterServicesFromAssemblies(
+               Assembly.GetExecutingAssembly()));
+
+        return services;
+    }
+}
+```
+
+Request
+```Csharp
+public record AddUserRequest(User user) : IRequest<AddUserRequest.Response>
+{
+    public const string RouteTemplate = "api/users";
+    public record Response(int userId);
+}
+
+public class AddUserRequestValidator : AbstractValidator<AddUserRequest>
+{
+    public AddUserRequestValidator()
+    {
+        RuleFor(x => x.user).SetValidator(new UserValidator());
+    }
+}
+```
+
+Handler
+```Csharp
+public class AddUserHandler : IRequestHandler<AddUserRequest,AddUserRequest.Response>
+{
+    private readonly HttpClient _httpClient;
+    private readonly string BaseUrl = "https://localhost:7214";
+    public AddUserHandler(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
+    public async Task<AddUserRequest.Response> Handle(AddUserRequest request, CancellationToken cancellationToken)
+    {
+        Console.WriteLine("Работает метод Handle из Handler");
+        var response = await _httpClient.PostAsJsonAsync<AddUserRequest>($"{BaseUrl}/{AddUserRequest.RouteTemplate}", request, cancellationToken);
+        if (response.IsSuccessStatusCode)
+        {
+            var userId = await response.Content.ReadFromJsonAsync<int>(cancellationToken:cancellationToken);
+            return new AddUserRequest.Response(userId);
+        }
+        else
+        {
+            return new AddUserRequest.Response(-1);
+        }
+    }
+}
+```
+
+Пример загрузки изображения
+
+```Csharp
+public record UploadUserImageRequest(int UserId, IBrowserFile File) : IRequest<UploadUserImageRequest.Response>
+{
+    public const string RouteTemplate = "/api/Users/{UserId}/images";
+    public record Response(string ImageName);
+}
+```
+
+```Csharp
+public class UploadUserImageHandler : IRequestHandler<UploadUserImageRequest, UploadUserImageRequest.Response>
+{
+    private readonly HttpClient _httpClient;
+    public UploadUserImageHandler(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
+    public async Task<UploadUserImageRequest.Response> Handle(UploadUserImageRequest request, CancellationToken cancellationToken)
+    {
+        var fileContent = request.File.OpenReadStream(request.File.Size, cancellationToken);
+
+        using var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(fileContent), "image", request.File.Name);
+        var response = await _httpClient.PostAsync(UploadUserImageRequest.RouteTemplate.Replace("{UserId}", request.UserId.ToString()), content, cancellationToken);
+        if (response.IsSuccessStatusCode)
+        {
+            var fileName = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
+            return new UploadUserImageRequest.Response(fileName);
+        }
+        else
+        {
+            return new UploadUserImageRequest.Response("");
+        }
+    }
+}
+```
 
 # appsettings.json
 
