@@ -209,6 +209,134 @@ public class UploadUserImageHandler : IRequestHandler<UploadUserImageRequest, Up
 }
 ```
 
+# Project.API
+
+Структура проекта:
+- ApiEndPoints
+- Controllers
+- Hubs
+- Images
+- Services
+
+Пакеты:
+```xml
+  <ItemGroup>
+    <PackageReference Include="Ardalis.ApiEndpoints" Version="4.1.0" />
+	<PackageReference Include="MediatR" Version="12.3.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.26.1" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.62.0" />
+    <PackageReference Include="Grpc.AspNetCore.Web" Version="2.62.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
+    <PackageReference Include="Grpc.Net.Client.Web" Version="2.62.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.62.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+  </ItemGroup>
+```
+
+Program
+```Csharp
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);         
+builder.Services.AddScoped<SportStoreContext>();
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<RoleRepository>();
+builder.Services.AddCors();
+builder.Services.AddSignalR();
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes
+    .Concat(new[] { "application/octet-stream" });
+});
+builder.Services.AddGrpc();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseWebAssemblyDebugging();
+}
+
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(),@"Images")),
+    RequestPath = new Microsoft.AspNetCore.Http.PathString("/Images")
+});
+
+app.UseHttpsRedirection();
+app.UseBlazorFrameworkFiles();
+app.MapHub<UserHub>("/test");
+app.MapControllers();
+app.UseCors(o => o.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseGrpcWeb();
+app.Run();
+```
+
+launchSettings.json
+```json
+"inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}"
+```
+
+ApiEndpotint для загрузки файла
+```Csharp
+public class UploadUserImageEndpoint : EndpointBaseAsync.WithRequest<int>.WithActionResult<string>
+{
+    private readonly SportStoreContext _database;
+    public UploadUserImageEndpoint(SportStoreContext database)
+    {
+        _database = database;
+    }
+
+    [HttpPost(UploadUserImageRequest.RouteTemplate)]
+    public override async Task<ActionResult<string>> HandleAsync([FromRoute] int UserId, CancellationToken cancellationToken = default)
+    {
+        var User = await _database.Users.SingleOrDefaultAsync(x => x.Id == UserId,cancellationToken);
+        if (User is null)
+        {
+            return BadRequest("User does not exist.");
+        }
+        var file = Request.Form.Files[0];
+        if (file.Length == 0)
+        {
+            return BadRequest("No image found.");
+        }
+        var filename = $"{Guid.NewGuid()}.jpg";
+        var saveLocation = Path.Combine(Directory.GetCurrentDirectory(), "Images", filename);
+        var resizeOptions = new ResizeOptions
+        {
+            Mode = ResizeMode.Pad,
+            Size = new Size(640, 426)
+        };
+        using var image = Image.Load(file.OpenReadStream());
+        image.Mutate(x => x.Resize(resizeOptions));
+        await image.SaveAsJpegAsync(saveLocation,cancellationToken: cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(User.Image))
+        {
+            System.IO.File.Delete(Path.Combine(Directory.GetCurrentDirectory(), "Images", User.Image));
+        }
+
+        User.Image = filename;
+        await _database.SaveChangesAsync(cancellationToken);
+        return Ok(User.Image);
+    }
+}
+```
+
+
+
+
 # appsettings.json
 
 ```JSON
