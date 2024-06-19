@@ -546,35 +546,6 @@ public class ApiResult<T>
  }
 ```
 
-# Application Services
-
-```Csharp
-public static class ApplicationServicesRegistration
-{
-    // Extension method for IServiceCollection
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
-    {
-        // Add logging services
-        services.AddLogging();
-
-        // Add MediatR services and register services from the current assembly
-        services.AddMediatR(config => config.RegisterServicesFromAssemblies(
-               Assembly.GetExecutingAssembly()));
-
-        // Add validators from the assembly of CreateUserCommandValidator
-        services.AddValidatorsFromAssembly(typeof(CreateUserCommandValidator).Assembly);
-
-        // Add transient service for the validation pipeline
-        services.AddTransient(
-           typeof(IPipelineBehavior<,>),
-           typeof(RequestValidationPipeline<,>));
-
-        // Return the service collection
-        return services;
-    }
-}
-```
-
 # OnModelCreating
 
 ```Csharp
