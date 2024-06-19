@@ -521,51 +521,7 @@ public class ApiResult<T>
 }
 ```
 
-# Валидация FluetnValidation
 
-```Csharp
-    public class UserValidator : AbstractValidator<User>
-    {
-        public UserValidator()
-        {
-            RuleFor(user => user.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("A valid email address is required.");
-        }
-    }  
-```
-
-Program.cs
-```Csharp
-builder.Services.AddScoped<IValidator<User>, UserValidator>();
-```
-
-# Проверка валидатора
-
-```Csharp
-        private readonly IValidator<User> _userValidator;
-        var validationResult = _userValidator.Validate(user);
-
-        if (!validationResult.IsValid)
-        {
-            foreach (var failure in validationResult.Errors)
-            {
-                ModelState.AddModelError(failure.PropertyName, failure.ErrorMessage);
-            }
-
-            return BadRequest(ModelState);
-        }
-```
-
-# Запрос на проверку уникальности
-```Csharp
-    [HttpPost]
-    [Route("isUniqName")]
-    public async Task<bool> IsNameUniq(string role)
-    {
-       return await _db.Roles.AnyAsync(r => r.Name == role);
-    }
-```
 
 # Тестовые данные Bogus
 ```Csharp
