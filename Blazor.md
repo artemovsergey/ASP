@@ -287,8 +287,6 @@ RouteAttribute (директива @page razor компилируется в Rou
 имеет бритвенную директиву @page "/counter", и когда URL в браузере
 совпадает с /counter, он отобразит компонент Counter в компоненте MainLayout.
 
-Переведено с помощью DeepL.com (бесплатная версия)
-
 
 
 # MainLayout
