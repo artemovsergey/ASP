@@ -1089,7 +1089,7 @@ else
 }
 ```
 
-## InputChange
+# InputChange
 
 ```
 <input type="number"
@@ -1098,12 +1098,13 @@ else
  => increment = int.Parse($"{e.Value}"))" />
 ```
 
-## Опции
+# Опции по умолчанию
 
 - Preventing Default Actions - отмена действий браузера по умолчанию
 - Stopping Event Propagation - отмена действий событий вверх по дереву
 
-# Format
+# Форматирование даты
+
 - форматирование даты  <input @bind="@Today" @bind:format="yyyy-MM-dd" />
 
 # Обновление интерфейса StateHasChange
