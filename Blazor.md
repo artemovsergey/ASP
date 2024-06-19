@@ -199,6 +199,23 @@ public class AppState
 
 # LocalStorage
 
+
+using Blazored LocalStorage
+
+Для хранения состояния в LocalStorege можно применить пакет
+Blazored LocalStorage
+
+```Csharp
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+var firstName = await localStorage.GetItemAsync<string>("EmployeeFirstName");
+```
+
+- SetItem()
+- GetItem()
+- ContainKey()
+- RemoveItem()
+
+
 ```Csharp
 public class FavoriteUsersState
 {
@@ -488,23 +505,6 @@ public async Task<IEnumerable<Employee>> GetAllEmployees(){
 return await JsonSerializer.DeserializeAsync<IEnumerable<Employee>> (await _httpClien.GetStreamAsync(), new JsonSerializerOption() { PropertyNameCaseInsensitive = true } );
 }
 ```
-
-#  LocalStorage
-
-using Blazored LocalStorage
-
-Для хранения состояния в LocalStorege можно применить пакет
-Blazored LocalStorage
-
-```Csharp
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
-var firstName = await localStorage.GetItemAsync<string>("EmployeeFirstName");
-```
-
-- SetItem()
-- GetItem()
-- ContainKey()
-- RemoveItem()
 
 # Валидация DataAnnotation
 
