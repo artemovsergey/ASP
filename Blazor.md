@@ -702,7 +702,7 @@ URL должен начинаться с _content/{LibraryProjectName} и ссы
 <img src="_content/Components.Library/cloud.png" alt="Cloud"/>
 ```
 
-# Проект для тестирование компонентов
+# Project.Test
 
 - Пакеты
 
