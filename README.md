@@ -1178,10 +1178,6 @@ public class UserController : ControllerBase
 
 ```
 
-
-
-
-
 # Регистрация в контейнере конкретного конструктора
 
 ```Csharp
@@ -1189,10 +1185,4 @@ services.AddSingleton( new EmailServerSettings ( host: "smtp.server.com", port: 
 services.AddScoped( provider => new EmailServerSettings ( host: "smtp.server.com", port: 25 ));
 
 Сервис должен использовать только те зависимости, жизненный цикл которых превышает или эквивалентен жизненному циклу сервиса. Сервис, зарегистрированный как синглтон, может безопасно использовать только singleton- зависимости. Сервис, зарегистрированный как scoped, может безопасно использовать scoped- или singleton-зависимости. Кратковременный сервис может использовать зависимости с любым жизненным циклом.
-```
-
-# Migration
-
-```
-dotnet ef migrations add "SampleMigration" --project src\Infrastructure --startup-project src\Web --output-dir Data\Migrations
 ```
