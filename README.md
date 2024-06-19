@@ -437,7 +437,7 @@ public static bool IsValidProperty(string propertyName,
 
 ```
 
-# Настройка формата даты для PostgreSQL в файле Context.cs
+# Формат даты Postgres
 
 ```
     static NewsAggregationContext()
