@@ -52,6 +52,34 @@ public class UserValidator : AbstractValidator<User>
   </ItemGroup>
 ```
 
+- Сервисы
+```Csharp
+public static class InfrastructureServicesRegistration
+{
+    // Extension method for IServiceCollection
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Add DbContext to the services
+        services.AddDbContext<AppDbContext>(opts =>
+        {
+            opts.UseSqlServer(configuration.GetConnectionString("Default") ??
+                "Server=.; Database=PosteBin; Trusted_Connection=SSPI; Encrypt=Optional");
+        });
+
+        // Register repositories and services
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRecordRepository, RecordRepository>();
+        services.AddScoped<IRecordCloudService, CloudService>();
+        services.AddScoped<IQRCodeGeneratorService, QRCodeGeneratorService>();
+        services.AddScoped<ITelegramService, TelegramService>();
+
+        return services;
+    }
+}
+```
+
+
 - Конфигурация
 ```Csharp
 public class UserConfig : IEntityTypeConfiguration<User>
@@ -689,33 +717,7 @@ public sealed class QRCodeGeneratorService : IQRCodeGeneratorService
 }
 ```
 
-# Infrastructure Services
 
-```Csharp
-public static class InfrastructureServicesRegistration
-{
-    // Extension method for IServiceCollection
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
-    {
-        // Add DbContext to the services
-        services.AddDbContext<AppDbContext>(opts =>
-        {
-            opts.UseSqlServer(configuration.GetConnectionString("Default") ??
-                "Server=.; Database=PosteBin; Trusted_Connection=SSPI; Encrypt=Optional");
-        });
-
-        // Register repositories and services
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IRecordRepository, RecordRepository>();
-        services.AddScoped<IRecordCloudService, CloudService>();
-        services.AddScoped<IQRCodeGeneratorService, QRCodeGeneratorService>();
-        services.AddScoped<ITelegramService, TelegramService>();
-
-        return services;
-    }
-}
-```
 
 # Configure Swagger for API documentation
 
