@@ -931,7 +931,7 @@ public class CounterShould : TestContext
  <link href="SportStore.Blazor.styles.css" rel="stylesheet" type="text/css">
 ```
 
-# События
+# Сопоставление событий Blazor и js
 
 Если элемент html имеет атрибуты вида on{СОБЫТИЕ}, которые позволяют связать событие с некоторой функцией javascript (например, атрибут onclick), то Blazor предоставляет их двойники - атрибуты типа @on{СОБЫТИЕ}, которые позвляют прикрепить к событию в качестве обработчика метод компонента.
 
