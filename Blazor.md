@@ -911,7 +911,7 @@ public class CounterShould : TestContext
 
 ```
 
-# Компонент ImputSelect
+# Компонент InputSelect
 
 ```Csharp
     <InputSelect @bind-Value="@user.RoleId" multiple>
