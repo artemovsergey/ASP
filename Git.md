@@ -87,7 +87,8 @@ git checkout -b [название-ветки]
 - https://gitimmersion.com/lab_08.html
 - https://github.com/git-school/visualizing-git
 
-
-
+- https://git-school.github.io/visualizing-git/
+- https://learngitbranching.js.org/?locale=ru_RU
+- https://git-scm.com/doc
 
 
