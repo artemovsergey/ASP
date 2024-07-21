@@ -1,4 +1,4 @@
-# Docker-compose
+# Docker-compose: .net, pg, pgadmin
 
 ```yml
 version: '1.0'
