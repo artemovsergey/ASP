@@ -375,6 +375,18 @@ public class UploadUserImageEndpoint : EndpointBaseAsync.WithRequest<int>.WithAc
     "PostgreSQL": "Host=localhost;Port=5432;Database=SportStore;Username=postgres;Password=root",
     "MySQL": "server=localhost;user=root;password=root;database=SportStore;",
     "SQLite": "Data Source=SportStore.db"
+  },
+
+  "Kestrel": {
+    "Endpoints": {
+      "Https": {
+        "Url": "https://*:5001",
+        "Certificate": {
+          "Path": "/app/certificates/2.pfx",
+          "Password": "123"
+        }
+      }
+    }
   }
 }
 
