@@ -57,3 +57,23 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     });
 }
 ```
+
+# Генерация контроллеров и конечных точек
+Если класс контекста лежит в другом проекте, то рядом с классом контекста создаем класс
+
+```Csharp
+public class ExampleContextFactory : IDesignTimeDbContextFactory<ExampleContext>
+{
+    public ExampleContext CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<ExampleContext>();
+        optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=Example;Username=postgres;Password=root");
+
+        return new ExampleContext(optionsBuilder.Options);
+    }
+}
+```
+
+
+
+
