@@ -3,6 +3,9 @@
 - docker network ls
 - docker network inspect example_asp-dotnet-network
 
+Замечание:  Имена сервисов Docker работают только с кодом, запущенным в сети контейнеров
+
+
 # Docker-compose: .net, pg, pgadmin
 
 ```yml
