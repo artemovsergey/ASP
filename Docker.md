@@ -1,3 +1,8 @@
+# Команды 
+
+- docker network ls
+- docker network inspect example_asp-dotnet-network
+
 # Docker-compose: .net, pg, pgadmin
 
 ```yml
