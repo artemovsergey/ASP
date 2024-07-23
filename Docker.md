@@ -3,10 +3,10 @@
 - docker network ls
 - docker network inspect example_asp-dotnet-network
 
-Замечание:  Имена сервисов Docker работают только с кодом, запущенным в сети контейнеров
+Замечание: имена сервисов Docker работают только с кодом, запущенным в сети контейнеров
 
 
-# Docker-compose: .net, pg, pgadmin
+# Docker-compose: nginx,angular,.net, pg, pgadmin
 
 ```yml
 version: '1.0'
@@ -16,17 +16,50 @@ networks:
     driver: bridge
 
 services:
+
+  nginx:
+    container_name: ContainerNginx
+    build: 
+      context: .
+      dockerfile: loadbalancer/Dockerfile
+    restart: always
+    ports:
+      - "80:80"
+    links:
+      - api
+      - angular
+    depends_on:
+      - db
+      - api
+      - angular
+    networks:
+      - asp-dotnet-network 
+
+  angular:
+    container_name: ContainerAngular
+    restart: always
+    build:
+      context: .
+      dockerfile: Example.Angular/Dockerfile
+    environment:
+      - Production
+    ports:
+      - "4200:4200"
+    networks:
+      - asp-dotnet-network
+    depends_on:
+      - db
+      - api
   api:
     container_name: ContainerAPI
     restart: always
-    image: ${DOCKER_REGISTRY-}exampleapi
     build:
       context: .
       dockerfile: Example.API/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - "5000:5001"
+      - "5010:5001"
     networks:
       - asp-dotnet-network
     depends_on:
@@ -44,7 +77,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - asp-dotnet-network
-
   pgadmin:
     container_name: ContainerPgAdmin
     image: dpage/pgadmin4
@@ -62,28 +94,49 @@ services:
 volumes:
     postgres_data:
 
-```
-
-
-# Nginx
 
 ```
-worker_processes 4;
-events { worker_connections 1024; }
+
+# nginx.conf
+
+```
+  events {
+    worker_connections 1024;
+  }
 http {
-    server {
-        listen 80;
-        location /
-        {
-         proxy_pass http://client:3000;
-        }
+  upstream angular {
+    # These are references to our backend containers, facilitated by
+    # Compose, as defined in docker-compose.yml
+    server angular:4200;
+  } 
+  upstream api {
+    # These are references to our backend containers, facilitated by
+    # Compose, as defined in docker-compose.yml
+    server api:5001;
+  }
+  
 
-        location /api/users 
-        {
-         proxy_pass http://backend:80/api/user/users;
-        }
+ server {
+    listen 80;
+    server_name angular;
+    server_name api;
+
+    location / {
+       resolver 127.0.0.11 valid=30s;
+       proxy_pass http://angular;
+       # для работы websocket
+       proxy_set_header Upgrade $http_upgrade;
+       proxy_set_header Connection "Upgrade";
+       proxy_set_header Host $host;
     }
+    location /api {
+       resolver 127.0.0.11 valid=30s;
+       proxy_pass https://api;
+       proxy_set_header Host $host;
+    }
+  }
 }
+
 ```
 
 - docker compose up --build
