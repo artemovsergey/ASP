@@ -8,6 +8,8 @@
 
 # Docker-compose: nginx,angular,.net, pg, pgadmin
 
+- docker-compose up --build --watch
+
 ```yml
 version: '1.0'
 
@@ -17,14 +19,14 @@ networks:
 
 services:
 
-  nginx:
+  nginx: #name of the fourth service
     container_name: ContainerNginx
     build: 
       context: .
       dockerfile: loadbalancer/Dockerfile
     restart: always
     ports:
-      - "80:80"
+      - "80:80" #specify ports forewarding
     links:
       - api
       - angular
@@ -41,6 +43,17 @@ services:
     build:
       context: .
       dockerfile: Example.Angular/Dockerfile
+
+    develop:
+      watch:
+        - action: sync
+          path: ./Example.Angular/src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+
     environment:
       - Production
     ports:
@@ -93,7 +106,6 @@ services:
 
 volumes:
     postgres_data:
-
 
 ```
 
