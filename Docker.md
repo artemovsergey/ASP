@@ -9,6 +9,8 @@
 # Docker-compose: nginx,angular,.net, pg, pgadmin
 
 - docker-compose up --build --watch
+Замечание: можно использовать docker-compose.override.yml или docker-compose.prod.yml
+
 
 ```yml
 version: '3.0'
