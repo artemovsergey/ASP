@@ -100,12 +100,18 @@ services:
       dockerfile: Example.API/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5001
+      - ASPNETCORE_HTTPS_PORTS=5001
     ports:
       - "5010:5001"
     networks:
       - asp-dotnet-network
     depends_on:
       - db
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      
   db:
     image: postgres:latest
     container_name: ContainerPostgreSQL
