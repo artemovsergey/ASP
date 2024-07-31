@@ -144,6 +144,76 @@ volumes:
 
 ```
 
+# Docker-compose for production
+```yml
+services:
+
+  nginx:
+    container_name: ContainerNginx
+    image: artik3314/react_nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - api
+      - angular
+    depends_on:
+      - db
+      - api
+      - angular
+    networks:
+      - asp-dotnet-network 
+
+  angular:
+    container_name: ContainerAngular
+    restart: always
+    image: artik3314/react_angular:latest
+    environment:
+      - Production
+    ports:
+      - "4200:4200"
+    networks:
+      - asp-dotnet-network
+    depends_on:
+      - db
+      - api
+  api:
+    container_name: ContainerAPI
+    restart: always
+    image: artik3314/react_api:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5010:5001"
+    networks:
+      - asp-dotnet-network
+    depends_on:
+      - db
+  db:
+    image: postgres:latest
+    container_name: ContainerPostgreSQL
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: Example
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - asp-dotnet-network
+volumes:
+    postgres_data:
+      
+networks:
+  asp-dotnet-network:
+    driver: bridge
+
+```
+
+
+
 # nginx.conf
 
 ```
