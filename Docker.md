@@ -11,7 +11,7 @@
 - docker-compose up --build --watch
 
 ```yml
-version: '1.0'
+version: '3.0'
 
 networks:
   asp-dotnet-network:
@@ -19,14 +19,41 @@ networks:
 
 services:
 
-  nginx: #name of the fourth service
+  # letsencrypt:
+  #   image: jrcs/letsencrypt-nginx-proxy-companion
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ./letsencrypt:/etc/letsencrypt
+  #     - ./webroot:/var/www/certbot
+  #     - ./certs:/etc/nginx/certs
+  #     - ./html:/usr/share/nginx/html
+  #     - ./acme:/etc/acme.sh  
+  #   environment:
+  #     - NGINX_PROXY_CONTAINER=nginx
+  #     - NGINX_DOCKER_GEN_CONTAINER=nginx
+  #   depends_on:
+  #     - nginx 
+
+  # certbot:
+  #   image: certbot/certbot
+  #   volumes:
+  #     - ./letsencrypt:/etc/letsencrypt
+  #     - ./webroot:/var/www/certbot
+  #   command: certonly --register-unsafely-without-email --webroot -w /var/www/certbot -d example.com -d www.example.com --agree-tos --no-eff-email --force-renewal
+  #   environment:
+  #     - WEBROOT=/var/www/certbot
+  #   depends_on:
+  #     - nginx
+
+  nginx:
     container_name: ContainerNginx
     build: 
       context: .
       dockerfile: loadbalancer/Dockerfile
     restart: always
     ports:
-      - "80:80" #specify ports forewarding
+      - "80:80"
+      - "443:443"
     links:
       - api
       - angular
@@ -44,15 +71,15 @@ services:
       context: .
       dockerfile: Example.Angular/Dockerfile
 
-    develop:
-      watch:
-        - action: sync
-          path: ./Example.Angular/src
-          target: /app/src
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: package.json
+#    develop:
+#      watch:
+#        - action: sync
+#          path: ./Example.Angular/src
+#          target: /app/src
+#          ignore:
+#            - node_modules/
+#        - action: rebuild
+#          path: package.json
 
     environment:
       - Production
