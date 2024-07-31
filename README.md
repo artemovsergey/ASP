@@ -121,6 +121,23 @@ public  class SportStoreContext : DbContext
     }
 }
 ```
+```
+/// <summary>
+/// Клаас для работы автогенерации restAPI черезе IDE по модели и контексту
+/// если конструктор с параметрами
+/// </summary>
+public class ExampleContextFactory : IDesignTimeDbContextFactory<ExampleContext>
+{
+    public ExampleContext CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<ExampleContext>();
+        optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=Example;Username=postgres;Password=root");
+
+        return new ExampleContext(optionsBuilder.Options);
+    }
+}
+```
+
 
 # Project.Application
 
