@@ -384,27 +384,29 @@ public class UploadUserImageEndpoint : EndpointBaseAsync.WithRequest<int>.WithAc
 
 # appsettings.json
 
-```JSON
+```json
 {
-  "ConnectionStrings": {
-    "MSSQL": "Server=WIN-PO9SVP3KRMT\\MSSQLSERVER01;Database=SportStore;Trusted_Connection=True;MultipleActiveResultSets=true",
-    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=SportStore;Trusted_Connection=True;MultipleActiveResultSets=true",
-    "PostgreSQL": "Host=localhost;Port=5432;Database=SportStore;Username=postgres;Password=root",
-    "MySQL": "server=localhost;user=root;password=root;database=SportStore;",
-    "SQLite": "Data Source=SportStore.db"
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
   },
+  "AllowedHosts": "*",
 
   "Kestrel": {
     "Endpoints": {
       "Https": {
-        "Url": "https://*:5001",
+        "Url": "https://localhost:5001",
         "Certificate": {
-          "Path": "/app/certificates/2.pfx",
-          "Password": "123"
+          "Path": "./../certificate/localhost.crt",
+          "KeyPath": "./../certificate/localhost.key"
         }
       }
     }
   }
+  
+  
 }
 
 ```
