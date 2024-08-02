@@ -1254,3 +1254,62 @@ services.AddScoped( provider => new EmailServerSettings ( host: "smtp.server.com
 
 Сервис должен использовать только те зависимости, жизненный цикл которых превышает или эквивалентен жизненному циклу сервиса. Сервис, зарегистрированный как синглтон, может безопасно использовать только singleton- зависимости. Сервис, зарегистрированный как scoped, может безопасно использовать scoped- или singleton-зависимости. Кратковременный сервис может использовать зависимости с любым жизненным циклом.
 ```
+
+# Отправка токена в заголовке Authorization
+
+```Csharp
+@page "/news"
+
+
+<PageTitle> Новости </PageTitle>
+
+
+@using Microsoft.AspNetCore.Authorization
+@using RusRoads.Domen.Models
+@using System.Net.Http.Headers
+
+
+
+@inject IHttpClientFactory factory
+
+@if (NewsList == null)
+{
+    <h1>Загрузка</h1>
+}
+else
+{
+    @foreach (var n in NewsList)
+    {
+        
+        <div class="row">
+            <Widget News="@n"/>
+        </div>
+    }
+
+    
+
+
+}
+
+
+
+
+@code {
+
+    public IEnumerable<RusRoads.Domen.Models.News> NewsList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlciIsImV4cCI6MTcxNjQwNDgyMiwiaXNzIjoiWW91cklzc3VlciIsImF1ZCI6IllvdXJBdWRpZW5jZSJ9.d5HH8AQRhKZT9yGbxX7nMT3_xfR2_-tkK3_rqoxGUt4"; // Получите этот токен от сервера аутентификации
+        HttpClient http = factory.CreateClient("API");
+
+        http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        NewsList = await http.GetFromJsonAsync<IEnumerable<RusRoads.Domen.Models.News>>($"{http.BaseAddress}/news");
+    }
+
+}
+
+```
+
+
