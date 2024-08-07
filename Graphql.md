@@ -143,4 +143,15 @@ public class Mutation
 }
 ```
 
+# Запрос Muration
+
+```graphql
+mutation UpdateCity($user: UserDTOInput!) {
+ addUser(userDTO: $user) {
+ id
+ email
+ password
+ }
+}
+```
 
