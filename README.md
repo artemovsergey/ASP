@@ -1331,5 +1331,7 @@ catch (Exception ex) when (
 }
 ```
 
+# Tuple
 
+tuple - можно применять как аналог DTO или ViewModel при отправке ответа
 
