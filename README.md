@@ -1339,3 +1339,15 @@ tuple - можно применять как аналог DTO или ViewModel �
 
 https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/
 
+
+# Learn
+
+- using static
+- reflection
+- lambda
+- null 
+- оператор _
+- record
+- generic
+- Action
+- Func 
