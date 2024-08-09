@@ -1335,3 +1335,7 @@ catch (Exception ex) when (
 
 tuple - можно применять как аналог DTO или ViewModel при отправке ответа
 
+# String
+
+https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/
+
