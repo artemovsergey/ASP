@@ -1314,3 +1314,22 @@ else
 # Проверка jwt
 - https://dinochiesa.github.io/jwt/
 
+
+# try-catch
+
+```Csharp
+{
+ // ...
+}
+catch (Exception ex) when (
+ (ex is AggregateException
+ && ex.InnerException is HttpRequestException)
+ || ex is HttpRequestException
+ || ex is TaskCanceledException)
+{
+ return null;
+}
+```
+
+
+
