@@ -818,12 +818,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 ```
 
-# Configure Serilog for logging
-```Csharp
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration).CreateLogger();
-builder.Host.UseSerilog();
-```
+
 
 # Configure authentication with JWT
 ```Csharp
@@ -946,6 +941,13 @@ public sealed class ExceptionHandlingMiddlwere : IMiddleware
 
 # Serilog 
 
+```Csharp
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration).CreateLogger();
+builder.Host.UseSerilog();
+```
+
+appsettings.json
 ```json
 "Serilog": {
   "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
