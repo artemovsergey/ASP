@@ -4,6 +4,7 @@
 
 - Models
 - Validations
+- Exceptions
 
 ```xml
   <ItemGroup>
