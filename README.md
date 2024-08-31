@@ -2,7 +2,7 @@
 
 # Project.Domen
 
-- Models
+- Models, Validations, Exceptions
 
 ```Chsarp
 public abstract class Base
@@ -16,8 +16,7 @@ public abstract class Base
 ```
 
 
-- Validations
-- Exceptions
+
 
 
 - Package
