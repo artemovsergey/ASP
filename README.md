@@ -25,8 +25,7 @@ public abstract class Base
 	  <PackageReference Include="FluentValidation" Version="11.9.1" />
   </ItemGroup>
 ```
-
-- Валидация
+### Валидация
 ```Csharp
 public class UserValidator : AbstractValidator<User>
 {
