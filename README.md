@@ -44,22 +44,48 @@ public class UserValidator : AbstractValidator<User>
 # Project.Application
 - Interfaces, Repositories, Handlers, Requests, Generics, Behaviors ApplicationService.cs
 
-### Package
+## Package
 - Mediatr
 
-### ApplicationService.cs
+## ApplicationService.cs
 ```Csharp
 public static class ApplicationServicesRegistration
 {
-    // Extension method for IServiceCollection
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services,IConfiguration configuration)
     {
-        // Add logging services
-        services.AddLogging();
+        //services.AddLogging();
 
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+        
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        
         // Add MediatR services and register services from the current assembly
         services.AddMediatR(config => config.RegisterServicesFromAssemblies(
-               Assembly.GetExecutingAssembly()));
+            Assembly.GetExecutingAssembly()));
+        
+        // Behaviors mediatr request pipeline
+        services.AddTransient(typeof(IPipelineBehavior<,>),
+            typeof(PerformanceBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>),
+            typeof(ValidationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>),
+            typeof(UnhandledExceptionBehavior<,>));
+        
+        
+        //services.Configure<MailSettings>(config.GetSection("MailSettings"));
+        services.AddTransient<IDateTime, DateTimeService>();
+        services.AddTransient<IEmailService, EmailService>();
+        services.AddTransient<ICsvFileBuilder, CsvFileBuilderService>();
+        
+        // Redis
+        
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("RedisConnection");
+            var assemblyName = Assembly.GetExecutingAssembly().GetName();
+            options.InstanceName = assemblyName.Name;
+        });
+        
 
         return services;
     }
@@ -308,11 +334,299 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         return await next();
     }
 }
-
 ```
 
+### Handlers
+
+```Chsarp
+public class AddRepositoryHandler : IRequestHandler<AddRepositoryRequest, AddRepositoryRequest.Response>
+{
+    private readonly ProjectStoreContext _db;
+    private readonly ILogger<AddRepositoryHandler> _log;
+    public AddRepositoryHandler(ProjectStoreContext db, ILogger<AddRepositoryHandler> log)
+    {
+        _db = db;
+        _log = log;
+    }
+    
+    public async Task<AddRepositoryRequest.Response> Handle(AddRepositoryRequest request, CancellationToken cancellationToken)
+    {
+        _log.LogWarning("Создание объекта репозитория");
+
+        try
+        {
+            _db.Repositories.Add(request.Repository);
+            await _db.SaveChangesAsync();
+            _log.LogInformation($"Репозиторий создан!"); 
+        }
+        catch (NpgsqlException e)
+        {
+            _log.LogError($"NpgsqlException: {e.InnerException}"); 
+        }
+        catch (Exception e)
+        {
+            _log.LogError($"Exception: {e.InnerException}");
+        }
+        
+        //Unit.Value
+        return new AddRepositoryRequest.Response(new Repository());
+        
+    }
+}
+```
+
+```Csharp
+public class RepositoryHandler : IRequestHandler<RepositoryRequest, RepositoryRequest.Response>
+{
+    private readonly ProjectStoreContext _db;
+    private readonly ILogger<RepositoryHandler> _log;
+    public RepositoryHandler(ProjectStoreContext db, ILogger<RepositoryHandler> log)
+    {
+        _db = db;
+        _log = log;
+    }
+
+    public async Task<RepositoryRequest.Response> Handle(RepositoryRequest request, CancellationToken cancellationToken)
+    {
+        
+        if (!string.IsNullOrEmpty(request.sortColumn) && IsValidProperty(request.sortColumn))
+        {
+            request = request with
+            {
+                sortOrder = !string.IsNullOrEmpty(request.sortOrder) && request.sortOrder.ToUpper() == "ASC"
+                    ? "ASC"
+                    : "DESC"
+            };
+        }
+        
+        IQueryable<Repository> newsList = _db.Repositories;
+
+        if (!string.IsNullOrEmpty(request.filterColumn)
+            && !string.IsNullOrEmpty(request.filterQuery)
+            && IsValidProperty(request.filterColumn))
+        {
+            //users = users.Where(u => $"{filterColumn}".Contains($"{filterQuery})"));
+            newsList = newsList.Where($"{request.filterColumn}.Contains(@0)", request.filterQuery);
+
+            Console.WriteLine($"Фильтрация: {newsList.Count()}");
+
+            // Если в базе данных нет записей, то поиск по API Github и сохранение в базу
+            if (newsList.Count() == 0)
+            {
+                var githubpublicapi = $"https://api.github.com/search/repositories?q={request.filterQuery}";
+                
+                HttpClient client = new();
+                client.DefaultRequestHeaders.Add("User-Agent", "YourAppName/1.0");
+                HttpResponseMessage response = await client.GetAsync(githubpublicapi);
+                
+                string responseBody = await response.Content.ReadAsStringAsync();
+                
+                var jsonObject = JObject.Parse(responseBody);
+                JToken items = jsonObject["items"];
+                
+                // Todo Настроить hash для уникальности
+                foreach (JToken item in items)
+                {
+                    Console.WriteLine(item["name"]);
+                    Console.WriteLine("--------------------------");
+                    
+                    var repo = new Repository
+                    {
+                        Name = item["name"].ToString(),
+                        Owner = item["owner"]["login"].ToString(),
+                        Stargazers = item["stargazers_count"].Value<int>(),
+                        Watchers = item["watchers_count"].Value<int>(),
+                        Url = item["html_url"].ToString()
+                    };
+                    _db.Repositories.Add(repo);
+                    await _db.SaveChangesAsync();
+                }
+                
+            }
+            
+            
+        }
+        
+        
+        var respositories = await newsList.OrderBy($"{request.sortColumn} {request.sortOrder}")
+            .Skip(request.pageIndex * request.pageSize)
+            .Take(request.pageSize)
+            .ToListAsync();
+        
+        var apiresult = new ApiResult<Repository>((List<Repository>)respositories,
+            _db.Repositories.Count(),
+            request.pageIndex,
+            request.pageSize,
+            request.sortColumn,
+            request.sortOrder,
+            request.filterColumn,
+            request.filterQuery);
+        
+        return new RepositoryRequest.Response(apiresult);
+    }
+    
+    public static bool IsValidProperty(string propertyName,
+        bool throwExceptionIfNotFound = true)
+    {
+        var prop = typeof(Repository).GetProperty(
+            propertyName,
+
+            BindingFlags.IgnoreCase |
+            BindingFlags.Public |
+            BindingFlags.Instance);
+        if (prop == null && throwExceptionIfNotFound)
+            throw new NotSupportedException(
+                string.Format($"ERROR: Property '{propertyName}' does not exist.")
+            );
+        return prop != null;
+    }
+}
+```
+```Csharp
+public class DeleteRepositoryHandler : IRequestHandler<DeleteRepositoryRequest, DeleteRepositoryRequest.Response>
+{
+    private readonly ProjectStoreContext _db;
+    private readonly ILogger<DeleteRepositoryHandler> _log;
+    public DeleteRepositoryHandler(ProjectStoreContext db, ILogger<DeleteRepositoryHandler> log)
+    {
+        _db = db;
+        _log = log;
+    }
+    
+    public async Task<DeleteRepositoryRequest.Response> Handle(DeleteRepositoryRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            _db.Remove(request.Repository);
+            await _db.SaveChangesAsync();
+            _log.LogInformation($"Репозиторий с Id = {request.Repository.Id} удален!" );
+        }
+        catch (NpgsqlException e)
+        {
+            _log.LogError($"NpgsqlException: {e.InnerException}");
+        }
+        catch (Exception e)
+        {
+            _log.LogError($"Exception: {e.InnerException}");
+        }
+
+        return new DeleteRepositoryRequest.Response(true);
+    }
+}
+```
+```Csharp
+public class EditRepositoryHandler : IRequestHandler<EditRepositoryRequest, EditRepositoryRequest.Response>
+{
+    private readonly ProjectStoreContext _db;
+    private readonly ILogger<EditRepositoryHandler> _log;
+
+    public EditRepositoryHandler(ProjectStoreContext db, ILogger<EditRepositoryHandler> log)
+    {
+        _db = db;
+        _log = log;
+    }
 
 
+    public async Task<EditRepositoryRequest.Response> Handle(EditRepositoryRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            _db.Update(request.Repository);
+            await _db.SaveChangesAsync();
+            _log.LogInformation($"Репозиторий отредактирован");
+        }
+        catch (NpgsqlException e)
+        {
+            _log.LogError($"NpgsqlException: {e.InnerException}");
+        }
+        catch (Exception e)
+        {
+            _log.LogError($"Exception: {e.InnerException}");
+        }
+
+        return new EditRepositoryRequest.Response(request.Repository);
+    }
+}
+```
+
+### AutoMapper Profile
+
+```Csharp
+public class MappingProfile : Profile
+{
+    public MappingProfile()
+    {
+        ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
+    }
+    private void ApplyMappingsFromAssembly(Assembly
+        assembly)
+    {
+        var types = assembly.GetExportedTypes()
+            .Where(t => t.GetInterfaces().Any(i =>
+                i.IsGenericType && i.GetGenericTypeDefinition()
+                == typeof(IMapFrom<>)))
+            .ToList();
+        foreach (var type in types)
+        {
+            var instance = Activator.CreateInstance(type);
+            var methodInfo = type.GetMethod("Mapping")
+                             ??
+                             type.GetInterface("IMapFrom`1").GetMethod
+                                 ("Mapping");
+            methodInfo?.Invoke(instance, new object[] { this
+            });
+        }
+    }
+}
+```
+
+### Requests
+
+```Csharp
+public record AddRepositoryRequest(Repository repo) : IRequest<AddRepositoryRequest.Response>
+{
+    public Repository Repository = repo;
+    public const string RouteTemplate = "/api/Repository";
+    public record Response(Repository repo);
+}
+
+public class AddRepositoryRequestValidator :  AbstractValidator<AddRepositoryRequest>
+{
+    private readonly ProjectStoreContext _context;
+    public AddRepositoryRequestValidator(ProjectStoreContext context)
+    {
+        _context = context;
+        RuleFor(v => v.Repository.Name)
+            .NotEmpty().WithMessage("Name is required");
+    }
+}
+
+public class DeleteRepositoryRequest(Repository repo) : IRequest<DeleteRepositoryRequest.Response>
+{
+    public Repository Repository = repo;
+    public record Response(bool Result);
+}
+
+public class EditRepositoryRequest(Repository repo) : IRequest<EditRepositoryRequest.Response>
+{
+    public string RouteTemplate = "/api/Repository";
+
+    public Repository Repository = repo;
+    public record Response(Repository repo);
+}
+
+public record RepositoryRequest(string? sortColumn,
+                                string? sortOrder,
+                                int pageIndex,
+                                int pageSize,
+                                string? filterColumn,
+                                string? filterQuery) : IRequest<RepositoryRequest.Response>
+{
+    public record Response(ApiResult<Repository> result);
+}
+
+```
 
 
 
