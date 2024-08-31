@@ -19,6 +19,8 @@ public abstract class Base
 - Validations
 - Exceptions
 
+
+- Package
 ```xml
   <ItemGroup>
 	  <PackageReference Include="FluentValidation" Version="11.9.1" />
