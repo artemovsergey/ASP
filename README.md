@@ -628,52 +628,57 @@ public record RepositoryRequest(string? sortColumn,
 
 ```
 
-
-
 # Project.Infrastructure
+- Configurations, Migrations, Data/Context.cs
 
-- Configurations
-- Migrations
-- Data/Context.cs
-
-- Пакеты
+## Package
 ```xml
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+      <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
+    </ItemGroup>
 ```
 
-- Сервисы
+## InfrastructureServicesRegistration
 ```Csharp
 public static class InfrastructureServicesRegistration
 {
-    // Extension method for IServiceCollection
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, 
+                                                                IConfiguration configuration)
     {
-        // Add DbContext to the services
-        services.AddDbContext<AppDbContext>(opts =>
+        services.AddScoped<JwtHandler>();
+        services.AddDbContext<ProjectStoreContext>(opts =>
         {
-            opts.UseSqlServer(configuration.GetConnectionString("Default") ??
-                "Server=.; Database=PosteBin; Trusted_Connection=SSPI; Encrypt=Optional");
-        });
+            opts.UseNpgsql(configuration.GetConnectionString("PostgreSQL"));
+        }).AddLogging();
 
-        // Register repositories and services
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IRecordRepository, RecordRepository>();
-        services.AddScoped<IRecordCloudService, CloudService>();
-        services.AddScoped<IQRCodeGeneratorService, QRCodeGeneratorService>();
-        services.AddScoped<ITelegramService, TelegramService>();
 
+        if (configuration["ASPNETCORE_ENVIRONMENT"] == "Production")
+        {
+            services.AddDbContext<ApplicationContext>(options =>
+                options.UseSqlServer(
+                    configuration.GetConnectionString("MSSQL")
+                )
+            );
+        }
+        else
+        {
+            services.AddDbContext<ApplicationContext>(options =>
+                options.UseSqlServer(
+                    configuration.GetConnectionString("DefaultConnection")
+                )
+            );
+        }
+        
         return services;
     }
 }
