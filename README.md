@@ -747,14 +747,9 @@ public class ExampleContextFactory : IDesignTimeDbContextFactory<ExampleContext>
 
 # Project.API
 
-Структура проекта:
-- ApiEndPoints
-- Controllers
-- Hubs
-- Images
-- Services
+ApiEndPoints, Controllers, Hubs, Images, Services, Filters, Graphql, Helpers, Hubs, Logs
 
-Пакеты:
+## Package
 ```xml
   <ItemGroup>
     <PackageReference Include="Ardalis.ApiEndpoints" Version="4.1.0" />
@@ -776,46 +771,515 @@ public class ExampleContextFactory : IDesignTimeDbContextFactory<ExampleContext>
   </ItemGroup>
 ```
 
-Program
+```
+<ItemGroup>
+        <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
+        <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+        <PackageReference Include="CsvHelper" Version="33.0.1" />
+        <PackageReference Include="FluentResults" Version="3.16.0" />
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+        <PackageReference Include="HotChocolate.AspNetCore" Version="13.9.9" />
+        <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.9.9" />
+        <PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.9.9" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+        <PackageReference Include="Serilog" Version="4.0.1" />
+        <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
+        <PackageReference Include="Serilog.Exceptions.EntityFrameworkCore" Version="8.4.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.2" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.7.0" />
+    </ItemGroup>
+```
+
+## ApiExtensions
+
+```Csharp
+public static class SwaggerServices
+{
+    public static void UseSwaggerServices(this IApplicationBuilder app)
+    {
+        
+        //var descriptions = app.DescribeApiVersions();
+        app.UseSwagger();
+    
+        app.UseSwaggerUI(
+            options =>
+            {
+                
+                foreach (var description in new List<string>(){"v1","v2"})
+                {
+                    options.SwaggerEndpoint($"/swagger/{description}/swagger.json", description.ToUpperInvariant());
+                }
+            });
+    }
+}
+```
+
+## BaseController
+```Csharp
+[ApiVersion("1.0", Deprecated = true)]
+[ApiController]
+[Route("api/v{version:apiVersion}/[controller]")]
+
+public class BaseController : ControllerBase
+{
+    private IMediator _mediator;
+    protected IMediator Mediator => _mediator ??=  HttpContext.RequestServices.GetService<IMediator>();  
+}
+```
+
+## Controleer v1
+```Csharp
+[ApiController]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
+public class RepositoryController : ControllerBase
+{
+    private readonly IMediator _mediator;
+    private readonly ILogger<RepositoryController> _logger;
+    public RepositoryController(IMediator mediatr, ILogger<RepositoryController> logger)
+    {
+        _logger = logger;
+        _mediator = mediatr;
+    }
+    
+    //[Authorize]
+    //[Authorize(Roles = "Administrator")]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Получает все репозитории.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "All repo successfully retrieved")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Repo not found", typeof(ValidationProblemDetails))]
+    public async Task<IActionResult> GetAllRepositories(string? sortColumn = null,
+        string? sortOrder = null,
+        int pageIndex = 0,
+        int pageSize = 10,
+        string? filterColumn = null,
+        string? filterQuery = null)
+    {
+        var response = await _mediator.Send(new RepositoryRequest(sortColumn,sortOrder,pageIndex,pageSize,filterColumn,filterQuery));
+        
+        if(response.result == null)
+        {
+            return NotFound("Репозитории не найдены");
+        }
+        return Ok(response.result);
+    }
+
+   
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [SwaggerOperation(Summary = "Создание репозитория.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Repo created success")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Repo not created", typeof(ValidationProblemDetails))]
+    public async Task<ActionResult<Repository>> PostRepository([FromBody] Repository repo)
+    {
+        var response = await _mediator.Send(new AddRepositoryRequest(repo));
+        if(response.repo == null)
+        {
+            return BadRequest("Репозиторий не создан!");
+        }
+        return Ok("Новый репозиторий создан!");
+    }
+    
+    [Authorize]
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [SwaggerOperation(Summary = "Редактирование репозитория.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Repo edited success")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Repo not edited", typeof(ValidationProblemDetails))]
+    public async Task<ActionResult<Repository>> EditRepository([FromBody] Repository repo)
+    {
+        var response = await _mediator.Send(new EditRepositoryRequest(repo));
+        if(response.repo == null)
+        {
+            return BadRequest("Репозиторий не отредактирован!");
+        }
+        return Ok("Репозиторий отредактирован!");
+    }
+    
+    
+    
+    //TODO Оптимизировать
+    
+    [Authorize]
+    [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [SwaggerOperation(Summary = "Удаление репозитория.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Repo deleted success")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Repo not deleted", typeof(ValidationProblemDetails))]
+    public async Task<ActionResult<bool>> DeleteRepository([FromBody] Repository repo)
+    {
+        var response = await _mediator.Send(new DeleteRepositoryRequest(repo));
+        if(response.Result == false)
+        {
+            return BadRequest("Репозиторий не удален!");
+        }
+        return Ok("Репозиторий удален!");
+    }
+}
+```
+
+## TokenController
+```Csharp
+[ApiController]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
+public class TokenController : ControllerBase
+{
+    private readonly IConfiguration _config;
+
+    public TokenController(IConfiguration config)
+    {
+        _config = config;
+    }
+
+    [HttpGet]
+    public IActionResult GenerateToken()
+    {
+        var claims = new List<Claim> { new Claim(ClaimTypes.Name, "user") };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:SecretKey"]));
+        Console.WriteLine(key);
+
+        // создаем JWT-токен
+        var jwt = new JwtSecurityToken(
+            issuer: _config["Jwt:Issuer"],
+            audience: _config["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.Add(TimeSpan.FromDays(365)),
+            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
+        
+        return Ok(new JwtSecurityTokenHandler().WriteToken(jwt));
+    }
+}
+```
+
+## Controller wuth Redis
+```Csharp
+[ApiVersion("1.0")]
+[ApiController]
+[Route("api/v{version:apiVersion}/[controller]")]
+public class UsersController : ControllerBase
+{
+    private readonly IUserService _userService;
+    private readonly IMemoryCache _memoryCache;
+    private readonly ApplicationContext _db;
+    private readonly IDistributedCache _distributedCache;
+
+    public UsersController(IUserService userService,
+                           IMemoryCache memoryCache,
+                           ApplicationContext db,
+                           IDistributedCache distributedCache)
+    {
+        _userService = userService;
+        _memoryCache = memoryCache;
+        _db = db;
+        _distributedCache = distributedCache;
+    }
+
+    [HttpPost]
+    public IActionResult PostUser([FromBody] ApplicationUser user)
+    {
+        try
+        {
+            _db.Users.Add(user);
+            _db.SaveChanges();
+            return Ok(user);
+        }
+        catch (Exception e)
+        {
+            return BadRequest($"Bad Request: {e.InnerException.Message}");
+            throw;
+           
+        }
+    }
+
+    [AspCore.Authorize]
+    [HttpPost]
+    [Route("login")]
+    public async Task<ActionResult> LoginUser(ApplicationUser user)
+    {
+        var result = await _db.Users.Where(u => u.Email == user.Email).FirstOrDefaultAsync();
+        if (result != null)
+        {
+            return Ok(result.Id);
+        }
+        else
+        {
+            return NotFound("Неправильный email или password");
+        }
+    }
+
+    
+    
+    [HttpPost("auth")]
+    public IActionResult Authenticate([FromBody] AuthenticateRequest model)
+    {
+        Console.WriteLine("Метод контроллера Authenticate");
+        var response = _userService.Authenticate(model);
+        
+        if (response == null)
+            return BadRequest(new { message = "Username or password is incorrect" });
+        return Ok(response);
+    }
+
+    /*
+     Кэширование в памяти не рекомендуется использовать 
+     при работе нескольких экземпляров одного решения,
+     поскольку данные не будут согласованы.
+     */
+    
+    [HttpGet("{cakeName}")]
+    public async Task<ApplicationUser> Get(string cakeName)
+    {
+        var cacheKey = cakeName.ToLower();
+        if (!_memoryCache.TryGetValue(cacheKey, out ApplicationUser cakeList))
+        {
+            cakeList = _userService.GetById(1);
+            var cacheExpirationOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTime.Now.AddHours(6),
+                Priority = CacheItemPriority.Normal, SlidingExpiration = TimeSpan.FromMinutes(5)
+            };
+            _memoryCache.Set(cacheKey, cakeList, cacheExpirationOptions);
+        }
+
+        return cakeList;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<ApplicationUser>>> GetUsers(CancellationToken cancellationToken)
+    {
+        const string cacheKey = "GetUsers";
+        IEnumerable<ApplicationUser> users;
+        var cacheUsers = await _distributedCache.GetAsync(cacheKey, cancellationToken);
+
+        if (cacheUsers == null)
+        {
+            users = _db.Users.ToList();
+            var serializedUsers = JsonConvert.SerializeObject(users);
+            cacheUsers = Encoding.UTF8.GetBytes(serializedUsers);
+
+            var options = new DistributedCacheEntryOptions()
+                .SetAbsoluteExpiration(DateTime.Now.AddMinutes(5))
+                .SetSlidingExpiration(TimeSpan.FromMinutes(1));
+            
+            await _distributedCache.SetAsync(cacheKey,cacheUsers, options, cancellationToken);
+            return Ok(users);
+        }
+        
+        var result  = Encoding.UTF8.GetString(cacheUsers);
+        users = JsonConvert.DeserializeObject<IEnumerable<ApplicationUser>>(result);
+        return Ok(users);
+    }
+}
+```
+
+## AccountController
+```Csharp
+[ApiController]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]/[action]")]
+public class AccountController : ControllerBase
+{
+    private readonly ApplicationContext _context;
+    private readonly JwtHandler _jwtHandler;
+    
+    public AccountController(
+        ApplicationContext context,
+        JwtHandler jwtHandler)
+    {
+        _context = context;
+        _jwtHandler = jwtHandler;
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+    {
+        var user = await _context.Users.Where(u => u.Email == loginRequest.Email).FirstOrDefaultAsync();
+        var password = await _context.Users.Where(u => u.Password == loginRequest.Password).FirstOrDefaultAsync();
+        
+        if (user == null
+            || password == null)
+            return Unauthorized(new LoginResult() {
+                Success = false,
+                Message = "Invalid Email or Password."
+            });
+        var secToken = await _jwtHandler.GetTokenAsync(user);
+        var jwt = new JwtSecurityTokenHandler().WriteToken(secToken);
+        return Ok(new LoginResult() {
+            Success = true, Message = "Login successful", Token = jwt
+        });
+    }
+    
+}
+```
+
+
+# Program
 ```Csharp
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);         
-builder.Services.AddScoped<SportStoreContext>();
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<RoleRepository>();
-builder.Services.AddCors();
-builder.Services.AddSignalR();
-builder.Services.AddResponseCompression(opts =>
+// Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
+// builder.Host.UseSerilog();
+
+var configuration = builder.Configuration;
+
+var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]));
+
+
+Console.WriteLine(key);
+
+builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddInfrastructureServices(builder.Configuration);
+
+builder.Services.AddInfrastructureIdentity(builder.Configuration);
+
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
+
+//builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>,ConfigureSwaggerOptions>();
+
+builder.Services.AddApiVersioning(config =>
 {
-    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes
-    .Concat(new[] { "application/octet-stream" });
+    config.DefaultApiVersion = new ApiVersion(1, 0);
+    config.AssumeDefaultVersionWhenUnspecified = true;
+    config.ReportApiVersions = true;
+})
+    .AddApiExplorer(
+    options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });;
+
+
+builder.Services.AddSwaggerGen(c =>
+{
+    //c.OperationFilter<SwaggerDefaultValues>();
+    c.EnableAnnotations();
+    
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Репозитории", Version = "v2024" });
+    c.SwaggerDoc("v2", new OpenApiInfo { Title = "Репозитории", Version = "v2024" });
+    
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Authorization using jwt token. Example: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
 });
-builder.Services.AddGrpc();
+
+builder.Services.AddCors();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = configuration["Jwt:Issuer"],
+            ValidAudience = configuration["Jwt:Audience"],
+            IssuerSigningKey = key,
+            //IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecurityKey"]))
+        };
+    });
+
+
+builder.Services.AddGraphQLServer()
+    .AddAuthorization()
+    .AddQueryType<Query>()
+    .AddMutationType<Mutation>()
+    .AddFiltering()
+    .AddSorting();
+
+
+builder.Services.AddSignalR();
+
+builder.Services.AddAuthorization();
+
+// builder.Services.AddControllers(options =>
+//     options.Filters.Add(new ApiExceptionFilter()));
+
+// builder.Services.Configure<ApiBehaviorOptions>(options =>
+//     options.SuppressModelStateInvalidFilter = true
+// );
+
+builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
+
+//app.UseSerilogRequestLogging();
+
 if (app.Environment.IsDevelopment())
 {
+    Console.WriteLine("Env: Development");
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI();
-    app.UseWebAssemblyDebugging();
+     app.UseSwaggerUI(
+         options =>
+         {
+             var descriptions = app.DescribeApiVersions();
+             foreach (var description in descriptions)
+             {
+                 options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+                 
+             }
+         });
+}
+else
+{
+    Console.WriteLine("Env: Production");
+    // For test in Production 
+    app.UseSwaggerServices();
+    
+    app.UseExceptionHandler("/Error");
+    app.MapGet("/Error", () => Results.Problem());
+    app.UseHsts();
 }
 
-app.UseStaticFiles(new StaticFileOptions()
-{
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(),@"Images")),
-    RequestPath = new Microsoft.AspNetCore.Http.PathString("/Images")
-});
-
 app.UseHttpsRedirection();
-app.UseBlazorFrameworkFiles();
-app.MapHub<UserHub>("/test");
-app.MapControllers();
 app.UseCors(o => o.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-app.UseGrpcWeb();
+
+// Identity Project
+//app.UseMiddleware<JwtMiddleware>();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+app.MapGraphQL("/api/graphql");
+
+app.MapHub<HealthCheckHub>("/api/health-hub");
+
 app.Run();
 ```
 
