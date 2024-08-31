@@ -15,16 +15,13 @@ public abstract class Base
 }
 ```
 
-
-
-
-
 - Package
 ```xml
   <ItemGroup>
 	  <PackageReference Include="FluentValidation" Version="11.9.1" />
   </ItemGroup>
 ```
+
 ### Валидация
 ```Csharp
 public class UserValidator : AbstractValidator<User>
@@ -43,6 +40,281 @@ public class UserValidator : AbstractValidator<User>
     }
 }
 ```
+
+# Project.Application
+- Interfaces, Repositories, Handlers, Requests, Generics, Behaviors ApplicationService.cs
+
+### Package
+- Mediatr
+
+### ApplicationService.cs
+```Csharp
+public static class ApplicationServicesRegistration
+{
+    // Extension method for IServiceCollection
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
+        // Add logging services
+        services.AddLogging();
+
+        // Add MediatR services and register services from the current assembly
+        services.AddMediatR(config => config.RegisterServicesFromAssemblies(
+               Assembly.GetExecutingAssembly()));
+
+        return services;
+    }
+}
+```
+
+### Request
+```Csharp
+public record AddUserRequest(User user) : IRequest<AddUserRequest.Response>
+{
+    public const string RouteTemplate = "api/users";
+    public record Response(int userId);
+}
+
+public class AddUserRequestValidator : AbstractValidator<AddUserRequest>
+{
+    public AddUserRequestValidator()
+    {
+        RuleFor(x => x.user).SetValidator(new UserValidator());
+    }
+}
+```
+
+### Handler
+```Csharp
+public class AddUserHandler : IRequestHandler<AddUserRequest,AddUserRequest.Response>
+{
+    private readonly HttpClient _httpClient;
+    private readonly string BaseUrl = "https://localhost:7214";
+    public AddUserHandler(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
+    public async Task<AddUserRequest.Response> Handle(AddUserRequest request, CancellationToken cancellationToken)
+    {
+        Console.WriteLine("Работает метод Handle из Handler");
+        var response = await _httpClient.PostAsJsonAsync<AddUserRequest>($"{BaseUrl}/{AddUserRequest.RouteTemplate}", request, cancellationToken);
+        if (response.IsSuccessStatusCode)
+        {
+            var userId = await response.Content.ReadFromJsonAsync<int>(cancellationToken:cancellationToken);
+            return new AddUserRequest.Response(userId);
+        }
+        else
+        {
+            return new AddUserRequest.Response(-1);
+        }
+    }
+}
+```
+
+### Пример загрузки изображения
+```Csharp
+public record UploadUserImageRequest(int UserId, IBrowserFile File) : IRequest<UploadUserImageRequest.Response>
+{
+    public const string RouteTemplate = "/api/Users/{UserId}/images";
+    public record Response(string ImageName);
+}
+```
+
+```Csharp
+public class UploadUserImageHandler : IRequestHandler<UploadUserImageRequest, UploadUserImageRequest.Response>
+{
+    private readonly HttpClient _httpClient;
+    public UploadUserImageHandler(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
+    public async Task<UploadUserImageRequest.Response> Handle(UploadUserImageRequest request, CancellationToken cancellationToken)
+    {
+        var fileContent = request.File.OpenReadStream(request.File.Size, cancellationToken);
+
+        using var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(fileContent), "image", request.File.Name);
+        var response = await _httpClient.PostAsync(UploadUserImageRequest.RouteTemplate.Replace("{UserId}", request.UserId.ToString()), content, cancellationToken);
+        if (response.IsSuccessStatusCode)
+        {
+            var fileName = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
+            return new UploadUserImageRequest.Response(fileName);
+        }
+        else
+        {
+            return new UploadUserImageRequest.Response("");
+        }
+    }
+}
+```
+
+### Generic Api Result
+
+```Csharp
+public class ApiResult<T>
+{
+    public List<T> Data { get; private set; }
+    public int PageIndex { get; private set; }
+    public int PageSize { get; private set; }
+    public int TotalCount { get; private set; }
+    public int TotalPages { get; private set; }
+    public bool HasPreviousPage
+    {
+        get
+        {
+            return (PageIndex > 0);
+        }
+    }
+    public bool HasNextPage
+    {
+        get
+        {
+            return ((PageIndex + 1) < TotalPages);
+        }
+    }
+    public string? SortColumn { get; set; }
+    public string? SortOrder { get; set; }
+    public string FilterColumn { get; set; }
+    public string FilterQuery { get; set; }
+
+    public ApiResult(List<T> data,
+        int count,
+        int pageIndex,
+        int pageSize,
+        string? sortColumn,
+        string? sortOrder,
+        string filterColumn,
+        string filterQuery)
+    {
+        Data = data;
+        PageIndex = pageIndex;
+        PageSize = pageSize;
+        TotalCount = count;
+        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+        SortColumn = sortColumn;
+        SortOrder = sortOrder;
+        FilterColumn = filterColumn;
+        FilterQuery = filterQuery;
+    }
+}
+```
+
+### Exception
+
+```Csharp
+public class ApiException : Exception
+{
+    public ApiException() : base() { }
+    public ApiException(string message) : base(message) { }
+    
+    public ApiException(string message, params object[] args)
+        : base(String.Format(CultureInfo.CurrentCulture, message, args)) { }
+}
+
+public class NotFoundException : Exception
+{
+    public NotFoundException() : base() { }
+    
+    public NotFoundException(string message) : base(message) { }
+    
+    public NotFoundException(string message, Exception innerException) : base(message, innerException) { }
+   
+    public NotFoundException(string name, object key) : base($"Entity \"{name}\" ({key}) was not found.") { }
+}
+
+public class ValidationException : Exception
+{
+    
+    public IDictionary<string, string[]> Errors { get; }
+    
+    public ValidationException() : base("One or more validation failures have occurred.")
+    {
+        Errors = new Dictionary<string, string[]>();
+    }
+    public ValidationException(IEnumerable<ValidationFailure> failures) : this()
+    {
+        var failureGroups = failures
+            .GroupBy(e => e.PropertyName, e => e.ErrorMessage);
+        
+        foreach (var failureGroup in failureGroups)
+        {  }
+    }
+}
+```
+
+### Behaviors
+
+```Csharp
+public class LoggingBehavior<TRequest> : IRequestPreProcessor<TRequest>
+{
+    private readonly ILogger<TRequest> _logger;
+    
+    public async Task Process(TRequest request,  CancellationToken cancellationToken)
+    {
+        var requestName = typeof(TRequest).Name;
+        _logger.LogInformation("Request: {request}", request);
+    }
+}
+
+internal class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+{
+    private readonly ILogger<PerformanceBehavior<TRequest, TResponse>> _logger;
+
+    public PerformanceBehavior(ILogger<PerformanceBehavior<TRequest, TResponse>> logger)
+    {
+        _logger = logger;
+    }
+    
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    {
+        _logger.LogWarning("PerfomanceBehavior");
+        
+        var result = await next();
+        return result;
+    }
+}
+
+public class UnhandledExceptionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+{
+    private readonly ILogger<TRequest> _logger;
+    
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    {
+        try { return await next(); }
+        catch (Exception ex)
+        {
+            var requestName = typeof(TRequest).Name;
+            _logger.LogError(ex, "Request: UnhandledException for Request {Name} {@Request}", requestName, request);
+            throw;
+        }
+    }
+}
+
+public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+{
+    private readonly IEnumerable<IValidator<TRequest>> _validators;
+    
+    public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators) { _validators = validators; }
+    
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    {
+        if (!_validators.Any()) return await next();
+        
+        var context = new  ValidationContext<TRequest>(request);
+        
+        var validationResults = await Task.WhenAll(_validators.Select(v => v.ValidateAsync(context, cancellationToken)));
+        
+        var failures = validationResults.SelectMany(r => r.Errors).Where(f => f != null).ToList();
+        
+        return await next();
+    }
+}
+
+```
+
+
+
+
+
 
 # Project.Infrastructure
 
@@ -153,120 +425,6 @@ public class ExampleContextFactory : IDesignTimeDbContextFactory<ExampleContext>
 ```
 
 
-# Project.Application
-
-Структура
-- Interfaces
-- Repositories
-- Handlers
-- Requests
-- ApplicationService.cs
-
-
-Пакеты
-- Mediatr
-
-
-Сервисы
-```Csharp
-public static class ApplicationServicesRegistration
-{
-    // Extension method for IServiceCollection
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
-    {
-        // Add logging services
-        services.AddLogging();
-
-        // Add MediatR services and register services from the current assembly
-        services.AddMediatR(config => config.RegisterServicesFromAssemblies(
-               Assembly.GetExecutingAssembly()));
-
-        return services;
-    }
-}
-```
-
-Request
-```Csharp
-public record AddUserRequest(User user) : IRequest<AddUserRequest.Response>
-{
-    public const string RouteTemplate = "api/users";
-    public record Response(int userId);
-}
-
-public class AddUserRequestValidator : AbstractValidator<AddUserRequest>
-{
-    public AddUserRequestValidator()
-    {
-        RuleFor(x => x.user).SetValidator(new UserValidator());
-    }
-}
-```
-
-Handler
-```Csharp
-public class AddUserHandler : IRequestHandler<AddUserRequest,AddUserRequest.Response>
-{
-    private readonly HttpClient _httpClient;
-    private readonly string BaseUrl = "https://localhost:7214";
-    public AddUserHandler(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-    public async Task<AddUserRequest.Response> Handle(AddUserRequest request, CancellationToken cancellationToken)
-    {
-        Console.WriteLine("Работает метод Handle из Handler");
-        var response = await _httpClient.PostAsJsonAsync<AddUserRequest>($"{BaseUrl}/{AddUserRequest.RouteTemplate}", request, cancellationToken);
-        if (response.IsSuccessStatusCode)
-        {
-            var userId = await response.Content.ReadFromJsonAsync<int>(cancellationToken:cancellationToken);
-            return new AddUserRequest.Response(userId);
-        }
-        else
-        {
-            return new AddUserRequest.Response(-1);
-        }
-    }
-}
-```
-
-Пример загрузки изображения
-
-```Csharp
-public record UploadUserImageRequest(int UserId, IBrowserFile File) : IRequest<UploadUserImageRequest.Response>
-{
-    public const string RouteTemplate = "/api/Users/{UserId}/images";
-    public record Response(string ImageName);
-}
-```
-
-```Csharp
-public class UploadUserImageHandler : IRequestHandler<UploadUserImageRequest, UploadUserImageRequest.Response>
-{
-    private readonly HttpClient _httpClient;
-    public UploadUserImageHandler(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-    public async Task<UploadUserImageRequest.Response> Handle(UploadUserImageRequest request, CancellationToken cancellationToken)
-    {
-        var fileContent = request.File.OpenReadStream(request.File.Size, cancellationToken);
-
-        using var content = new MultipartFormDataContent();
-        content.Add(new StreamContent(fileContent), "image", request.File.Name);
-        var response = await _httpClient.PostAsync(UploadUserImageRequest.RouteTemplate.Replace("{UserId}", request.UserId.ToString()), content, cancellationToken);
-        if (response.IsSuccessStatusCode)
-        {
-            var fileName = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
-            return new UploadUserImageRequest.Response(fileName);
-        }
-        else
-        {
-            return new UploadUserImageRequest.Response("");
-        }
-    }
-}
-```
 
 # Project.API
 
