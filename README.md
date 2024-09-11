@@ -714,6 +714,13 @@ public  class SportStoreContext : DbContext
         //Database.EnsureCreated();    
     }
 
+    public SportStoreContext(DbContextOptions<ColledgeContext> opt) : base(opt)
+    {
+        //Database.EnsureDeleted();
+        Database.EnsureCreated();
+        //Database.Migrate();
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=SportStoreBlazor;Trusted_Connection=True;");
