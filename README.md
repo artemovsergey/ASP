@@ -42,12 +42,12 @@ public class UserValidator : AbstractValidator<User>
 ```
 
 # Project.Application
-- Interfaces, Repositories, Handlers, Requests, Generics, Behaviors ApplicationService.cs
+- Interfaces, Repositories, Handlers, Requests, Generics, Behaviors
 
 ## Package
 - Mediatr
 
-## ApplicationService.cs
+## ApplicationServices.cs
 ```Csharp
 public static class ApplicationServicesRegistration
 {
@@ -648,12 +648,11 @@ public record RepositoryRequest(string? sortColumn,
     </ItemGroup>
 ```
 
-## InfrastructureServicesRegistration
+## InfrastructureServices
 ```Csharp
-public static class InfrastructureServicesRegistration
+public static class InfrastructureServices
 {
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, 
-                                                                IConfiguration configuration)
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<JwtHandler>();
         services.AddDbContext<ProjectStoreContext>(opts =>
@@ -685,7 +684,7 @@ public static class InfrastructureServicesRegistration
 ```
 
 
-- Конфигурация
+## EF Configuration
 ```Csharp
 public class UserConfig : IEntityTypeConfiguration<User>
 {
@@ -700,7 +699,7 @@ public class UserConfig : IEntityTypeConfiguration<User>
 }
 ```
 
-- Контекст
+## Context
 ```Csharp
 public  class SportStoreContext : DbContext
 {
@@ -733,6 +732,8 @@ public  class SportStoreContext : DbContext
     }
 }
 ```
+
+## Factory
 ```
 /// <summary>
 /// Клаас для работы автогенерации restAPI черезе IDE по модели и контексту
@@ -749,7 +750,6 @@ public class ExampleContextFactory : IDesignTimeDbContextFactory<ExampleContext>
     }
 }
 ```
-
 
 
 # Project.API
@@ -779,7 +779,7 @@ ApiEndPoints, Controllers, Hubs, Images, Services, Filters, Graphql, Helpers, Hu
 ```
 
 ```
-<ItemGroup>
+   <ItemGroup>
         <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
         <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
         <PackageReference Include="CsvHelper" Version="33.0.1" />
@@ -808,14 +808,10 @@ public static class SwaggerServices
 {
     public static void UseSwaggerServices(this IApplicationBuilder app)
     {
-        
-        //var descriptions = app.DescribeApiVersions();
         app.UseSwagger();
-    
         app.UseSwaggerUI(
             options =>
             {
-                
                 foreach (var description in new List<string>(){"v1","v2"})
                 {
                     options.SwaggerEndpoint($"/swagger/{description}/swagger.json", description.ToUpperInvariant());
@@ -838,7 +834,7 @@ public class BaseController : ControllerBase
 }
 ```
 
-## Controleer v1
+## Controller v1
 ```Csharp
 [ApiController]
 [ApiVersion("1.0")]
@@ -910,10 +906,6 @@ public class RepositoryController : ControllerBase
         }
         return Ok("Репозиторий отредактирован!");
     }
-    
-    
-    
-    //TODO Оптимизировать
     
     [Authorize]
     [HttpDelete]
@@ -1025,8 +1017,6 @@ public class UsersController : ControllerBase
         }
     }
 
-    
-    
     [HttpPost("auth")]
     public IActionResult Authenticate([FromBody] AuthenticateRequest model)
     {
@@ -1130,8 +1120,7 @@ public class AccountController : ControllerBase
 }
 ```
 
-
-# Program
+## Program
 ```Csharp
 var builder = WebApplication.CreateBuilder(args);
 
@@ -1290,12 +1279,12 @@ app.MapHub<HealthCheckHub>("/api/health-hub");
 app.Run();
 ```
 
-launchSettings.json
+## launchSettings.json
 ```json
 "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}"
 ```
 
-ApiEndpotint для загрузки файла
+## ApiEndpotint для загрузки файла
 ```Csharp
 public class UploadUserImageEndpoint : EndpointBaseAsync.WithRequest<int>.WithActionResult<string>
 {
@@ -1341,10 +1330,7 @@ public class UploadUserImageEndpoint : EndpointBaseAsync.WithRequest<int>.WithAc
 }
 ```
 
-
-
-
-# appsettings.json
+## appsettings.Development.json
 
 ```json
 {
@@ -1356,21 +1342,85 @@ public class UploadUserImageEndpoint : EndpointBaseAsync.WithRequest<int>.WithAc
   },
   "AllowedHosts": "*",
 
+  "ConnectionStrings": {
+    "MSSQL": "Server=localhost,1433;Database=Colledge;Trust Server Certificate=True;MultipleActiveResultSets=true",
+    "MSSQLAuth": "Server=localhost,1433;Database=Colledge;UserId=yourUsername;Password=yourPassword;MultipleActiveResultSets=true;",
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=Colledge;Trusted_Connection=True;MultipleActiveResultSets=true",
+    "PostgreSQL": "Host=localhost;Port=5432;Database=Colledge;Username=postgres;Password=root"
+  },
+
+  "Jwt": {
+    "SecretKey": "asdasdsdsfdgdgfdgdgdgdgdgdsdasdsadgeregegerggdfgdga",
+    "Issuer": "YourIssuer",
+    "Audience": "YourAudience",
+    "ExpirationTimeInMinutes": 30
+  },
+
+  "DefaultPasswords": {
+    "RegisteredUser": "Sampl3Pa$$_User",
+    "Administrator": "Sampl3Pa$$_Admin"
+  },
+
+
   "Kestrel": {
     "Endpoints": {
+      "Http": {
+        "Url": "http://localhost:5002"
+      },
       "Https": {
         "Url": "https://localhost:5001",
-        "Certificate": {
-          "Path": "./../certificate/localhost.crt",
-          "KeyPath": "./../certificate/localhost.key"
-        }
+        //"Certificate": {
+        //  "Path": "./../certificate/localhost.crt",
+        //  "KeyPath": "./../certificate/localhost.key"
+        //}
       }
     }
   }
-  
-  
 }
+```
 
+## appsettings.json
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+
+  "ConnectionStrings": {
+    "MSSQL": "Server=mssql;Database=ProjectStore;Trust Server Certificate=True;User Id=sa;Password=HlxTm2fcFE54JA1I_Yp5;MultipleActiveResultSets=true",
+    "MSSQLAuth": "Server=localhost,1433;Database=ProjectStore;UserId=yourUsername;Password=yourPassword;MultipleActiveResultSets=true;",
+    "DefaultConnection": "Server=mssql;Database=ProjectStore;Trusted_Connection=True;MultipleActiveResultSets=true",
+    "PostgreSQL": "Host=db;Port=5432;Database=ProjectStore;Username=postgres;Password=root"
+  },
+
+  "Jwt": {
+    "SecretKey": "asdasdsdsfdgdgfdgdgdgdgdgdsdasdsadgeregegerggdfgdga",
+    "Issuer": "YourIssuer",
+    "Audience": "YourAudience",
+    "ExpirationTimeInMinutes": 30
+  },
+
+  "Kestrel": {
+    "Endpoints": {
+      "Http": {
+        "Url": "http://api:5002"
+      },
+      "Https": {
+        "Url": "https://api:5001",
+        //"Certificate": {
+        //  "Path": "/app/certificate/localhost.crt",
+        //  "KeyPath": "/app/certificate/localhost.key"
+        //}
+      }
+    }
+  }
+
+
+}
 ```
 
 # Docker for Project.API
@@ -1409,20 +1459,8 @@ COPY ./Example.API/appsettings.json /app/appsettings.json
 ENTRYPOINT ["dotnet", "Example.API.dll"]
 ```
 
-
-# OnConfiguring
-
-```Csharp
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=Myrtex;Trusted_Connection=True;");
-    }
-```
-
 # Scaffold
-
 В консоли диспетчера пакетов
-
 ```Scaffold-DbContext "Server=localhost;Database=Users;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models```
 
 # dotnet cli
@@ -1433,9 +1471,6 @@ ENTRYPOINT ["dotnet", "Example.API.dll"]
 - dotnet ef migrations add InitialCreate
 - dotnet ef database update
 - dotnet dev-certs https --trust
-
-
-
 
 # Фильтрация, сортировка
 
@@ -1492,7 +1527,6 @@ public static bool IsValidProperty(string propertyName,
     return prop != null;
 
 }
-
 ```
 
 # Формат даты Postgres
@@ -1525,7 +1559,6 @@ public static bool IsValidProperty(string propertyName,
         }
     }
 ```
-
 
 # API Result для фильтрации, сортировки и пагинации
 
@@ -1578,8 +1611,6 @@ public class ApiResult<T>
     }
 }
 ```
-
-
 
 # Тестовые данные Bogus
 ```Csharp
@@ -1699,7 +1730,6 @@ public class ApiResult<T>
 ```
 
 # QRCode
-
 ```Csharp
 public sealed class QRCodeGeneratorService : IQRCodeGeneratorService
 {
@@ -1747,10 +1777,7 @@ public sealed class QRCodeGeneratorService : IQRCodeGeneratorService
 }
 ```
 
-
-
 # Configure Swagger for API documentation
-
 ```Csharp
 builder.Services.AddSwaggerGen(c =>
 {
@@ -1780,8 +1807,6 @@ builder.Services.AddSwaggerGen(c =>
 });
 ```
 
-
-
 # Configure authentication with JWT
 ```Csharp
 builder.Services.AddAuthentication().AddJwtBearer(opts =>
@@ -1810,12 +1835,6 @@ builder.Services.AddAuthorization(opts =>
         .RequireAuthenticatedUser()
         .Build();
 });
-```
-
-# Add application and infrastructure services
-```Csharp
-builder.Services.AddApplicationServices();
-builder.Services.AddInfrastructureServices(builder.Configuration);
 ```
 
 # Configure middleware, CORS, authentication, and authorization
@@ -1859,7 +1878,7 @@ Scoped или Transient, внедрите их в метод Invoke
  */
 ```
 
-- Обработка ошибок
+# ExceptionHandlingMiddlwere
 ```Csharp
 public sealed class ExceptionHandlingMiddlwere : IMiddleware
 {
@@ -2207,77 +2226,10 @@ public class UserController : ControllerBase
         return NotFound(response.Reasons);
     }
 }
-
 ```
 
-# Регистрация в контейнере конкретного конструктора
-
-```Csharp
-services.AddSingleton( new EmailServerSettings ( host: "smtp.server.com", port: 25 ));
-services.AddScoped( provider => new EmailServerSettings ( host: "smtp.server.com", port: 25 ));
-
-Сервис должен использовать только те зависимости, жизненный цикл которых превышает или эквивалентен жизненному циклу сервиса. Сервис, зарегистрированный как синглтон, может безопасно использовать только singleton- зависимости. Сервис, зарегистрированный как scoped, может безопасно использовать scoped- или singleton-зависимости. Кратковременный сервис может использовать зависимости с любым жизненным циклом.
-```
-
-# Отправка токена в заголовке Authorization
-
-```Csharp
-@page "/news"
-
-
-<PageTitle> Новости </PageTitle>
-
-
-@using Microsoft.AspNetCore.Authorization
-@using RusRoads.Domen.Models
-@using System.Net.Http.Headers
-
-
-
-@inject IHttpClientFactory factory
-
-@if (NewsList == null)
-{
-    <h1>Загрузка</h1>
-}
-else
-{
-    @foreach (var n in NewsList)
-    {
-        
-        <div class="row">
-            <Widget News="@n"/>
-        </div>
-    }
-
-    
-
-
-}
-
-
-
-
-@code {
-
-    public IEnumerable<RusRoads.Domen.Models.News> NewsList { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlciIsImV4cCI6MTcxNjQwNDgyMiwiaXNzIjoiWW91cklzc3VlciIsImF1ZCI6IllvdXJBdWRpZW5jZSJ9.d5HH8AQRhKZT9yGbxX7nMT3_xfR2_-tkK3_rqoxGUt4"; // Получите этот токен от сервера аутентификации
-        HttpClient http = factory.CreateClient("API");
-
-        http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-        NewsList = await http.GetFromJsonAsync<IEnumerable<RusRoads.Domen.Models.News>>($"{http.BaseAddress}/news");
-    }
-
-}
-
-```
 # Проверка jwt
 - https://dinochiesa.github.io/jwt/
-
 
 # try-catch
 
@@ -2302,7 +2254,6 @@ tuple - можно применять как аналог DTO или ViewModel �
 # String
 
 https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/
-
 
 # Learn
 
