@@ -969,7 +969,7 @@ public class TokenController : ControllerBase
 }
 ```
 
-## Controller wuth Redis
+## Controller with Redis
 ```Csharp
 [ApiVersion("1.0")]
 [ApiController]
