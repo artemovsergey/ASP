@@ -1346,7 +1346,8 @@ public class UploadUserImageEndpoint : EndpointBaseAsync.WithRequest<int>.WithAc
     "MSSQL": "Server=localhost,1433;Database=Colledge;Trust Server Certificate=True;MultipleActiveResultSets=true",
     "MSSQLAuth": "Server=localhost,1433;Database=Colledge;UserId=yourUsername;Password=yourPassword;MultipleActiveResultSets=true;",
     "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=Colledge;Trusted_Connection=True;MultipleActiveResultSets=true",
-    "PostgreSQL": "Host=localhost;Port=5432;Database=Colledge;Username=postgres;Password=root"
+    "PostgreSQL": "Host=localhost;Port=5432;Database=Colledge;Username=postgres;Password=root",
+    "SQLite" : "Data Source = TodoApp.db;Foreign Keys=True;"
   },
 
   "Jwt": {
