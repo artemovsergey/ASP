@@ -145,6 +145,8 @@ jobs:
 
 # build_and_push.sh
 
+- сборка контейнов и публикация на docker hub
+
 ```bash
 #!/bin/bash
 echo "Build images from compose"
@@ -171,6 +173,8 @@ docker push artik3314/react_api:latest
 
 
 # vps.sh
+
+- запуск контейнеров
 
 ```bash
 #!/bin/bash
