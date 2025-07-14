@@ -1,6 +1,90 @@
 # Github Action
 
-- Развертывание на VPS
+
+## Unit и Integration Tests, Coverage and deploy results on Github Pages 
+
+```yml
+name: unit and integration Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 9.0.102
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Install reportgenerator tool
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+
+      - name: Install coverlet.msbuild
+        run: |
+          # Находим все тестовые проекты и добавляем coverlet.msbuild
+          for PROJECT in $(find . -name "*.Tests.csproj"); do
+            dotnet add $PROJECT package coverlet.msbuild --version 3.2.0
+          done
+        continue-on-error: true  # На случай, если не найдены тестовые проекты
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test with coverage
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testdb
+        run: |
+          dotnet test --no-build --configuration Release \
+                --collect:"XPlat Code Coverage" \
+                -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura \
+                --logger trx
+
+      - name: Generate report
+        run: |
+          reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coveragereport" -reporttypes:Html   
+
+      - name: Publish test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            ./**/*.trx
+            ./**/coverage.cobertura.xml
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./coveragereport
+```
+
+## Развертывание на VPS
 **Замечание**: в настройках репозитория на github надо укащать секреты. VPS_PRIVATE_KEY берет на локальном компьютере в папке `.ssh` c названием `id_rsa`, f `id_rsa.pub` должен соответствовать открытому публичному ключу на VPS 
 
 ```yml
