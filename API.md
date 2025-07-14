@@ -1,3 +1,14 @@
+# Настройки сериализации
+
+# Enums
+
+```Csharp
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+```
+
 # Newtonsoft
 
 ```Csharp
