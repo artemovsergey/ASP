@@ -1,31 +1,34 @@
 # Github Action
 
+- Развертывание на VPS
+**Замечание**: в настройках репозитория на github надо укащать секреты. VPS_PRIVATE_KEY берет на локальном компьютере в папке `.ssh` c названием `id_rsa`, f `id_rsa.pub` должен соответствовать открытому публичному ключу на VPS 
+
 ```yml
-name: CI/CD Pipeline
+name: deploy
 
 on:
   push:
     branches: [ master ]
+env:
+  VPS_HOST: ${{ secrets.VPS_HOST }}
+  VPS_USERNAME: ${{ secrets.VPS_USERNAME }}
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
 jobs:
+  
   publish:
+
     runs-on: ubuntu-latest
 
     steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '9.0'
+          
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-
-      - name: Make script executable
-        run: chmod +x ./build_and_push.sh
-
-      - name: Run script to build and push images
-        run: ./build_and_push.sh
-      
       - name: Delete old repository from VPS
         uses: appleboy/ssh-action@master
         with:
@@ -33,28 +36,26 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            rm -rf /home/artik3314/project
-        
-      - name: Clone or update repository from Github
+            rm -rf /home/user1/tictactoe
+
+      - name: Сlone new repo
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            git clone https://github.com/artemovsergey/React.git /home/artik3314/project/
-            
+            git clone https://github.com/artemovsergey/TicTacToe.git /home/user1/tictactoe/
 
-    
-      - name: Deploy docker-compose to VPS
+      - name: Deploy to VPS
         uses: appleboy/ssh-action@master
         with:
-              host: ${{ secrets.VPS_HOST }}
-              username: ${{ secrets.VPS_USERNAME }}
-              key: ${{ secrets.SSH_PRIVATE_KEY }}
-              script: |
-                chmod +x /home/artik3314/project/vps.sh
-                /home/artik3314/project/vps.sh
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            chmod +x /home/user1/tictactoe/scripts/vps.sh
+            /home/user1/tictactoe/scripts/vps.sh
 ```
 
 
