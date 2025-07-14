@@ -175,16 +175,17 @@ docker push artik3314/react_api:latest
 ```bash
 #!/bin/bash
 echo "Go to project"
-cd /home/artik3314/project/
+cd /home/user1/tictactoe/
 
 echo "Stop all containers"
-docker-compose -f docker-compose-production.yml down
+docker-compose down
 
 echo "Update new version images"
-docker-compose -f docker-compose-production.yml pull
+docker-compose pull
 
-echo "Поднятие контейнеров"
-docker-compose -f docker-compose-production.yml up -d --build
+echo "Up"
+docker-compose up -d --build
 
+echo "Status"
 docker ps
 ```
