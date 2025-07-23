@@ -1,6 +1,6 @@
 # Технический журнал ASP Core
 
-
+https://github.com/artemovsergey/ASP/wiki
 
 
 
