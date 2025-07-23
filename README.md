@@ -1539,28 +1539,6 @@ public static bool IsValidProperty(string propertyName,
     }
 ```
 
-# Hash md5
-
-```Csharp
-    public async Task<string> HashNews(string title)
-    {
-        // Реализация хеширования пароля с использованием MD5
-        using (MD5 md5 = MD5.Create())
-        {
-            byte[] inputBytes = Encoding.ASCII.GetBytes(title);
-            byte[] hashBytes = md5.ComputeHash(inputBytes);
-
-            // Конвертируем байты обратно в строку
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < hashBytes.Length; i++)
-            {
-                sb.Append(hashBytes[i].ToString("X2"));
-            }
-            return sb.ToString();
-        }
-    }
-```
-
 # API Result для фильтрации, сортировки и пагинации
 
 ```Csharp
@@ -1613,28 +1591,7 @@ public class ApiResult<T>
 }
 ```
 
-# Тестовые данные Bogus
-```Csharp
- [HttpGet("/generate")]
- public async Task<IActionResult> SeedUsers()
- {
-     var faker = new Faker<User>()
-     //.RuleFor(u => u.Id, f => f.UniqueIndex)
-     .RuleFor(u => u.Email, f => f.Internet.Email())
-     .RuleFor(u => u.Login, f => f.Person.UserName)
-     .RuleFor(u => u.Password, f => f.Internet.Password());
 
-     List<User> users = faker.Generate(100);
-
-     using (var context = new KeeperContext())
-     {
-         context.Users.AddRangeAsync(users);
-         await context.SaveChangesAsync();
-     }
-
-     return Ok();
- }
-```
 
 
 
