@@ -1,72 +1,8 @@
 # Program
 
-```csharp
-
-var builder = WebApplication.CreateBuilder(args);
-var config = builder.Configuration;
-
-builder.Logging.AddLoggingServices(config);
-builder.Services.AddRateLimiter();
-builder.Services.AddResponseCompression(opts => 
-{
-    opts.EnableForHttps = true;
-    opts.Providers.Add<BrotliCompressionProvider>();
-    opts.Providers.Add<GzipCompressionProvider>();
-    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat([
-        "application/json",
-        "application/problem+json"
-    ]);
-});
-
-builder.Services.AddSwaggerServices();
-builder.Services.AddApiVersioningServices();
-builder.Services.AddJwtServices(config);
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IValidator<User>, FluentValidator>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-});
-
-builder.Services.AddDbContext<SampleAppContext>(opt => 
-    opt.UseNpgsql(config.GetConnectionString("PostgreSQL")));
-
-builder.Services.AddCors();
-builder.Services.AddProblemDetails();
-builder.Services.AddHealthServices();
-
-
-var app = builder.Build();
-
-app.UseMiddleware<SampleApp.API.Middlewares.ExceptionHandlerMiddleware>();
-app.UseSecurityMiddlewares();
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseUsersEndpoints();
-app.UseSwaggerMiddlewares();
-app.UseHealthMiddlewares();
-app.UseResponseCompression(); 
-
-app.Run();
-```
-
 # LoggingServices
 
-```csharp
-public static class LoggingServices
-{
-    public static ILoggingBuilder AddLoggingServices(this ILoggingBuilder builder, IConfiguration config)
-    {
-        builder.AddConfiguration(config.GetSection("Logging"))
-            .AddConsole()
-            .AddDebug();
 
-        return builder;
-    }
-}
-```
 
 # SwaggerServices
 
